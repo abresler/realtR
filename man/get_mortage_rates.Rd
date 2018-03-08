@@ -9,6 +9,9 @@ get_mortage_rates(return_wide = F)
 \arguments{
 \item{return_wide}{if \code{TRUE} widens data and removes duration and benchmark variables}
 }
+\value{
+a \code{data_frame}
+}
 \description{
 Gets current mortgage rates
 }

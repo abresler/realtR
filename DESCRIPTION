@@ -1,10 +1,10 @@
 Package: realtR
 Type: Package
 Title: realtR; it's cool
-Version: 0.10
+Version: 0.10001
 Date: 2018-03-06
 Authors@R: c(person("Alex", "Bresler", email = "abresler@asbcllc.com", role = c("aut", "cre")))
 Maintainer: Alex Bresler <abresler@asbcllc.com>
-Description: Because real estate brokers suck and you should be empowered with the data you need
+Description: Real estate broker kryponite
 License: GPL (>= 2)
 RoxygenNote: 6.0.1.9000

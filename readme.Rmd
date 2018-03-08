@@ -15,8 +15,6 @@ devtools::install_github("abresler/realtR")
 
 ### realtR
 
-Because the only thing in the universe as awful as and unnecassary as
-Stefan Bondy are real estate brokers.
 
 <img src = 'http://media.sny.tv/sny/2016/12/01/images/snyf_1214481883_th_25.jpg'>
 <br>

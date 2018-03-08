@@ -102,6 +102,7 @@ dictionary_geo_names <-
            limit = 100,
            search_types = c("neighborhood","city","county","postal_code","address","building","street","school")
            ) {
+    area_name <- as.character(area_name)
     if (limit > 100) {
       stop("limit cannot exceed 100")
     }
@@ -109,7 +110,8 @@ dictionary_geo_names <-
     base <- 'https://parser-external.geo.moveaws.com/suggest?input='
     area_types <- 
       search_types %>% str_c(collapse = ",")
-    search_area <- URLencode(area_name)
+    search_area <- 
+      URLencode(area_name)
     
     url <- 
       glue::glue("{base}{search_area}&limit={limit}&client_id={client_id}&area_types={area_types}") %>% 
@@ -187,7 +189,7 @@ parse_geo_urls <-
 #' @param return_message if \code{TRUE} returns a message
 #' @param ... 
 #'
-#' @return
+#' @return a \code{data_frame}
 #' @export
 #'
 #' @examples

@@ -5,7 +5,7 @@
 .munge_realtor <-
   function(data) {
     num_names <-
-      data %>% dplyr::select(matches("^area|^count|^price|^latitude|^longitude|^year")) %>% names()
+      data %>% dplyr::select(matches("^area|^count|^price|^latitude|^longitude|^year|^index")) %>% names()
     
     
     if (num_names %>% length() > 0) {
@@ -94,7 +94,13 @@ dictionary_realtor_names <-
         'slug',
         'validatedLocation',
         'state_id',
-        "zip"
+        "zip",
+        "year", "month", "active_listing_count", "hotmarket_rank", 
+        "hotmarket_index", "hotmarket_temperature", "asking_to_sold_price_percent_change", 
+        "sales_to_inventory_count_percent", "sales_to_inventory_count_percent_market_type", 
+        "median.age_days", "median.listing_price", "median.rental_listing_price", 
+        "median.listing_price_sqft", "median.closing_price", "listing_count.for_sale", 
+        "listing_count.rental", "listing_count.sold"
       ),
       nameActual = c(
         "pricePerSF",
@@ -141,7 +147,13 @@ dictionary_realtor_names <-
         'slugLocation',
         'nameLocationValidated',
         'slugState',
-        "zipcodeProperty"
+        "zipcodeProperty",
+        "yearData", "monthData", "countActiveListings", "rankMarketHot", 
+        "indexMarketTemperature", "temperatureMarket", "pctSoldPriceToAsk", 
+        "pctSalesToInventory", "typeSalesToInventoryFavor", 
+        "countDaysMarketMedian", "priceListingMedian", "priceRentMedian", 
+        "pricePerSFMedian", "priceClosingMedian", "countForSale", 
+        "countRental", "countSold"
       )
     )
   }
@@ -155,7 +167,7 @@ dictionary_realtor_names <-
 #'
 #' @param return_wide if \code{TRUE} widens data and removes duration and benchmark variables
 #'
-#' @return
+#' @return a \code{data_frame}
 #' @export
 #'
 #' @examples
@@ -254,30 +266,32 @@ parse_location <-
       
       data <-
         data_frame(
-          nameLocationSearch = location_name,
-          nameCitySearch = location_slugs[[1]],
-          slugStateSearch = location_slugs[[2]]
+          locationSearch = location_name,
+          citySearch = location_slugs[[1]],
+          stateSearch = location_slugs[[2]]
         )
       return(data)
     }
     
-    data_frame(nameLocationSearch = location_name, zipcodeSearch = location_name)
+    data_frame(locationSearch = location_name, zipcodeSearch = location_name)
     
     
   }
 
 .generate_market_url <-
   function(location_name = c("Bethesda, MD")) {
+    
     df_loc_slug <-
       location_name %>%
+      as.character() %>% 
       str_trim() %>%
       parse_location()
     city <-
-      df_loc_slug$nameCitySearch
+      df_loc_slug$citySearch
     
     city_slug <-
       city %>% URLencode()
-    state <- df_loc_slug$slugStateSearch
+    state <- df_loc_slug$stateSearch
     
     if (state %>% nchar() > 4) {
       stop("Has to be the 2 digit state slug buddy")
@@ -289,8 +303,8 @@ parse_location <-
     
     data <-
       df_loc_slug %>%
-      mutate(urlAPIRealtor = url) %>%
-      select(nameLocationSearch, everything())
+      mutate(urlAPI = url) %>%
+      select(locationSearch, everything())
     
     data
     
@@ -330,13 +344,22 @@ parse_location <-
             message()
           return(name)
         }
-        df_row %>% pull(nameActual)
+        df_row %>%  pull(nameActual)
       })
     
-    data %>%
+    data <- 
+      data %>%
       purrr::set_names(actual_names) %>%
-      mutate(urlAPIRealtor = url)
+      mutate(urlAPI = url)
     
+    
+    if (data %>% tibble::has_name("pricePerSF")) {
+      data <- 
+        data %>% 
+        dplyr::rename(pricePerSFMedian = pricePerSF)
+    }
+    
+    data
   }
 
 
@@ -390,8 +413,8 @@ parse_location <-
 #' @export
 #'
 #' @examples
-#' get_realtor_locations_median_prices(location_names = "Greenwich, CT")
-get_realtor_locations_median_prices <-
+#' get_median_prices(location_names = c("Greenwich, CT", "New London, CT", "Woodside, CA"))
+get_median_prices <-
   function(location_names = NULL,
            return_message = TRUE,
            ...) {
@@ -414,7 +437,7 @@ get_realtor_locations_median_prices <-
       purrr::possibly(.parse_market_data_urls, data_frame())
     
     all_data <-
-      .parse_market_data_urls_safe(urls = df_urls$urlAPIRealtor, return_message = return_message)
+      .parse_market_data_urls_safe(urls = df_urls$urlAPI, return_message = return_message)
     
     if (all_data %>% nrow() == 0) {
       "No results" %>% message()
@@ -431,7 +454,7 @@ get_realtor_locations_median_prices <-
     if (all_data %>% tibble::has_name("priceListingMedian")) {
       all_data <-
         all_data %>%
-        mutate(areaSFMedian = (priceListingMedian / pricePerSF) %>% round(digits = 0))
+        mutate(areaSFMedian = (priceListingMedian / pricePerSFMedian) %>% round(digits = 0))
     }
     
     all_data <-
@@ -439,10 +462,10 @@ get_realtor_locations_median_prices <-
       left_join(df_urls) %>%
       select(one_of(
         c(
-          'nameLocationSearch',
-          'nameCitySearch',
-          'slugStateSearch',
-          'pricePerSF',
+          'locationSearch',
+          'citySearch',
+          'stateSearch',
+          'pricePerSFMedian',
           'priceRentMedian',
           'pctRentYield',
           'areaSFMedian'
@@ -451,10 +474,276 @@ get_realtor_locations_median_prices <-
       everything()) %>%
       suppressMessages() %>%
       suppressWarnings() %>%
-      asbmisc::remove_na_columns()
+      remove_na()
     all_data
   }
 
+
+# market_trends -----------------------------------------------------------
+.generate_market_trend_url <-
+  function(location_name = c("Bethesda, MD")) {
+    is_city_state <- location_name %>% str_detect("\\,")
+    if (is_city_state) {
+      df_loc_slug <-
+        location_name %>%
+        str_trim() %>%
+        parse_location()
+      
+      city <-
+        df_loc_slug$citySearch %>% 
+        str_replace_all("\\ ", "\\-")
+      
+      location_slug <-
+        glue("{city}_{df_loc_slug$stateSearch}") %>% as.character()
+      
+      state <- df_loc_slug$stateSearch
+      
+      if (state %>% nchar() > 4) {
+        stop("Has to be the 2 digit state slug buddy")
+      }
+      
+      url <-
+        glue::glue("https://www.realtor.com/local/markettrends/city/{location_slug}") %>%
+        as.character()
+      
+      data <-
+        df_loc_slug %>%
+        mutate(locationSearch = location_name) %>%
+        mutate(urlAPI = url) %>%
+        select(locationSearch, everything())
+      
+      
+      data <-
+        df_loc_slug %>%
+        mutate(urlAPI = url) %>%
+        select(locationSearch, everything())
+    } else {
+      data <- 
+        parse_location(location_name = location_name)
+      url <-
+        glue::glue("https://www.realtor.com/local/markettrends/city/{location_name}") %>%
+        as.character()
+      
+      data <-
+        data %>%
+        mutate(urlAPI = url)
+    }
+    data
+  }
+
+.generate_market_trend_urls <-
+  function(location_names = c("Bethesda, MD")) {
+    .generate_market_trend_url_safe <-
+      purrr::possibly(.generate_market_trend_url, data_frame())
+    
+    location_names %>%
+      map_df(function(location_name) {
+        .generate_market_trend_url_safe(location_name = location_name)
+      }) %>% 
+      dplyr::select(one_of(c("locationSearch", "citySearch", "stateSearch", "zipcodeSearch", "urlAPI")), everything()) %>% 
+      suppressWarnings() %>% 
+      suppressMessages()
+  }
+
+
+.parse_market_trend_url <- 
+  function(url = "https://www.realtor.com/local/markettrends/city/Marietta_GA") {
+    json_data <-
+      url %>%
+      jsonlite::fromJSON(flatten = T, simplifyDataFrame = T)
+    
+    df_geo <-
+      json_data$geo %>% flatten_df()
+    
+    df_names <- dictionary_realtor_names()
+    actual_names <-
+      names(df_geo) %>%
+      map_chr(function(name) {
+        df_row <- df_names %>% filter(nameRealtor == name)
+        if (df_row %>% nrow() == 0) {
+          glue::glue("Missing {name}") %>%
+            message()
+          return(name)
+        }
+        df_row %>% pull(nameActual)
+      }) %>%
+      str_replace_all("Property", "Search")
+    
+    df_geo <-
+      df_geo %>%
+      purrr::set_names(actual_names) %>%
+      mutate(urlAPI = url)
+    
+    data <-
+      json_data$trends %>%
+      as_data_frame()
+    
+    actual_names <-
+      names(data) %>%
+      map_chr(function(name) {
+        df_row <- df_names %>% filter(nameRealtor == name)
+        if (df_row %>% nrow() == 0) {
+          glue::glue("Missing {name}") %>%
+            message()
+          return(name)
+        }
+        df_row %>% pull(nameActual)
+      })
+    
+    data <-
+      data %>%
+      purrr::set_names(actual_names) %>%
+      remove_na() %>%
+      mutate(
+        dateData = glue::glue("{yearData}-{monthData}-{01}") %>% as.character() %>%
+          lubridate::ymd()
+      ) %>%
+      select(dateData, everything())
+    
+    data <-
+      data %>%
+      mutate(dateData = dateData %m+% months(1) - 1)
+    
+    data <-
+      data %>%
+      mutate_at(data %>% select(matches("pct")) %>% names(),
+                funs(. / 100)) %>% 
+      .munge_realtor()
+    
+    data <-
+      data %>%
+      mutate(
+        areaSFMedian = (priceListingMedian / pricePerSFMedian) %>% round(digits = 0),
+        pctRentYield = (priceRentMedian * 12) / priceListingMedian
+      ) %>%
+      mutate(urlAPI = url)
+    
+    data <-
+      data %>%
+      left_join(df_geo) %>%
+      dplyr::select(one_of(c(
+        "stateSearch", "citySearch", "zipcodeSearch"
+      )), everything()) %>%
+      suppressMessages() %>%
+      suppressWarnings()
+    
+    data
+    
+  
+  }
+
+.parse_market_trend_urls <-
+  function(urls ="https://www.realtor.com/local/markettrends/city/Marietta_GA",
+           return_message = TRUE) {
+    df <-
+      data_frame()
+    
+    success <- function(res) {
+      url <-
+        res$url
+      
+      if (return_message) {
+        glue::glue("Parsing {url}") %>%
+          message()
+      }
+      .parse_market_trend_url_safe <-
+        purrr::possibly(.parse_market_trend_url , data_frame())
+      
+      all_data <-
+        .parse_market_trend_url_safe(url = url)
+      
+      
+      df <<-
+        df %>%
+        bind_rows(all_data)
+    }
+    failure <- function(msg) {
+      data_frame()
+    }
+    urls %>%
+      map(function(x) {
+        curl_fetch_multi(url = x, success, failure)
+      })
+    multi_run()
+    df
+  }
+
+#' Acquires market trend data
+#' 
+#' This function returns market
+#' trend information dating back to 2015
+#' for the user's specified locations
+#'
+#' @param location_names vector of location names, location name must contain
+#' a city name and a comma ie "Brooklyn, NY" or a zipcode
+#' @param return_wide if \code{TRUE} returns data in wide form
+#' @param return_message if \code{TRUE} returns a message
+#' @param ... extra parameters
+#'
+#' @return a \code{data_frame}
+#' @export
+#'
+#' @examples
+#' get_markets_trends(location_names = c("Greenwich, CT", "New London, CT", "Woodside, CA"), return_message = F, return_wide = T)
+get_markets_trends <- 
+  function(location_names = NULL,
+           return_wide = TRUE,
+           return_message = F,
+           ...) {
+    
+    if (location_names %>% purrr::is_null()) {
+      stop("Please enter locations")
+    }
+    
+    if (location_names %>% purrr::is_null()) {
+      stop("Please enter location names!!")
+    }
+    
+    .generate_market_trend_urls_safe <-
+      purrr::possibly(.generate_market_trend_urls, data_frame())
+    
+    df_urls <-
+      .generate_market_trend_urls_safe(location_names = location_names)
+    
+    if (df_urls %>% nrow() == 0) {
+      "No results" %>% message()
+      return(invisible())
+    }
+    
+    .parse_market_trend_urls_safe <-
+      purrr::possibly(.parse_market_trend_urls, data_frame())
+    
+    all_data <-
+      .parse_market_trend_urls_safe(urls = df_urls$urlAPI, return_message = return_message)
+      
+    all_data <- 
+      all_data %>% 
+      left_join(df_urls) %>% 
+      dplyr::select(one_of("dateData","locationSearch", "stateSearch", "citySearch", "zipcodeSearch"), everything()) %>% 
+      arrange(dateData) %>% 
+      suppressMessages()
+    
+    if (all_data %>% nrow() == 0) {
+      "No results" %>% message()
+      return(invisible())
+    }
+    
+    if (!return_wide) {
+      gather_cols <- 
+        c("stateSearch", "citySearch",
+          "zipcodeSearch", "dateData", "yearData",
+          "monthData", "temperatureMarket", "typeSalesToInventoryFavor",
+          "urlAPI")
+      
+      gather_cols <- gather_cols[gather_cols %in% names(all_data)]
+      all_data <- 
+        all_data %>% 
+        gather(metric, value, -gather_cols,na.rm = T)
+    }
+    
+    all_data
+    
+  }
 
 # validate -----------------------------------------------------------------
 
@@ -466,13 +755,12 @@ get_realtor_locations_median_prices <-
       flatten_df() %>%
       as_data_frame()
     
-    df_names <- dictionary_realtor_names()
     
     data <- 
       data %>% 
       dplyr::select(-one_of("postal_code")) %>% 
       suppressWarnings()
-    
+    df_names <- dictionary_realtor_names()
     actual_names <-
       names(data) %>%
       map_chr(function(name) {
@@ -489,7 +777,7 @@ get_realtor_locations_median_prices <-
       data %>%
       purrr::set_names(actual_names) %>% 
       mutate(slugLDP = slugLDP %>% substr(2, nchar(slugLDP))) %>% 
-      mutate(urlAPIRealtor = url)
+      mutate(urlAPI = url)
     
     data %>%
       .munge_realtor()
@@ -541,13 +829,13 @@ get_realtor_locations_median_prices <-
         str_trim() %>%
         parse_location()
       city <-
-        df_loc_slug$nameCitySearch
+        df_loc_slug$citySearch
       
       location_slug <-
         location_name %>%
         str_replace_all("\\,", "") %>%
         URLencode()
-      state <- df_loc_slug$slugStateSearch
+      state <- df_loc_slug$stateSearch
       
       if (state %>% nchar() > 4) {
         stop("Has to be the 2 digit state slug buddy")
@@ -561,15 +849,15 @@ get_realtor_locations_median_prices <-
       
       data <-
         df_loc_slug %>%
-        mutate(nameLocationSearch = location_name) %>%
-        mutate(urlAPIRealtor = url) %>%
-        select(nameLocationSearch, everything())
+        mutate(locationSearch = location_name) %>%
+        mutate(urlAPI = url) %>%
+        select(locationSearch, everything())
       
       
       data <-
         df_loc_slug %>%
-        mutate(urlAPIRealtor = url) %>%
-        select(nameLocationSearch, everything())
+        mutate(urlAPI = url) %>%
+        select(locationSearch, everything())
       
       data
     } else {
@@ -582,17 +870,17 @@ get_realtor_locations_median_prices <-
       
       data <-
         data %>%
-        mutate(urlAPIRealtor = url)
+        mutate(urlAPI = url)
     }
     data %>% 
       select(
         one_of(
         c(
-          "nameLocationSearch",
+          "locationSearch",
           "nameCitySeach",
-          "slugStateSearch",
+          "stateSearch",
           "zipcodeSearch",
-          "urlAPIRealtor"
+          "urlAPI"
         ),
         everything()
       )) %>% 
@@ -631,7 +919,7 @@ validate_realtor_locations <-
       purrr::possibly(.parse_validation_urls, data_frame())
     
     all_data <-
-      .parse_validation_urls(urls = df_urls$urlAPIRealtor, return_message = return_message) %>% 
+      .parse_validation_urls(urls = df_urls$urlAPI, return_message = return_message) %>% 
       mutate()
     
     if (all_data %>% nrow() == 0) {
@@ -644,9 +932,9 @@ validate_realtor_locations <-
       left_join(df_urls) %>%
       select(one_of(
         c(
-          "nameLocationSearch",
+          "locationSearch",
           "nameCity",
-          "slugStateSearch",
+          "stateSearch",
           "zipcodeSearch"
         )
       ),
@@ -725,7 +1013,7 @@ validate_realtor_locations <-
     data <-
       data %>%
       purrr::set_names(actual_names) %>%
-      mutate(urlAPIRealtor = url,
+      mutate(urlAPI = url,
              dataListingsRecent = list(data_listings))
     
     data
@@ -776,13 +1064,13 @@ validate_realtor_locations <-
         str_trim() %>%
         parse_location()
       city <-
-        df_loc_slug$nameCitySearch
+        df_loc_slug$citySearch
       
       location_slug <-
         location_name %>%
         str_replace_all("\\,", "") %>%
         URLencode()
-      state <- df_loc_slug$slugStateSearch
+      state <- df_loc_slug$stateSearch
       
       if (state %>% nchar() > 4) {
         stop("Has to be the 2 digit state slug buddy")
@@ -794,15 +1082,15 @@ validate_realtor_locations <-
       
       data <-
         df_loc_slug %>%
-        mutate(nameLocationSearch = location_name) %>%
-        mutate(urlAPIRealtor = url) %>%
-        select(nameLocationSearch, everything())
+        mutate(locationSearch = location_name) %>%
+        mutate(urlAPI = url) %>%
+        select(locationSearch, everything())
       
       
       data <-
         df_loc_slug %>%
-        mutate(urlAPIRealtor = url) %>%
-        select(nameLocationSearch, everything())
+        mutate(urlAPI = url) %>%
+        select(locationSearch, everything())
       
       data
     } else {
@@ -813,7 +1101,7 @@ validate_realtor_locations <-
       
       data <-
         data %>%
-        mutate(urlAPIRealtor = url)
+        mutate(urlAPI = url)
     }
     data
   }
@@ -830,10 +1118,11 @@ validate_realtor_locations <-
   }
 
 
-#' Meta level market data
+#' Meta market vitality data
 #'
 #' Acquires meta level information
-#' for specified markets
+#' for specified locations as of the
+#' most recent time period
 #'
 #' @param location_names vector of location names, location name must contain
 #' a city name and a comma ie "Brooklyn, NY" or a zipcode
@@ -844,14 +1133,9 @@ validate_realtor_locations <-
 #' @return a \code{data_frame}
 #' @export
 #'
-
-#'
-#' @return
-#' @export
-#'
 #' @examples
-#' get_realtor_locations_vitality(location_names = c("La Jolla, CA", "Manhattan, NY", "Bethany, DE", "10016"))
-get_realtor_locations_vitality <-
+#' get_markets_vitality(location_names = c("La Jolla, CA", "Manhattan, NY", "Bethany, DE", "10016"))
+get_markets_vitality <-
   function(location_names = NULL,
            return_message = TRUE,
            ...) {
@@ -874,7 +1158,7 @@ get_realtor_locations_vitality <-
       purrr::possibly(.parse_market_vitality_urls, data_frame())
     
     all_data <-
-      .parse_market_vitality_urls_safe(urls = df_urls$urlAPIRealtor, return_message = return_message)
+      .parse_market_vitality_urls_safe(urls = df_urls$urlAPI, return_message = return_message)
     
     if (all_data %>% nrow() == 0) {
       "No results" %>% message()
@@ -885,9 +1169,9 @@ get_realtor_locations_vitality <-
       left_join(df_urls) %>%
       select(one_of(
         c(
-          "nameLocationSearch",
+          "locationSearch",
           "nameCity",
-          "slugStateSearch",
+          "stateSearch",
           "zipcodeSearch"
         )
       ), everything()) %>%
@@ -901,6 +1185,19 @@ get_realtor_locations_vitality <-
 
 # api ---------------------------------------------------------------------
 ## https://www.realtor.com/browse_modules/homes_near_street?price=239000&postal_code=20816&median_price=1132000&type=homes_near_street&vis_id=6b0d44ae-f4d6-41f0-8feb-e6491ab43fe9&mcm_id=03714656198478469204855792545062287725&address=5301+Westbard+Cir+Apt+323&user_id=&city=Bethesda&coordinates=38.964595%2C-77.109017
+
+
+.generate_address_url <- 
+  function() {
+    base_url <- 'https://www.realtor.com/browse_modules/homes_near_street?'
+  }
+
+generate_coordinate_slug <- 
+  function(latitude = 38.964419 ,
+           longitude = -77.113659) {
+    glue::glue("{latitude},{longitude}") %>% 
+      as.character()
+  }
 
 
 .parse_realtor_api_near_url <-
@@ -939,7 +1236,7 @@ get_realtor_locations_vitality <-
     df_properties <-
       df_properties %>%
       .munge_realtor() %>%
-      mutate(urlAPIRealtor = url)
+      mutate(urlAPI = url)
     
     df_properties
   }
@@ -1143,7 +1440,7 @@ get_realtor_locations_vitality <-
     df
   }
 
-get_realtor_location_data <- 
+get_location_data <- 
   function(location_name = c("Bethesda, MD"),
            include_features = F,
            radius = NULL,
@@ -1152,14 +1449,14 @@ get_realtor_location_data <-
   ) {
     df_val <- validate_realtor_locations(location_names = location_name)
     
-    df_urls <- .generate_search_urls(url = df_val$urlListing,radius = radius)
-    df_urls$urlListingPage[[1]]  <- 
-      df_urls$urlListingPage[[1]] %>% str_replace_all("\\/pg-1", "")
+    df_urls <-
+      .generate_search_urls(url = df_val$urlListing, radius = radius)
     
+    df_urls$urlListingPage[[1]]  <-
+      df_urls$urlListingPage[[1]] %>% str_replace_all("\\/pg-1", "")
     
     all_data <- 
       .parse_search_pages(urls = df_urls$urlListingPage)
-    
     
     all_data <- 
       all_data %>%
@@ -1171,16 +1468,26 @@ get_realtor_location_data <-
     
     if (include_property_details) {
       "Parsing indvidual property listings" %>% message()
+      
       .parse_listing_urls_safe <-
         purrr::possibly(.parse_listing_urls, data_frame())
       
+      urls <- 
+        all_data$urlListing
+      
       all_listing <-
         .parse_listing_urls_safe(
-          urls = all_data$urlListing,
+          urls = urls,
           include_features = include_features,
           return_message = return_message
         )
+      
+      all_data <- 
+        all_data %>% 
+        left_join(all_listing) %>% 
+        suppressMessages()
     }
+    all_data
   }
 
 # listings ----------------------------------------------------------------
