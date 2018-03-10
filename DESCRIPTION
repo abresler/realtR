@@ -1,7 +1,7 @@
 Package: realtR
 Type: Package
 Title: Real estate broker kryponite
-Version: 0.10002
+Version: 0.101
 Date: 2018-03-06
 Authors@R: c(person("Alex", "Bresler", email = "abresler@asbcllc.com", role = c("aut", "cre")))
 Maintainer: Alex Bresler <abresler@asbcllc.com>

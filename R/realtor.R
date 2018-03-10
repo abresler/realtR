@@ -1694,14 +1694,14 @@ location_listings <-
     if (parse_property_details) {
       "Parsing indvidual property listings" %>% message()
       
-      .parse_listing_urls_safe <-
-        purrr::possibly(.parse_listing_urls, data_frame())
+      parse_listing_urls_safe <-
+        purrr::possibly(parse_listing_urls, data_frame())
       
       urls <- 
         all_data$urlListing
       
       all_listing <-
-        .parse_listing_urls_safe(
+        parse_listing_urls_safe(
           urls = urls,
           include_features = include_features,
           return_message = return_message
@@ -1717,7 +1717,7 @@ location_listings <-
       remove_columns()
   }
 
-#' Property Listings
+#' Property Listings tables
 #'
 #' @param locations 
 #' @param include_features 
@@ -1730,7 +1730,7 @@ location_listings <-
 #' @export
 #'
 #' @examples
-tabllistings <- 
+table_listings <- 
   function(locations,
             include_features = F,
             radius = NULL,
@@ -1842,10 +1842,23 @@ tabllistings <-
     
   }
 
-.parse_listing_urls <-
-  function(urls = "https://www.realtor.com/realestateandhomes-detail/6817-Connecticut-Ave_Chevy-Chase_MD_20815_M54141-71551",
+#' Parse listing urls
+#'
+#' @param urls vector of urls
+#' @param include_features if \code{TRUE} includes features
+#' @param return_message if \code{TRUE} returns a message
+#'
+#' @return a \code{data_frame}
+#' @export
+#'
+#' @examples
+parse_listing_urls <-
+  function(urls = NULL,
            include_features = F,
            return_message = TRUE) {
+    if (urls %>% purrr::is_null()) {
+      stop("Enter urls")
+    }
     df <-
       data_frame()
     
