@@ -122,13 +122,13 @@ dictionary_geo_names <-
   }
 
 generate_geo_urls <-
-  function(area_names = c("Greenwich", "Bethesda"),
+  function(locations = c("Greenwich", "Bethesda"),
            search_types = c("neighborhood","city","county","postal_code","address","building","street","school"),
            limit = 100) {
     generate_geo_url_safe <- 
       purrr::possibly(.generate_geo_url, data_frame())
     
-    area_names %>% 
+    locations %>% 
       map_df(function(area){
         .generate_geo_url(area_name = area, limit = limit, search_types = search_types)
       })
@@ -175,7 +175,7 @@ parse_geo_urls <-
 #' This function returns data from the Amazon geoquery API
 #' for the specified areas
 #'
-#' @param area_names vector of area names
+#' @param locations vector of area names
 #' @param search_types  vector of search parameters options include \itemize{
 #' \item neighborhood - includes neighborhood information
 #' \item city - includes city information
@@ -193,19 +193,19 @@ parse_geo_urls <-
 #' @export
 #'
 #' @examples
-#' get_aws_geo_areas(area_names = c("Palm Springs", "Bethesda"), limit = 100)
-get_aws_geo_areas <-
-  function(area_names = NULL,
+#' geocode(locations = c("Palm Springs", "Bethesda"), limit = 100)
+geocode <-
+  function(locations = NULL,
            search_types = c("neighborhood","city","county","postal_code","address","building","street","school"),
            limit = 100,
            return_message = TRUE, 
            ...) {
     
-    if (area_names %>% purrr::is_null()) {
+    if (locations %>% purrr::is_null()) {
       stop("Please enter search areas")
     }
     df_urls <-
-      generate_geo_urls(area_names = area_names,
+      generate_geo_urls(locations = locations,
                         search_types = search_types,
                         limit = 100)
     
@@ -218,5 +218,6 @@ get_aws_geo_areas <-
       select(nameLocationSearch, everything()) %>%
       suppressMessages()
     
-    all_data
+    all_data %>% 
+      remove_columns()
   }
