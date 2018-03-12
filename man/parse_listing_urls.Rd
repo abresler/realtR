@@ -18,5 +18,5 @@ parse_listing_urls(urls = NULL, include_features = F,
 a \code{data_frame}
 }
 \description{
-Parse listing urls
+Parses a vector of listing urls
 }

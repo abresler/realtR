@@ -1,3 +1,21 @@
+.generate_cookies <- 
+  function() {
+    h <- new_handle()
+  
+    req <- 
+      curl_fetch_memory(url = url, handle = h)
+    req <- curl_fetch_memory("http://httpbin.org/cookies/set?baz=moooo", handle = h)
+    
+    handle_cookies(h) %>% 
+      as_data_frame() %>% 
+      tidyr::unite(param, name, value, sep = "=") %>% 
+      pull(param) %>% 
+      str_c(collapse = "; ")
+    
+  }
+
+
+
 #' Property type dictionary
 #' 
 #' Searchable property types 
@@ -71,13 +89,22 @@ dictionary_listing_features <-
 
 
 .generate_headers <-
-  function() {
+  function(generate_new_cookies = T) {
     df_headers <-
       .headers_base()
     df_call <- generate_url_reference()
     df_headers <-
       df_headers %>%
       mutate(`user-agent` = df_call$userAgent)
+    
+    
+    if (generate_new_cookies) {
+      new_cookie <- .generate_cookies()
+      df_headers <- 
+        df_headers %>% 
+        mutate(cookie = new_cookie)
+    }
+    
     df_headers
   }
 

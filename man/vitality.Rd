@@ -2,7 +2,7 @@
 % Please edit documentation in R/api.R
 \name{vitality}
 \alias{vitality}
-\title{Meta market vitality data}
+\title{Market vitality}
 \usage{
 vitality(locations = NULL, return_message = TRUE, ...)
 }
@@ -12,7 +12,7 @@ a city name and a comma ie "Brooklyn, NY" or a zipcode}
 
 \item{return_message}{if \code{TRUE} returns a message}
 
-\item{...}{}
+\item{...}{extra parameters}
 }
 \value{
 a \code{data_frame}

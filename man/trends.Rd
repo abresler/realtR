@@ -2,7 +2,7 @@
 % Please edit documentation in R/api.R
 \name{trends}
 \alias{trends}
-\title{Acquires market trend data}
+\title{Market trends}
 \usage{
 trends(locations = NULL, return_wide = TRUE, return_message = T, ...)
 }
@@ -25,5 +25,5 @@ trend information dating back to 2015
 for the user's specified locations
 }
 \examples{
-trends(locations = c("Greenwich, CT", "New London, CT", "Woodside, CA"), return_message = F, return_wide = T)
+trends(locations = c("Greenwich, CT", "New London, CT", "Woodside, CA", 90210), return_message = F, return_wide = T)
 }

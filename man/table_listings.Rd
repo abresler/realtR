@@ -2,24 +2,31 @@
 % Please edit documentation in R/api.R
 \name{table_listings}
 \alias{table_listings}
-\title{Property Listings tables}
+\title{Property listing table}
 \usage{
 table_listings(locations, include_features = F, radius = NULL,
   parse_property_details = F, return_message = T, ...)
 }
 \arguments{
-\item{locations}{}
+\item{locations}{vector of table listings}
 
-\item{include_features}{}
+\item{include_features}{if \code{TRUE} includes property featues from pages}
 
-\item{radius}{}
+\item{radius}{if not \code{NULL} additional search radius}
 
-\item{parse_property_details}{}
+\item{parse_property_details}{if \cod{TRUE}}
 
-\item{return_message}{}
+\item{return_message}{if \code{TRUE} returns messages}
 
-\item{...}{}
+\item{...}{extra parameters}
+}
+\value{
+a \code{data_frame}
 }
 \description{
-Property Listings tables
+Returns listing table.  Slower and not advised 
+unless \link{listings()} does not work for your search.
+}
+\examples{
+table_listings(locations = "Marietta, GA")
 }

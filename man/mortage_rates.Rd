@@ -2,7 +2,7 @@
 % Please edit documentation in R/api.R
 \name{mortage_rates}
 \alias{mortage_rates}
-\title{Gets current mortgage rates}
+\title{Motgage Rates}
 \usage{
 mortage_rates(return_wide = F)
 }
@@ -13,8 +13,11 @@ mortage_rates(return_wide = F)
 a \code{data_frame}
 }
 \description{
-Gets current mortgage rates
+Returns a variety of 
+interest rates for various
+mortgage types.
 }
 \examples{
 mortage_rates(return_wide = F)
 }
+\concept{interest rates}

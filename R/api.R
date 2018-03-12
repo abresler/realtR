@@ -1,4 +1,16 @@
+
 # gdeltr2::load_needed_packages(c("jsonlite", "purrr", "tidyr", "glue", "stringr", "curl", "dplyr", "rvest", 'lubridate', "requestsR"))
+
+.curl_page <- 
+  function(url) {
+    h <- curl::new_handle(accept_encoding = NULL)
+    page <-
+      readr::read_lines(curl::curl(url, handle = h)) %>% 
+      str_c(collapse = "") %>% 
+      xml2::read_html()
+    
+    page
+  }
 
 # munge -------------------------------------------------------------------
 
@@ -341,7 +353,7 @@ dictionary_realtor_names <-
 #'
 #' @return a \code{data_frame}
 #' @export
-#'
+#' @family interest rates
 #' @examples
 #' mortage_rates(return_wide = F)
 mortage_rates <-
@@ -476,6 +488,7 @@ parse_location <-
       as.character() %>% 
       str_trim() %>%
       parse_location()
+    
     city <-
       df_loc_slug$citySearch
     
@@ -589,19 +602,22 @@ parse_location <-
     df
   }
 
-#' Get median market statistics for specified locations
+#' Median market statistics
 #'
-#' Returns summary market information for the specified
-#' location.  The locaiton name must be a city bounded by a comma
+#' Returns summary median market information for the specified
+#' locations.  
+#' 
+#' The location names must be a city and/or neighborhood bounded
+#' by commas.
 #'
 #' @param locations vector of location , location name must contain
 #' a city name and a comma ie "Brooklyn, NY"
 #' @param return_message if \code{TRUE} returns a message
-#' @param ...
+#' @param ... extra parameters
 #'
 #' @return a \code{data_frame}
 #' @export
-#'
+#' @family market information
 #' @examples
 #' median_prices(locations = c("Greenwich, CT", "New London, CT", "Woodside, CA", "Park Slope, Brooklyn, NY"))
 median_prices <-
@@ -896,7 +912,7 @@ median_prices <-
     df
   }
 
-#' Acquires market trend data
+#' Market trends
 #' 
 #' This function returns market
 #' trend information dating back to 2015
@@ -912,7 +928,7 @@ median_prices <-
 #' @export
 #'
 #' @examples
-#' trends(locations = c("Greenwich, CT", "New London, CT", "Woodside, CA"), return_message = F, return_wide = T)
+#' trends(locations = c("Greenwich, CT", "New London, CT", "Woodside, CA", 90210), return_message = F, return_wide = T)
 trends <- 
   function(locations = NULL,
            return_wide = TRUE,
@@ -1347,7 +1363,7 @@ validate_locations <-
   }
 
 
-#' Meta market vitality data
+#' Market vitality
 #'
 #' Acquires meta level information
 #' for specified locations as of the
@@ -1357,7 +1373,7 @@ validate_locations <-
 #' a city name and a comma ie "Brooklyn, NY" or a zipcode
 #'
 #' @param return_message if \code{TRUE} returns a message
-#' @param ...
+#' @param ... extra parameters
 #'
 #' @return a \code{data_frame}
 #' @export
@@ -1522,9 +1538,7 @@ generate_coordinate_slug <-
 .parse_search_page <- 
   function(url = "https://www.realtor.com/realestateandhomes-search/Bethesda_MD/pg-3") {
     page <- 
-      url %>% 
-      read_html()
-    
+      .curl_page(url = url)
     result_nodes <- 
       page %>% 
       html_nodes('.js-save-alert-wrapper')
@@ -1733,19 +1747,24 @@ location_listings <-
       remove_columns()
   }
 
-#' Property Listings tables
+#' Property listing table
+#' 
+#' Returns listing table.  Slower and not advised 
+#' unless \link{listings()} does not work for your search.
 #'
-#' @param locations 
-#' @param include_features 
-#' @param radius 
-#' @param parse_property_details 
-#' @param return_message 
-#' @param ... 
+#' @param locations vector of table listings
+#' @param include_features if \code{TRUE} includes property featues from pages
+#' @param radius if not \code{NULL} additional search radius
+#' @param parse_property_details if \cod{TRUE}
+#' @param return_message if \code{TRUE} returns messages
+#' @param ... extra parameters
 #'
-#' @return
+#' @return a \code{data_frame}
 #' @export
 #'
 #' @examples
+#' table_listings(locations = "Marietta, GA")
+
 table_listings <- 
   function(locations,
             include_features = F,
@@ -1775,9 +1794,8 @@ table_listings <-
 .parse_listing_url <-
   function(url = "https://www.realtor.com/realestateandhomes-detail/5301-Westbard-Cir-Apt-323_Bethesda_MD_20816_M63437-59115",
            include_features = T) {
-    page <-
-      url %>%
-      read_html()
+    page <- 
+      .curl_page(url = url)
     
     fact_nodes <- 
       page %>% 
@@ -1859,6 +1877,8 @@ table_listings <-
   }
 
 #' Parse listing urls
+#' 
+#' Parses a vector of listing urls
 #'
 #' @param urls vector of urls
 #' @param include_features if \code{TRUE} includes features

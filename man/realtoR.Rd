@@ -7,7 +7,7 @@
 \title{realtR}
 \description{
 Tools to make finding property
-suck lesss.
+suck less
 }
 \author{
 Alex Bresler (abresler@asbcllc.com)

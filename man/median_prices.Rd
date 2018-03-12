@@ -2,7 +2,7 @@
 % Please edit documentation in R/api.R
 \name{median_prices}
 \alias{median_prices}
-\title{Get median market statistics for specified locations}
+\title{Median market statistics}
 \usage{
 median_prices(locations = NULL, return_message = TRUE, ...)
 }
@@ -12,15 +12,20 @@ a city name and a comma ie "Brooklyn, NY"}
 
 \item{return_message}{if \code{TRUE} returns a message}
 
-\item{...}{}
+\item{...}{extra parameters}
 }
 \value{
 a \code{data_frame}
 }
 \description{
-Returns summary market information for the specified
-location.  The locaiton name must be a city bounded by a comma
+Returns summary median market information for the specified
+locations.
+}
+\details{
+The location names must be a city and/or neighborhood bounded
+by commas.
 }
 \examples{
 median_prices(locations = c("Greenwich, CT", "New London, CT", "Woodside, CA", "Park Slope, Brooklyn, NY"))
 }
+\concept{market information}
