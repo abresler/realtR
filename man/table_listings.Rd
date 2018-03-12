@@ -14,7 +14,7 @@ table_listings(locations, include_features = F, radius = NULL,
 
 \item{radius}{if not \code{NULL} additional search radius}
 
-\item{parse_property_details}{if \cod{TRUE}}
+\item{parse_property_details}{if \code{TRUE}}
 
 \item{return_message}{if \code{TRUE} returns messages}
 

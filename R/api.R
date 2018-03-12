@@ -1755,7 +1755,7 @@ location_listings <-
 #' @param locations vector of table listings
 #' @param include_features if \code{TRUE} includes property featues from pages
 #' @param radius if not \code{NULL} additional search radius
-#' @param parse_property_details if \cod{TRUE}
+#' @param parse_property_details if \code{TRUE}
 #' @param return_message if \code{TRUE} returns messages
 #' @param ... extra parameters
 #'
