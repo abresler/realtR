@@ -3,8 +3,7 @@
     h <- new_handle()
   
     req <- 
-      curl_fetch_memory(url = url, handle = h)
-    req <- curl_fetch_memory("http://httpbin.org/cookies/set?baz=moooo", handle = h)
+      curl_fetch_memory(url = 'https://www.realtor.com/', handle = h)
     
     handle_cookies(h) %>% 
       as_data_frame() %>% 
