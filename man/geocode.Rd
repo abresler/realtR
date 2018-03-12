@@ -2,14 +2,14 @@
 % Please edit documentation in R/aws.R
 \name{geocode}
 \alias{geocode}
-\title{Get AWS area geo-query}
+\title{Geocodes location}
 \usage{
 geocode(locations = NULL, search_types = c("neighborhood", "city", "county",
   "postal_code", "address", "building", "street", "school"), limit = 100,
   return_message = TRUE, ...)
 }
 \arguments{
-\item{locations}{vector of area names}
+\item{locations}{vector of locations}
 
 \item{search_types}{vector of search parameters options include \itemize{
 \item neighborhood - includes neighborhood information
@@ -25,15 +25,16 @@ geocode(locations = NULL, search_types = c("neighborhood", "city", "county",
 
 \item{return_message}{if \code{TRUE} returns a message}
 
-\item{...}{}
+\item{...}{extra parameters}
 }
 \value{
 a \code{data_frame}
 }
 \description{
-This function returns data from the Amazon geoquery API
-for the specified areas
+This function geocodes a users vector of locations
+an returns a \code{data_frame} with the results
 }
 \examples{
-geocode(locations = c("Palm Springs", "Bethesda"), limit = 100)
+geocode(locations = c("Palm Springs", "Bethesda", 10016), limit = 100)
 }
+\concept{geocoder}

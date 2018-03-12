@@ -1,35 +1,47 @@
-dictionary_geo_names <- 
+dictionary_geo_names <-
   function() {
-    data_frame(nameGeo = c("area_type", "_id", "_score", "city", "state_code", "country", 
-                           "centroid.lon", "centroid.lat", 
-                           "neighborhood", "postal_code", "has_catchment",
-                           "school_id",
-                           "school",
-                           "line",
-                           "full_address",
-                           "prop_status",
-                           "street",
-                           "mpr_id"),
-               nameActual =  c(
-                 "typeArea",
-                 "slugLocation",
-                 "scorePrediction",
-                 "nameCity",
-                 "slugState",
-                 "codeCountry",
-                 "longitudeLocation",
-                 "latitudeLocation",
-                 "nameNeighborhood",
-                 "zipcodeLocation",
-                 "hasCatchment",
-                 "idSchool",
-                 "nameSchool",
-                 "addressStreet",
-                 "nameAddress",
-                 "statusProperty",
-                 "nameStreet",
-                 "idMPR"
-               ))
+    data_frame(
+      nameGeo = c(
+        "area_type",
+        "_id",
+        "_score",
+        "city",
+        "state_code",
+        "country",
+        "centroid.lon",
+        "centroid.lat",
+        "neighborhood",
+        "postal_code",
+        "has_catchment",
+        "school_id",
+        "school",
+        "line",
+        "full_address",
+        "prop_status",
+        "street",
+        "mpr_id"
+      ),
+      nameActual =  c(
+        "typeArea",
+        "slugLocation",
+        "scorePrediction",
+        "nameCity",
+        "slugState",
+        "codeCountry",
+        "longitudeLocation",
+        "latitudeLocation",
+        "nameNeighborhood",
+        "zipcodeLocation",
+        "hasCatchment",
+        "idSchool",
+        "nameSchool",
+        "addressStreet",
+        "nameAddress",
+        "statusProperty",
+        "nameStreet",
+        "idMPR"
+      )
+    )
   }
 
 #  gdeltr2::load_needed_packages(required_packages = c("dplyr", "glue", "stringr", "jsonlite", "curl", "rvest", "purrr", "requestsR"))
@@ -43,32 +55,30 @@ dictionary_geo_names <-
         flatten = T
       )
     
-    data <- 
+    data <-
       data$autocomplete %>%
       as_data_frame()
     df_names <- dictionary_geo_names()
-    actual_names <- 
-      names(data) %>% 
-      map_chr(function(name){
+    actual_names <-
+      names(data) %>%
+      map_chr(function(name) {
         df_row <- df_names %>% filter(nameGeo == name)
         if (df_row %>% nrow() == 0) {
-          glue::glue("Missing {name}") %>% 
+          glue::glue("Missing {name}") %>%
             message()
           return(name)
         }
         df_row %>% pull(nameActual)
       })
     
-    data <- 
+    data <-
       data %>%
-      purrr::set_names(
-       actual_names
-      ) %>% 
+      purrr::set_names(actual_names) %>%
       mutate(urlGeoAPI = url)
     
     if (data %>% tibble::has_name("nameAddress")) {
-     data <- 
-       data %>%
+      data <-
+        data %>%
         mutate(nameAddress = nameAddress %>% map_chr(function(x) {
           if (x %>% purrr::is_null()) {
             return(NA)
@@ -78,7 +88,7 @@ dictionary_geo_names <-
     }
     
     if (data %>% tibble::has_name("statusProperty")) {
-      data <- 
+      data <-
         data %>%
         mutate(statusProperty = statusProperty %>% map_chr(function(x) {
           if (x %>% purrr::is_null()) {
@@ -89,33 +99,43 @@ dictionary_geo_names <-
     }
     
     
-    data <- 
-      data %>% 
+    data <-
+      data %>%
       mutate_at(data %>% dplyr::select(matches("^id[A-Z]")) %>% names(),
                 funs(. %>% as.numeric()))
     
     data
   }
 
-.generate_geo_url <- 
-  function(area_name = "Beth", 
+.generate_geo_url <-
+  function(area_name = "Beth",
            limit = 100,
-           search_types = c("neighborhood","city","county","postal_code","address","building","street","school")
-           ) {
+           search_types = c(
+             "neighborhood",
+             "city",
+             "county",
+             "postal_code",
+             "address",
+             "building",
+             "street",
+             "school"
+           )) {
     area_name <- as.character(area_name)
     if (limit > 100) {
       stop("limit cannot exceed 100")
     }
     client_id <- 'rdcV8'
     base <- 'https://parser-external.geo.moveaws.com/suggest?input='
-    area_types <- 
+    area_types <-
       search_types %>% str_c(collapse = ",")
-    search_area <- 
+    search_area <-
       URLencode(area_name)
     
-    url <- 
-      glue::glue("{base}{search_area}&limit={limit}&client_id={client_id}&area_types={area_types}") %>% 
-      as.character() %>% 
+    url <-
+      glue::glue(
+        "{base}{search_area}&limit={limit}&client_id={client_id}&area_types={area_types}"
+      ) %>%
+      as.character() %>%
       URLencode()
     data_frame(nameLocationSearch = area_name,
                urlGeoAPI = url)
@@ -123,20 +143,31 @@ dictionary_geo_names <-
 
 generate_geo_urls <-
   function(locations = c("Greenwich", "Bethesda"),
-           search_types = c("neighborhood","city","county","postal_code","address","building","street","school"),
+           search_types = c(
+             "neighborhood",
+             "city",
+             "county",
+             "postal_code",
+             "address",
+             "building",
+             "street",
+             "school"
+           ),
            limit = 100) {
-    generate_geo_url_safe <- 
+    generate_geo_url_safe <-
       purrr::possibly(.generate_geo_url, data_frame())
     
-    locations %>% 
-      map_df(function(area){
-        .generate_geo_url(area_name = area, limit = limit, search_types = search_types)
+    locations %>%
+      map_df(function(area) {
+        .generate_geo_url(area_name = area,
+                          limit = limit,
+                          search_types = search_types)
       })
   }
 
 parse_geo_urls <-
   function(urls = "https://parser-external.geo.moveaws.com/suggest?input=bethesda&limit=100&client_id=rdcV8&area_types=neighborhood,city,county,postal_code,address",
-  return_message = T) {
+           return_message = T) {
     df <-
       data_frame()
     
@@ -170,12 +201,12 @@ parse_geo_urls <-
     df
   }
 
-#' Get AWS area geo-query
-#' 
-#' This function returns data from the Amazon geoquery API
-#' for the specified areas
+#' Geocodes location
 #'
-#' @param locations vector of area names
+#' This function geocodes a users vector of locations
+#' an returns a \code{data_frame} with the results
+#'
+#' @param locations vector of locations
 #' @param search_types  vector of search parameters options include \itemize{
 #' \item neighborhood - includes neighborhood information
 #' \item city - includes city information
@@ -185,22 +216,30 @@ parse_geo_urls <-
 #' \item street - include street info
 #' \item school - include school info
 #' }
-#' @param limit numeric vector of results cannot exceed 100 
+#' @param limit numeric vector of results cannot exceed 100
 #' @param return_message if \code{TRUE} returns a message
-#' @param ... 
-#'
+#' @param ... extra parameters
+#' @family geocoder
 #' @return a \code{data_frame}
 #' @export
 #'
 #' @examples
-#' geocode(locations = c("Palm Springs", "Bethesda"), limit = 100)
+#' geocode(locations = c("Palm Springs", "Bethesda", 10016), limit = 100)
 geocode <-
   function(locations = NULL,
-           search_types = c("neighborhood","city","county","postal_code","address","building","street","school"),
+           search_types = c(
+             "neighborhood",
+             "city",
+             "county",
+             "postal_code",
+             "address",
+             "building",
+             "street",
+             "school"
+           ),
            limit = 100,
-           return_message = TRUE, 
+           return_message = TRUE,
            ...) {
-    
     if (locations %>% purrr::is_null()) {
       stop("Please enter search areas")
     }
@@ -209,15 +248,15 @@ geocode <-
                         search_types = search_types,
                         limit = 100)
     
-    all_data <- 
-     parse_geo_urls(urls = df_urls$urlGeoAPI, return_message = return_message)
-   
+    all_data <-
+      parse_geo_urls(urls = df_urls$urlGeoAPI, return_message = return_message)
+    
     all_data <-
       all_data %>%
       left_join(df_urls) %>%
       select(nameLocationSearch, everything()) %>%
       suppressMessages()
     
-    all_data %>% 
+    all_data %>%
       remove_columns()
   }

@@ -1,3 +1,73 @@
+#' Property type dictionary
+#' 
+#' Searchable property types 
+#' for isolating listings
+#'
+#' @return a \code{data_frame}
+#' @export
+#' @family dictionary
+#' @family listing search
+#'
+#' @examples
+#' dictionary_property_types()
+dictionary_property_types <-
+  function() {
+    data_frame(
+      slugType = c(
+        "single-family-home",
+        "condo-townhome-row-home-co-op",
+        "condo-townhome-row-home-co-op",
+        "multi-family-home",
+        "mfd-mobile-home",
+        "farms-ranches",
+        "land"
+      ),
+      nameType = c("House", "Condo", "Townhouse", "Multifamily",
+                   "Mobile Home", "Farm","Land")
+    )
+  }
+
+#' Property feature dictionary
+#' 
+#' This function returns a dictionary
+#' of searchable property features.  These features 
+#' can be used as search parameters in the \link{count_listings}, \link{listings}, \link{listing_counts}
+#' and \link{map_listings} functions.
+#' 
+#' @return a \code{data_frame}
+#' @export
+#' @family dictionary
+#' @family listing search
+#' @examples
+#' dictionary_listing_features()
+dictionary_listing_features <-
+  function() {
+    data_frame(
+      nameFeature =
+        c("Basement", "Garage", "Central Air", "Central Heat", "Boat Facilities", 
+          "Community Clubhouse", "Community Golf", "Community Security", 
+          "Community Spa", "Community Pool", "Community Tennis", 
+          "Corner Lot", "Cul De Sac", "Home Office", "Dining Room", "Disability Features", 
+          "Family Room", "Fireplace", "Forced Air", "2 Car Garage", 
+          "Golf Course Frontage", "Hardwood Floors", "Mountain Community", 
+          "Horse Facilities", "Lake View", "Laundry Room", "Ocean View", 
+          "River View", "RV Parking", "Senior Community", "Single Story", 
+          "Spa", "Swimming Pool", "Multi Stories", "Waterfront"
+        ),
+      slugFeature =
+        c("basement", "carport", "central_air", "central_heat", "community_boat_facilities", 
+          "community_clubhouse", "community_golf", "community_security_features", 
+          "community_spa_or_hot_tub", "community_swimming_pool", "community_tennis_court", 
+          "corner_lot", "cul_de_sac", "den_or_office", "dining_room", "disability_features", 
+          "family_room", "fireplace", "forced_air", "garage_2_or_more", 
+          "golf_course_lot_or_frontage", "hardwood_floors", "hill_mountain", 
+          "horse_facilities", "lake_view", "laundry_room", "ocean_view", 
+          "river_view", "rv_or_boat_parking", "senior_community", "single_story", 
+          "spa_or_hot_tub", "swimming_pool", "two_or_more_stories", "waterfront"
+        )
+      
+    )
+  }
 
 
 .generate_headers <-
@@ -85,7 +155,8 @@
       dplyr::select(-matches("display")) %>%
       dplyr::select(-one_of(c("id", "type", "plot")))
     
-    df_names <- dictionary_realtor_names()
+    df_names <-
+      dictionary_realtor_names()
     
     actual_names <-
       names(all_results) %>%
@@ -283,30 +354,6 @@ dictionary_search <-
     )
   }
 
-dictionary_features <-
-  function() {
-    data_frame(
-      nameFeature = c(
-        "Pool",
-        "Spa",
-        "Waterfront",
-        "Basement",
-        "2 Car Garage",
-        "Single Story",
-        "Multifamily"
-      ),
-      slugFeature = c(
-        "swimming_pool" ,
-        "spa_or_hot_tub",
-        "waterfront",
-        "basement",
-        "garage_2_or_more",
-        "single_story",
-        "two_or_more_stories"
-      )
-    )
-  }
-
 .headers_base <-
   function() {
     structure(
@@ -423,7 +470,7 @@ dictionary_features <-
         searchFacetsToDTM = "pf_not_visible",
         searchFeaturesToDTM = list(),
         pos = "",
-        page_size = 2500L,
+        page_size = 50L, # 2500L
         viewport_height = 1000L,
         pin_height = 240L,
         page = 1L
@@ -486,7 +533,6 @@ dictionary_features <-
            pending = NULL,
            only_open_houses = NULL,
            is_new_construction =  NULL,
-           is_foreclosure = NULL,
            include_pending_contingency = TRUE) {
     options(scipen = 99999)
     location_name <- as.character(location_name)
@@ -549,8 +595,22 @@ dictionary_features <-
     }
     
     if (!features %>% purrr::is_null()) {
+      f_t <- 
+        features %>% str_to_lower()
+      
+      df_features <-
+        dictionary_listing_features() %>% 
+        mutate(nameFeature = nameFeature %>% str_to_lower())
+      
+      feature_slugs <- 
+        df_features %>% 
+        filter(nameFeature %in% f_t) %>% 
+        pull(slugFeature) %>% 
+        unique() %>% 
+        str_c(collapse = ",")
+      
       data$facets$features_hash <-
-        c(features)
+        c(feature_slugs)
     }
     
     if (!price_min %>% purrr::is_null()) {
@@ -565,7 +625,21 @@ dictionary_features <-
     
     
     if (!property_type %>% purrr::is_null()) {
-      data$facets$prop_type <- property_type
+      p_t <- 
+        property_type %>% str_to_lower()
+      df_types <-
+        dictionary_property_types() %>% 
+        mutate(nameType = nameType %>% str_to_lower())
+      
+      property_slugs <- 
+        df_types %>% 
+        filter(nameType %in% p_t) %>% 
+        pull(slugType) %>% 
+        unique() %>% 
+        str_c(collapse = ",")
+      
+      
+      data$facets$prop_type <- property_slugs
     }
     
     if (!sqft_min %>% purrr::is_null()) {
@@ -606,11 +680,7 @@ dictionary_features <-
     if (!age_min %>% purrr::is_null()) {
       data$facets$age_min <- age_min
     }
-    
-    if (!is_foreclosure %>% purrr::is_null()) {
-      data$facets$foreclosure <- is_foreclosure
-    }
-    
+
     if (!include_pending_contingency %>% purrr::is_null()) {
       data$facets$include_pending_contingency <-
         include_pending_contingency
@@ -623,13 +693,13 @@ dictionary_features <-
 .get_location_counts <-
   function(location_name = 10016,
            search_type = "city",
+           features =NULL,
            city_isolated = NULL,
            county_isolated = NULL,
            zipcode_isolated = NULL,
            state_isolated = NULL,
            street_isolated = NULL,
            neighborhood_isolated = NULL,
-           features = NULL,
            beds_min = NULL,
            only_open_houses = F,
            beds_max = NULL,
@@ -647,7 +717,6 @@ dictionary_features <-
            days_on_market = NULL,
            pending = NULL,
            is_new_construction =  NULL,
-           is_foreclosure = NULL,
            include_pending_contingency = TRUE) {
     url <- "https://www.realtor.com/search_result_count"
     headers =  .generate_headers()
@@ -681,7 +750,6 @@ dictionary_features <-
         days_on_market = days_on_market,
         pending = pending,
         is_new_construction = is_new_construction,
-        is_foreclosure = is_foreclosure,
         include_pending_contingency = include_pending_contingency
       )
     
@@ -720,42 +788,68 @@ dictionary_features <-
     df_loc_val
   }
 
-#' Title
+#' Listing count
+#' 
+#' This function returns a summary of the 
+#' number of total listings for your specified locations
+#' and parameters
 #'
-#' @param locations
-#' @param search_type
-#' @param city_isolated
-#' @param county_isolated
-#' @param zipcode_isolated
-#' @param state_isolated
-#' @param street_isolated
-#' @param neighborhood_isolated
-#' @param beds_min
-#' @param beds_max
-#' @param baths_min
-#' @param baths_max
-#' @param price_min
-#' @param price_max
-#' @param property_type
-#' @param sqft_min
-#' @param sqft_max
-#' @param acre_min
-#' @param acre_max
-#' @param age_min
-#' @param age_max
-#' @param days_on_market
-#' @param pending
-#' @param is_new_construction
-#' @param is_foreclosure
-#' @param include_pending_contingency
-#'
-#' @return
+#' @param locations vector of locations
+#' @param search_type search type options include \itemize{
+#' \item city - \code{default}
+#' \item county
+#' }
+#' @param property_type if not \code{NULL} type of property options
+#' see \link{dictionary_property_types} for options
+#' @param features if not \code{NULL} list of searchable features
+#' see \link{dictionary_listing_features} for options
+#' @param city_isolated if not \code{NULL} isolates
+#' @param county_isolated if not \code{NULL} isolates county
+#' @param zipcode_isolated if not \code{NULL} isolates zipcode
+#' @param state_isolated if not \code{NULL} isolates state
+#' @param street_isolated if not \code{NULL} isolates street
+#' @param neighborhood_isolated if not \code{NULL} isolates
+#' @param beds_min if not \code{NULL} minimum bedrooms
+#' @param beds_max if not \code{NULL} maximum bedrooms
+#' @param baths_min if not \code{NULL} minimum bathrooms
+#' @param baths_max if not \code{NULL} maximum bathrooms
+#' @param price_min if not \code{NULL} minimum price
+#' @param price_max if not \code{NULL} maximum price
+#' @param sqft_min if not \code{NULL} minimum square footage
+#' @param sqft_max if not \code{NULL} maximum square footbge
+#' @param acre_min if not \code{NULL} minimum acres
+#' @param acre_max if not \code{NULL} maximum acres
+#' @param age_min if not \code{NULL} minimum age
+#' @param age_max if not \code{NULL} maximum age
+#' @param days_on_market if not \code{NULL} count of days on market
+#' @param pending if \code{TRUE} include pending
+#' @param is_new_construction if \code{TRUE} isolates to new constructioon
+#' @param include_pending_contingency if \code{TRUE} also includes pending and contingent sales
+#' @param only_open_houses if \code{TRUE} isolates open houses
+#' #'
+#' @return a \code{data_frame}
 #' @export
+#' @family summary search
+#' @family listing search
 #'
 #' @examples
+#' library(dplyr)
+#' library(realtR)
+#' ## New Construction in selected markets
+#' df_nc <-
+#' listing_counts(
+#' locations = c("Miami Beach, FL", "SOMA, San Francisco, CA", 10013,
+#' "Bethesda, MD"),
+#'  is_new_construction = TRUE
+#'  )
+#'  
+#'  df_nc %>%
+#'  select(locationSearch, countListings)
+
 listing_counts <-
   function(locations ,
            search_type = "city",
+           features = NULL,
            city_isolated = NULL,
            county_isolated = NULL,
            zipcode_isolated = NULL,
@@ -779,13 +873,12 @@ listing_counts <-
            days_on_market = NULL,
            pending = NULL,
            is_new_construction =  NULL,
-           is_foreclosure = NULL,
            include_pending_contingency = TRUE) {
     .get_location_counts_safe <-
       purrr::possibly(.get_location_counts, data_frame())
     locations %>%
       map_df(function(location) {
-        .get_location_counts_safe(
+        .get_location_counts(
           location_name = location,
           search_type = search_type,
           city_isolated = city_isolated,
@@ -810,8 +903,8 @@ listing_counts <-
           days_on_market = days_on_market,
           pending = pending,
           is_new_construction = is_new_construction,
-          is_foreclosure = is_foreclosure,
-          include_pending_contingency = include_pending_contingency
+          include_pending_contingency = include_pending_contingency,
+          features = features
         )
       })
   }
@@ -843,7 +936,6 @@ listing_counts <-
            days_on_market = NULL,
            pending = NULL,
            is_new_construction =  NULL,
-           is_foreclosure = NULL,
            include_pending_contingency = TRUE) {
     df_count <-
       .get_location_counts(
@@ -871,7 +963,6 @@ listing_counts <-
         days_on_market = days_on_market,
         pending = pending,
         is_new_construction = is_new_construction,
-        is_foreclosure = is_foreclosure,
         include_pending_contingency = include_pending_contingency,
         features = features,
         only_open_houses = only_open_houses
@@ -914,7 +1005,6 @@ listing_counts <-
             days_on_market = days_on_market,
             pending = pending,
             is_new_construction = is_new_construction,
-            is_foreclosure = is_foreclosure,
             include_pending_contingency = include_pending_contingency,
             features = features,
             only_open_houses = only_open_houses
@@ -959,41 +1049,70 @@ listing_counts <-
       distinct()
   }
 
-#' Map listing data
+#' Mapped listing data
+#' 
+#' This function returns data 
+#' from an API that maps the most
+#' pertient matches to a users input.
+#' 
+#' This function is faster than \code{listings}
+#' but returns less detailed information.
 #'
-#' @param locations
-#' @param search_type
-#' @param city_isolated
-#' @param county_isolated
-#' @param zipcode_isolated
-#' @param state_isolated
-#' @param street_isolated
-#' @param features
-#' @param only_open_houses
-#' @param neighborhood_isolated
-#' @param beds_min
-#' @param beds_max
-#' @param baths_min
-#' @param baths_max
-#' @param price_min
-#' @param price_max
-#' @param property_type
-#' @param sqft_min
-#' @param sqft_max
-#' @param acre_min
-#' @param acre_max
-#' @param age_min
-#' @param age_max
-#' @param days_on_market
-#' @param pending
-#' @param is_new_construction
-#' @param is_foreclosure
-#' @param include_pending_contingency
+#' @param locations vector of locations
+#' @param property_type if not \code{NULL} type of property options
+#' see \link{dictionary_property_types} for options
+#' @param features if not \code{NULL} list of searchable features
+#' see \link{dictionary_listing_features} for options
+#' @param search_type search type options include \itemize{
+#' \item city - \code{default}
+#' \item county
+#' }
+#' @param city_isolated if not \code{NULL} isolates
+#' @param county_isolated if not \code{NULL} isolates county
+#' @param zipcode_isolated if not \code{NULL} isolates zipcode
+#' @param state_isolated if not \code{NULL} isolates state
+#' @param street_isolated if not \code{NULL} isolates street
+#' @param neighborhood_isolated if not \code{NULL} isolates
+#' @param beds_min if not \code{NULL} minimum bedrooms
+#' @param beds_max if not \code{NULL} maximum bedrooms
+#' @param baths_min if not \code{NULL} minimum bathrooms
+#' @param baths_max if not \code{NULL} maximum bathrooms
+#' @param price_min if not \code{NULL} minimum price
+#' @param price_max if not \code{NULL} maximum price
+#' @param sqft_min if not \code{NULL} minimum square footage
+#' @param sqft_max if not \code{NULL} maximum square footbge
+#' @param acre_min if not \code{NULL} minimum acres
+#' @param acre_max if not \code{NULL} maximum acres
+#' @param age_min if not \code{NULL} minimum age
+#' @param age_max if not \code{NULL} maximum age
+#' @param days_on_market if not \code{NULL} count of days on market
+#' @param pending if \code{TRUE} include pending
+#' @param is_new_construction if \code{TRUE} isolates to new constructioon
+#' @param include_pending_contingency if \code{TRUE} also includes pending and contingent sales
+#' @param only_open_houses if \code{TRUE} isolates open houses
 #'
-#' @return
+#' @return a \code{data_frame}
+#' @family listing search
+#' @family detailed search
 #' @export
-#'
-#' @examples
+#' @examples 
+#' ## New Construction Waterfront actual mapped listings
+#' library(dplyr)
+#' library(realtR)
+#' df_new_water <-
+#'  map_listings( locations = c("Miami Beach, FL", "Naples, FL"),
+#' features = "Waterfront", is_new_construction = TRUE ) 
+#' 
+#' df_new_water %>%
+#' glimpse() 
+#' 
+#' df_new_water %>% 
+#' group_by(cityProperty, stateProperty, typeProperty) %>% 
+#' summarise( meanPSF = mean(priceListingPerSF, na.rm = T),
+#' meanPrice = mean(priceListing, na.rm = T), countListings = n()) %>%
+#' ungroup()
+#' 
+#' 
 map_listings <-
   function(locations = NULL,
            search_type = "city",
@@ -1021,7 +1140,6 @@ map_listings <-
            days_on_market = NULL,
            pending = NULL,
            is_new_construction =  NULL,
-           is_foreclosure = NULL,
            include_pending_contingency = TRUE) {
     .get_location_listings_json_safe <-
       purrr::possibly(.get_location_listings_json, data_frame())
@@ -1054,7 +1172,6 @@ map_listings <-
           days_on_market = days_on_market,
           pending = pending,
           is_new_construction = is_new_construction,
-          is_foreclosure = is_foreclosure,
           include_pending_contingency = include_pending_contingency,
           features = features,
           only_open_houses = only_open_houses
@@ -1143,7 +1260,6 @@ map_listings <-
            days_on_market = NULL,
            pending = NULL,
            is_new_construction =  NULL,
-           is_foreclosure = NULL,
            include_pending_contingency = TRUE) {
     df_count <-
       .get_location_counts(
@@ -1171,7 +1287,6 @@ map_listings <-
         days_on_market = days_on_market,
         pending = pending,
         is_new_construction = is_new_construction,
-        is_foreclosure = is_foreclosure,
         include_pending_contingency = include_pending_contingency,
         features = features,
         only_open_houses = only_open_houses
@@ -1223,7 +1338,6 @@ map_listings <-
             days_on_market = days_on_market,
             pending = pending,
             is_new_construction = is_new_construction,
-            is_foreclosure = is_foreclosure,
             include_pending_contingency = include_pending_contingency,
             features = features,
             only_open_houses = only_open_houses
@@ -1481,43 +1595,64 @@ map_listings <-
   }
 
 
+
 #' MLS listing data
 #'
 #' Returns MLS data for
 #' specified locations and parameters
 #'
-#' @param locations
-#' @param search_type
-#' @param city_isolated
-#' @param county_isolated
-#' @param zipcode_isolated
-#' @param state_isolated
-#' @param street_isolated
-#' @param features
-#' @param only_open_houses
-#' @param neighborhood_isolated
-#' @param beds_min
-#' @param beds_max
-#' @param baths_min
-#' @param baths_max
-#' @param price_min
-#' @param price_max
-#' @param property_type
-#' @param sqft_min
-#' @param sqft_max
-#' @param acre_min
-#' @param acre_max
-#' @param age_min
-#' @param age_max
-#' @param days_on_market
-#' @param pending
-#' @param is_new_construction
-#' @param is_foreclosure
-#' @param include_pending_contingency
+#' @param locations vector of locations
+#' @param property_type if not \code{NULL} type of property options
+#' see \link{dictionary_property_types} for options
+#' @param features if not \code{NULL} list of searchable features
+#' see \link{dictionary_listing_features} for options
+#' @param search_type search type options include \itemize{
+#' \item city - \code{default}
+#' \item county
+#' }
+#' @param city_isolated if not \code{NULL} isolates
+#' @param county_isolated if not \code{NULL} isolates county
+#' @param zipcode_isolated if not \code{NULL} isolates zipcode
+#' @param state_isolated if not \code{NULL} isolates state
+#' @param street_isolated if not \code{NULL} isolates street
+#' @param neighborhood_isolated if not \code{NULL} isolates
+#' @param beds_min if not \code{NULL} minimum bedrooms
+#' @param beds_max if not \code{NULL} maximum bedrooms
+#' @param baths_min if not \code{NULL} minimum bathrooms
+#' @param baths_max if not \code{NULL} maximum bathrooms
+#' @param price_min if not \code{NULL} minimum price
+#' @param price_max if not \code{NULL} maximum price
+#' @param sqft_min if not \code{NULL} minimum square footage
+#' @param sqft_max if not \code{NULL} maximum square footbge
+#' @param acre_min if not \code{NULL} minimum acres
+#' @param acre_max if not \code{NULL} maximum acres
+#' @param age_min if not \code{NULL} minimum age
+#' @param age_max if not \code{NULL} maximum age
+#' @param days_on_market if not \code{NULL} count of days on market
+#' @param pending if \code{TRUE} include pending
+#' @param is_new_construction if \code{TRUE} isolates to new constructioon
+#' @param include_pending_contingency if \code{TRUE} also includes pending and contingent sales
+#' @param only_open_houses if \code{TRUE} isolates open houses
 #'
-#' @return
+#' @return a \code{data_frame}
 #' @export
+#' @family listing search
 #' @examples
+# library(realtR)
+# library(dplyr)
+# df_big_ass_houses_with_pools <-
+#   listings(
+#     locations = c(
+#       "Buckhead, Atlanta, GA",
+#       90210,
+#       "Greenwich, CT",
+#       "Malibu, CA",
+#       "Soho, New York, NY"
+#     ),
+#     beds_min = 4,
+#     features = 'Swimming Pool',
+#     sqft_min = 3000
+#   )
 listings <-
   function(locations = NULL,
            search_type = "city",
@@ -1545,7 +1680,6 @@ listings <-
            days_on_market = NULL,
            pending = NULL,
            is_new_construction =  NULL,
-           is_foreclosure = NULL,
            include_pending_contingency = TRUE) {
     if (locations %>% purrr::is_null()) {
       stop("Enter locations")
@@ -1582,7 +1716,6 @@ listings <-
           days_on_market = days_on_market,
           pending = pending,
           is_new_construction = is_new_construction,
-          is_foreclosure = is_foreclosure,
           include_pending_contingency = include_pending_contingency,
           features = features,
           only_open_houses = only_open_houses

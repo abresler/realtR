@@ -6,7 +6,8 @@
 \alias{realtoR-package}
 \title{realtR}
 \description{
-Because real estate brokers suck
+Tools to make finding property
+suck lesss.
 }
 \author{
 Alex Bresler (abresler@asbcllc.com)

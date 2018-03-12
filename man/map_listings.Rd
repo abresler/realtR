@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{map_listings}
 \alias{map_listings}
-\title{Map listing data}
+\title{Mapped listing data}
 \usage{
 map_listings(locations = NULL, search_type = "city", city_isolated = NULL,
   county_isolated = NULL, zipcode_isolated = NULL, state_isolated = NULL,
@@ -12,12 +12,103 @@ map_listings(locations = NULL, search_type = "city", city_isolated = NULL,
   price_max = NULL, property_type = NULL, sqft_min = NULL,
   sqft_max = NULL, acre_min = NULL, acre_max = NULL, age_min = NULL,
   age_max = NULL, days_on_market = NULL, pending = NULL,
-  is_new_construction = NULL, is_foreclosure = NULL,
-  include_pending_contingency = TRUE)
+  is_new_construction = NULL, include_pending_contingency = TRUE)
 }
 \arguments{
-\item{include_pending_contingency}{}
+\item{locations}{vector of locations}
+
+\item{search_type}{search type options include \itemize{
+\item city - \code{default}
+\item county
+}}
+
+\item{city_isolated}{if not \code{NULL} isolates}
+
+\item{county_isolated}{if not \code{NULL} isolates county}
+
+\item{zipcode_isolated}{if not \code{NULL} isolates zipcode}
+
+\item{state_isolated}{if not \code{NULL} isolates state}
+
+\item{street_isolated}{if not \code{NULL} isolates street}
+
+\item{features}{if not \code{NULL} list of searchable features
+see \link{dictionary_listing_features} for options}
+
+\item{only_open_houses}{if \code{TRUE} isolates open houses}
+
+\item{neighborhood_isolated}{if not \code{NULL} isolates}
+
+\item{beds_min}{if not \code{NULL} minimum bedrooms}
+
+\item{beds_max}{if not \code{NULL} maximum bedrooms}
+
+\item{baths_min}{if not \code{NULL} minimum bathrooms}
+
+\item{baths_max}{if not \code{NULL} maximum bathrooms}
+
+\item{price_min}{if not \code{NULL} minimum price}
+
+\item{price_max}{if not \code{NULL} maximum price}
+
+\item{property_type}{if not \code{NULL} type of property options
+see \link{dictionary_property_types} for options}
+
+\item{sqft_min}{if not \code{NULL} minimum square footage}
+
+\item{sqft_max}{if not \code{NULL} maximum square footbge}
+
+\item{acre_min}{if not \code{NULL} minimum acres}
+
+\item{acre_max}{if not \code{NULL} maximum acres}
+
+\item{age_min}{if not \code{NULL} minimum age}
+
+\item{age_max}{if not \code{NULL} maximum age}
+
+\item{days_on_market}{if not \code{NULL} count of days on market}
+
+\item{pending}{if \code{TRUE} include pending}
+
+\item{is_new_construction}{if \code{TRUE} isolates to new constructioon}
+
+\item{include_pending_contingency}{if \code{TRUE} also includes pending and contingent sales}
+}
+\value{
+a \code{data_frame}
 }
 \description{
-Map listing data
+This function returns data 
+from an API that maps the most
+pertient matches to a users input.
 }
+\details{
+This function is faster than \code{listings}
+but returns less detailed information.
+}
+\examples{
+## New Construction Waterfront actual mapped listings
+library(dplyr)
+library(realtR)
+df_new_water <-
+ map_listings( locations = c("Miami Beach, FL", "Naples, FL"),
+features = "Waterfront", is_new_construction = TRUE ) 
+
+df_new_water \%>\%
+glimpse() 
+
+df_new_water \%>\% 
+group_by(cityProperty, stateProperty, typeProperty) \%>\% 
+summarise( meanPSF = mean(priceListingPerSF, na.rm = T),
+meanPrice = mean(priceListing, na.rm = T), countListings = n()) \%>\%
+ungroup()
+
+
+}
+\seealso{
+Other listing search: \code{\link{dictionary_listing_features}},
+  \code{\link{dictionary_property_types}},
+  \code{\link{listing_counts}}, \code{\link{listings}}
+}
+\concept{detailed search}
+\concept{listing search}

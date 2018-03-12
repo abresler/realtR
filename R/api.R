@@ -40,6 +40,18 @@
         mutate(pricePerSFListing = (priceDisplay / areaPropertySF) %>% round(digits = 2))
     }
     
+    if (data %>% tibble::has_name("areaPropertySF") &&data %>%  tibble::has_name("priceListing")) {
+      data <-
+        data %>%
+        mutate(pricePerSFListing = (priceListing / areaPropertySF) %>% round(digits = 2))
+    }
+    
+    if (data %>% tibble::has_name("nameBroker")) {
+      data <-
+        data %>%
+        mutate(nameBroker = nameBroker %>% str_to_upper())
+    }
+    
     data <- 
       data %>% 
       mutate_if(is.character,
@@ -78,12 +90,12 @@ dictionary_css_page <-
                    "idAgent", "idOffice", "idBroker", 
                    "idListing", "remove_omtag", "remove_page", "remove_producttype", 
                    "remove_proptype", "typeProperty", "idProperty", "statusProperty", 
-                   "slugLDP", "typeHotBuy", "remove_id", "typePropertySchema", "statusPromotion", 
-                   "remove_schema", "priceListing", "nameProduct", "countBathsFull", 
+                   "slugLDP", "slugHotBuy", "remove_id", "typePropertySchema", "statusPromotion", 
+                   "remove_schema", "priceListing", "slugProduct", "countBathsFull", 
                    "countBathsHalf", "remove_baths", "areaLotSize", "remove_ab_tst", 
-                   "remove_form_modal", "isCoBroke", "isShowCased", "isSuppressdPin", 
-                   "isAddressSuppress", "isForclosure", "isAdvantagPro", 
-                   "remove_show_contact_a_lender", "typeLead", "typeForm", "nameBroker", 
+                   "remove_form_modal", "isCoBroke", "isShowcased", "isSuppressdPin", 
+                   "isAddressSuppress", "isForeclosure", "isAdvantagPro", 
+                   "remove_show_contact_a_lender", "slugLead", "slugForm", "nameBroker", 
                    "addressProperty", "cityProperty", "stateProperty", "zipcodeProperty",
                    "latitudeProperty", "longitudeProperty", "addressProperty", "urlImage",
                    "countBeds", "countBaths", "areaPropertySF", 
@@ -284,7 +296,7 @@ dictionary_realtor_names <-
         'isPending',
         'isContingent',
         'isListingNew',
-        'isShowCased',
+        'isShowcased',
         'hasTour',
         'hasVideo',
         'hasRealtorLogo',
@@ -319,7 +331,11 @@ dictionary_realtor_names <-
 
 # https://www.realtor.com/mrtg_handler/get_trends_data
 
-#' Gets current mortgage rates
+#' Motgage Rates
+#' 
+#' Returns a variety of 
+#' interest rates for various
+#' mortgage types.
 #'
 #' @param return_wide if \code{TRUE} widens data and removes duration and benchmark variables
 #'
