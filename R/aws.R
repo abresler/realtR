@@ -49,6 +49,7 @@ dictionary_geo_names <-
   function(url = "https://parser-external.geo.moveaws.com/suggest?input=Gre&limit=100&client_id=rdcV8&area_types=neighborhood%2Ccity%2Ccounty%2Cpostal_code%2Caddress%2Cbuilding%2Cstreet%2Cschool%2CFuck") {
     data <-
       url %>%
+      .curl_json() %>% 
       jsonlite::fromJSON(
         simplifyVector = T,
         simplifyDataFrame = T,

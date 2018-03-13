@@ -743,9 +743,11 @@ dictionary_search <-
            days_on_market = NULL,
            pending = NULL,
            is_new_construction =  NULL,
-           include_pending_contingency = TRUE) {
+           include_pending_contingency = TRUE,
+           generate_new_cookies = F) {
     url <- "https://www.realtor.com/search_result_count"
-    headers =  .generate_headers()
+    headers = 
+      .generate_headers(generate_new_cookies = generate_new_cookies)
     
     data <-
       .generate_data(
@@ -897,6 +899,7 @@ listing_counts <-
            age_min = NULL,
            age_max = NULL,
            days_on_market = NULL,
+           generate_new_cookies = F,
            pending = NULL,
            is_new_construction =  NULL,
            include_pending_contingency = TRUE) {
@@ -930,7 +933,8 @@ listing_counts <-
           pending = pending,
           is_new_construction = is_new_construction,
           include_pending_contingency = include_pending_contingency,
-          features = features
+          features = features,
+          generate_new_cookies = generate_new_cookies
         )
       })
   }
@@ -962,6 +966,7 @@ listing_counts <-
            days_on_market = NULL,
            pending = NULL,
            is_new_construction =  NULL,
+           generate_new_cookies = F,
            include_pending_contingency = TRUE) {
     df_count <-
       .get_location_counts(
@@ -1040,7 +1045,7 @@ listing_counts <-
           .parse_data_parameters(data_param = data)
         
         headers <-
-          .generate_headers()
+          .generate_headers(generate_new_cookies = generate_new_cookies)
         
         response  <-
           Post(
@@ -1116,6 +1121,7 @@ listing_counts <-
 #' @param is_new_construction if \code{TRUE} isolates to new constructioon
 #' @param include_pending_contingency if \code{TRUE} also includes pending and contingent sales
 #' @param only_open_houses if \code{TRUE} isolates open houses
+#' @param generate_new_cookies generate new cookies
 #'
 #' @return a \code{data_frame}
 #' @family listing search
@@ -1166,6 +1172,7 @@ map_listings <-
            days_on_market = NULL,
            pending = NULL,
            is_new_construction =  NULL,
+           generate_new_cookies = F,
            include_pending_contingency = TRUE) {
     .get_location_listings_json_safe <-
       purrr::possibly(.get_location_listings_json, data_frame())
@@ -1200,6 +1207,7 @@ map_listings <-
           is_new_construction = is_new_construction,
           include_pending_contingency = include_pending_contingency,
           features = features,
+          generate_new_cookies = generate_new_cookies,
           only_open_houses = only_open_houses
         )
       }) %>% 
@@ -1250,11 +1258,22 @@ map_listings <-
   }
 
 .headers_search_json <-
-  function() {
+  function(generate_new_cookies = F) {
     df_call <- generate_url_reference()
     
-    .headers_search_json_base() %>%
+    df_headers <- 
+      .headers_search_json_base() %>%
       mutate(`user-agent` = df_call$userAgent)
+    
+    
+    
+    if (generate_new_cookies) {
+      new_cookie <- .generate_cookies()
+      df_headers <- 
+        df_headers %>% 
+        mutate(cookie = new_cookie)
+    }
+    df_headers
   }
 
 
@@ -1286,6 +1305,7 @@ map_listings <-
            days_on_market = NULL,
            pending = NULL,
            is_new_construction =  NULL,
+           generate_new_cookies = T,
            include_pending_contingency = TRUE) {
     df_count <-
       .get_location_counts(
@@ -1315,6 +1335,7 @@ map_listings <-
         is_new_construction = is_new_construction,
         include_pending_contingency = include_pending_contingency,
         features = features,
+        generate_new_cookies = generate_new_cookies,
         only_open_houses = only_open_houses
       )
     
@@ -1324,7 +1345,7 @@ map_listings <-
     pages <- max(1, pages)
     
     headers <-
-      .headers_search_json()
+      .headers_search_json(generate_new_cookies = generate_new_cookies)
     
     all_properties <-
       1:pages %>%
@@ -1419,7 +1440,7 @@ map_listings <-
               lat_lon_node %>%
               html_nodes('meta') %>%
               html_attrs() %>%
-              flatten()
+              purrr::flatten()
             
             df_lat_lon <-
               data_frame(
@@ -1659,26 +1680,27 @@ map_listings <-
 #' @param is_new_construction if \code{TRUE} isolates to new constructioon
 #' @param include_pending_contingency if \code{TRUE} also includes pending and contingent sales
 #' @param only_open_houses if \code{TRUE} isolates open houses
+#' @param generate_new_cookies generate new cookies
 #'
 #' @return a \code{data_frame}
 #' @export
 #' @family listing search
 #' @examples
-# library(realtR)
-# library(dplyr)
-# df_big_ass_houses_with_pools <-
-#   listings(
-#     locations = c(
-#       "Buckhead, Atlanta, GA",
-#       90210,
-#       "Greenwich, CT",
-#       "Malibu, CA",
-#       "Soho, New York, NY"
-#     ),
-#     beds_min = 4,
-#     features = 'Swimming Pool',
-#     sqft_min = 3000
-#   )
+#' library(realtR)
+#'  library(dplyr)
+#'  df_big_ass_houses_with_pools <-
+#'  listings(
+#'  locations = c(
+#'  "Buckhead, Atlanta, GA",
+#'  90210,
+#'  "Greenwich, CT",
+#'  "Malibu, CA",
+#'  "Soho, New York, NY"
+#'  ),
+#'  beds_min = 4,
+#'  features = 'Swimming Pool',
+#'  sqft_min = 3000
+#'  )
 listings <-
   function(locations = NULL,
            search_type = "city",
@@ -1706,6 +1728,7 @@ listings <-
            days_on_market = NULL,
            pending = NULL,
            is_new_construction =  NULL,
+           generate_new_cookies = F,
            include_pending_contingency = TRUE) {
     if (locations %>% purrr::is_null()) {
       stop("Enter locations")
@@ -1725,6 +1748,7 @@ listings <-
           zipcode_isolated = zipcode_isolated,
           state_isolated = state_isolated,
           street_isolated = street_isolated,
+          generate_new_cookies = generate_new_cookies,
           neighborhood_isolated = neighborhood_isolated,
           beds_min = beds_min,
           beds_max = beds_max,

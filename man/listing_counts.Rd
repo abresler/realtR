@@ -11,8 +11,9 @@ listing_counts(locations, search_type = "city", features = NULL,
   baths_min = NULL, baths_max = NULL, price_min = NULL,
   price_max = NULL, only_open_houses = NULL, property_type = NULL,
   sqft_min = NULL, sqft_max = NULL, acre_min = NULL, acre_max = NULL,
-  age_min = NULL, age_max = NULL, days_on_market = NULL, pending = NULL,
-  is_new_construction = NULL, include_pending_contingency = TRUE)
+  age_min = NULL, age_max = NULL, days_on_market = NULL,
+  generate_new_cookies = F, pending = NULL, is_new_construction = NULL,
+  include_pending_contingency = TRUE)
 }
 \arguments{
 \item{locations}{vector of locations}

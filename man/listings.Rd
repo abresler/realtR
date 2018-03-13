@@ -12,7 +12,8 @@ listings(locations = NULL, search_type = "city", city_isolated = NULL,
   price_max = NULL, property_type = NULL, sqft_min = NULL,
   sqft_max = NULL, acre_min = NULL, acre_max = NULL, age_min = NULL,
   age_max = NULL, days_on_market = NULL, pending = NULL,
-  is_new_construction = NULL, include_pending_contingency = TRUE)
+  is_new_construction = NULL, generate_new_cookies = F,
+  include_pending_contingency = TRUE)
 }
 \arguments{
 \item{locations}{vector of locations}
@@ -72,6 +73,8 @@ see \link{dictionary_property_types} for options}
 
 \item{is_new_construction}{if \code{TRUE} isolates to new constructioon}
 
+\item{generate_new_cookies}{generate new cookies}
+
 \item{include_pending_contingency}{if \code{TRUE} also includes pending and contingent sales}
 }
 \value{
@@ -80,6 +83,23 @@ a \code{data_frame}
 \description{
 Returns MLS data for
 specified locations and parameters
+}
+\examples{
+library(realtR)
+ library(dplyr)
+ df_big_ass_houses_with_pools <-
+ listings(
+ locations = c(
+ "Buckhead, Atlanta, GA",
+ 90210,
+ "Greenwich, CT",
+ "Malibu, CA",
+ "Soho, New York, NY"
+ ),
+ beds_min = 4,
+ features = 'Swimming Pool',
+ sqft_min = 3000
+ )
 }
 \seealso{
 Other listing search: \code{\link{dictionary_listing_features}},

@@ -1,5 +1,3 @@
-
-
 # gdeltr2::load_needed_packages(c("jsonlite", "purrr", "tidyr", "glue", "stringr", "curl", "dplyr", "rvest", 'lubridate', "requestsR"))
 
 .curl_page <-
@@ -9,7 +7,7 @@
     df_call <- generate_url_reference()
     h <-
       h %>%
-      curl::handle_setheaders("User-Agent" = df_call$userAgent)
+      curl::handle_setheaders("useragent" = df_call$userAgent)
     
     page <-
       curl::curl(url, handle = h) %>%
@@ -20,6 +18,25 @@
     closeAllConnections()
     
     page
+  }
+
+.curl_json <-
+  function(url) {
+    h <-
+      curl::new_handle(accept_encoding = NULL, verbose = F)
+    df_call <- generate_url_reference()
+    
+    h <-
+      h %>%
+      curl::handle_setheaders("useragent" = df_call$userAgent)
+    
+    json_data <-
+      curl::curl(url, handle = h) %>%
+      readr::read_lines()
+    
+    closeAllConnections()
+    json_data
+    
   }
 
 # munge -------------------------------------------------------------------
@@ -675,7 +692,9 @@ parse_location <-
 .parse_market_data_url <-
   function(url = "https://www.realtor.com/median_prices?city=Bethesda&state_code=MD") {
     data <-
-      url %>% jsonlite::fromJSON(
+      url %>% 
+      .curl_json() %>% 
+      jsonlite::fromJSON(
         simplifyVector = T,
         simplifyDataFrame = T,
         flatten = T
@@ -952,7 +971,7 @@ median_prices <-
 .parse_market_trend_url <-
   function(url = "https://www.realtor.com/local/markettrends/city/Marietta_GA") {
     json_data <-
-      url %>%
+      curl_json(url = url) %>% 
       jsonlite::fromJSON(flatten = T, simplifyDataFrame = T)
     
     df_geo <-
@@ -1174,6 +1193,7 @@ trends <-
   function(url = "https://www.realtor.com/validate_geo?location=Easton%2C+MD&retain_secondary_facets=true&include_zip=false&search_controller=Search%3A%3APropertiesController") {
     data <-
       url %>%
+      .curl_json() %>% 
       jsonlite::fromJSON(flatten = T, simplifyDataFrame = T) %>%
       flatten_df() %>%
       as_data_frame()
@@ -1377,6 +1397,7 @@ validate_locations <-
   function(url = "https://www.realtor.com/home_page/vitality?location=Bethesda%2C+MD") {
     data <-
       url %>%
+      .curl_json() %>% 
       jsonlite::fromJSON(flatten = T, simplifyDataFrame = T)
     
     df_names <- dictionary_realtor_names()
@@ -1634,6 +1655,7 @@ generate_coordinate_slug <-
   function(url = "https://www.realtor.com/browse_modules/homes_near_street?postal_code=20816vis_id=6b0d44ae-f4d6-41f0-8feb-e6491ab43fe9&mcm_id=03714656198478469204855792545062287725&city=New+York&coordinates=40.74516%2C-73.97852") {
     data <-
       url %>%
+      .curl_json() %>% 
       jsonlite::fromJSON(
         simplifyVector = T,
         simplifyDataFrame = T,

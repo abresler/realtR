@@ -12,7 +12,8 @@ map_listings(locations = NULL, search_type = "city", city_isolated = NULL,
   price_max = NULL, property_type = NULL, sqft_min = NULL,
   sqft_max = NULL, acre_min = NULL, acre_max = NULL, age_min = NULL,
   age_max = NULL, days_on_market = NULL, pending = NULL,
-  is_new_construction = NULL, include_pending_contingency = TRUE)
+  is_new_construction = NULL, generate_new_cookies = F,
+  include_pending_contingency = TRUE)
 }
 \arguments{
 \item{locations}{vector of locations}
@@ -71,6 +72,8 @@ see \link{dictionary_property_types} for options}
 \item{pending}{if \code{TRUE} include pending}
 
 \item{is_new_construction}{if \code{TRUE} isolates to new constructioon}
+
+\item{generate_new_cookies}{generate new cookies}
 
 \item{include_pending_contingency}{if \code{TRUE} also includes pending and contingent sales}
 }
