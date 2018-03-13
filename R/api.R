@@ -62,6 +62,14 @@
       data <-
         data %>%
         mutate(nameBroker = nameBroker %>% str_to_upper())
+      
+      data <- 
+        data %>%
+        separate(col = nameBroker, into = c("nameBroker", "locationOffice"), sep = "\\-") %>% 
+        suppressWarnings() %>% 
+        mutate_if(is.character,
+                  str_trim)
+      
     }
     
     data <- 

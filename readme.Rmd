@@ -36,11 +36,16 @@ In addition to listing data the package provides users access to the most robust
 
 ## Functions
 
-* `geocode()` - 
-* `listing_counts()` -
-* `listings()` - 
-* `vitality()` - 
-* `trends()` - 
-* `map_listings()` - 
-* `median_prices()` -
-* `market_trends()` - 
+* `geocode()` :
+* `listing_counts()` :
+* `listings()` : 
+* `vitality()` :
+* `trends()` :
+* `map_listings()` :
+* `median_prices()` :
+* `market_trends()` :
+
+## Dictionaries
+
+* `dictionary_property_types()`
+* `dictionary_listing_features()`
