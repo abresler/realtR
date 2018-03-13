@@ -7,7 +7,7 @@
     df_call <- generate_url_reference()
     h <-
       h %>%
-      curl::handle_setheaders("useragent" = df_call$userAgent)
+      curl::handle_setheaders("user-agent" = df_call$userAgent)
     
     page <-
       curl::curl(url, handle = h) %>%
@@ -28,7 +28,7 @@
     
     h <-
       h %>%
-      curl::handle_setheaders("useragent" = df_call$userAgent)
+      curl::handle_setheaders("user-agent" = df_call$userAgent)
     
     json_data <-
       curl::curl(url, handle = h) %>%
@@ -971,7 +971,7 @@ median_prices <-
 .parse_market_trend_url <-
   function(url = "https://www.realtor.com/local/markettrends/city/Marietta_GA") {
     json_data <-
-      curl_json(url = url) %>% 
+      .curl_json(url = url) %>% 
       jsonlite::fromJSON(flatten = T, simplifyDataFrame = T)
     
     df_geo <-
