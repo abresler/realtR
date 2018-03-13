@@ -4,13 +4,15 @@
 \alias{parse_listing_urls}
 \title{Parse listing urls}
 \usage{
-parse_listing_urls(urls = NULL, include_features = F,
+parse_listing_urls(urls = NULL, include_features = F, sleep_time = 1,
   return_message = TRUE)
 }
 \arguments{
 \item{urls}{vector of urls}
 
 \item{include_features}{if \code{TRUE} includes features}
+
+\item{sleep_time}{sleep time in between url}
 
 \item{return_message}{if \code{TRUE} returns a message}
 }

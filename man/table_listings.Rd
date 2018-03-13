@@ -24,7 +24,7 @@ table_listings(locations, include_features = F, radius = NULL,
 a \code{data_frame}
 }
 \description{
-Returns listing table.  Slower and not advised 
+Returns listing table.  Slower and not advised
 unless \link{listings()} does not work for your search.
 }
 \examples{

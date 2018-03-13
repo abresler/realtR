@@ -13,7 +13,7 @@ mortage_rates(return_wide = F)
 a \code{data_frame}
 }
 \description{
-Returns a variety of 
+Returns a variety of
 interest rates for various
 mortgage types.
 }
