@@ -81,7 +81,7 @@ see \link{dictionary_property_types} for options}
 a \code{data_frame}
 }
 \description{
-This function returns data 
+This function returns data
 from an API that maps the most
 pertient matches to a users input.
 }
@@ -95,13 +95,13 @@ library(dplyr)
 library(realtR)
 df_new_water <-
  map_listings( locations = c("Miami Beach, FL", "Naples, FL"),
-features = "Waterfront", is_new_construction = TRUE ) 
+features = "Waterfront", is_new_construction = TRUE )
 
 df_new_water \%>\%
-glimpse() 
+glimpse()
 
-df_new_water \%>\% 
-group_by(cityProperty, stateProperty, typeProperty) \%>\% 
+df_new_water \%>\%
+group_by(cityProperty, stateProperty, typeProperty) \%>\%
 summarise( meanPSF = mean(priceListingPerSF, na.rm = T),
 meanPrice = mean(priceListing, na.rm = T), countListings = n()) \%>\%
 ungroup()

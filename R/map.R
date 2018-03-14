@@ -1,14 +1,30 @@
-.generate_cookies <- 
+.parse_content_to_page <- 
+  function(content) {
+    page <-
+      content %>%
+      stringi::stri_trans_general("Latin-ASCII") %>%
+      xml2::read_html()
+    page
+  }
+
+.generate_cookies <-
   function() {
-    h <- new_handle()
-  
-    req <- 
+    df_call <- generate_url_reference()
+    h <-
+      curl::new_handle(
+        accept_encoding = NULL,
+        verbose = F,
+        useragent =  df_call$urlReferer
+      )
+    
+    
+    req <-
       curl_fetch_memory(url = 'https://www.realtor.com/', handle = h)
     
-    handle_cookies(h) %>% 
-      as_data_frame() %>% 
-      tidyr::unite(param, name, value, sep = "=") %>% 
-      pull(param) %>% 
+    handle_cookies(h) %>%
+      as_data_frame() %>%
+      tidyr::unite(param, name, value, sep = "=") %>%
+      pull(param) %>%
       str_c(collapse = "; ")
     
   }
@@ -16,8 +32,8 @@
 
 
 #' Property type dictionary
-#' 
-#' Searchable property types 
+#'
+#' Searchable property types
 #' for isolating listings
 #'
 #' @return a \code{data_frame}
@@ -39,18 +55,25 @@ dictionary_property_types <-
         "farms-ranches",
         "land"
       ),
-      nameType = c("House", "Condo", "Townhouse", "Multifamily",
-                   "Mobile Home", "Farm","Land")
+      nameType = c(
+        "House",
+        "Condo",
+        "Townhouse",
+        "Multifamily",
+        "Mobile Home",
+        "Farm",
+        "Land"
+      )
     )
   }
 
 #' Property feature dictionary
-#' 
+#'
 #' This function returns a dictionary
-#' of searchable property features.  These features 
+#' of searchable property features.  These features
 #' can be used as search parameters in the \link{count_listings}, \link{listings}, \link{listing_counts}
 #' and \link{map_listings} functions.
-#' 
+#'
 #' @return a \code{data_frame}
 #' @export
 #' @family dictionary
@@ -61,26 +84,80 @@ dictionary_listing_features <-
   function() {
     data_frame(
       nameFeature =
-        c("Basement", "Garage", "Central Air", "Central Heat", "Boat Facilities", 
-          "Community Clubhouse", "Community Golf", "Community Security", 
-          "Community Spa", "Community Pool", "Community Tennis", 
-          "Corner Lot", "Cul De Sac", "Home Office", "Dining Room", "Disability Features", 
-          "Family Room", "Fireplace", "Forced Air", "2 Car Garage", 
-          "Golf Course Frontage", "Hardwood Floors", "Mountain Community", 
-          "Horse Facilities", "Lake View", "Laundry Room", "Ocean View", 
-          "River View", "RV Parking", "Senior Community", "Single Story", 
-          "Spa", "Swimming Pool", "Multi Stories", "Waterfront"
+        c(
+          "Basement",
+          "Garage",
+          "Central Air",
+          "Central Heat",
+          "Boat Facilities",
+          "Community Clubhouse",
+          "Community Golf",
+          "Community Security",
+          "Community Spa",
+          "Community Pool",
+          "Community Tennis",
+          "Corner Lot",
+          "Cul De Sac",
+          "Home Office",
+          "Dining Room",
+          "Disability Features",
+          "Family Room",
+          "Fireplace",
+          "Forced Air",
+          "2 Car Garage",
+          "Golf Course Frontage",
+          "Hardwood Floors",
+          "Mountain Community",
+          "Horse Facilities",
+          "Lake View",
+          "Laundry Room",
+          "Ocean View",
+          "River View",
+          "RV Parking",
+          "Senior Community",
+          "Single Story",
+          "Spa",
+          "Swimming Pool",
+          "Multi Stories",
+          "Waterfront"
         ),
       slugFeature =
-        c("basement", "carport", "central_air", "central_heat", "community_boat_facilities", 
-          "community_clubhouse", "community_golf", "community_security_features", 
-          "community_spa_or_hot_tub", "community_swimming_pool", "community_tennis_court", 
-          "corner_lot", "cul_de_sac", "den_or_office", "dining_room", "disability_features", 
-          "family_room", "fireplace", "forced_air", "garage_2_or_more", 
-          "golf_course_lot_or_frontage", "hardwood_floors", "hill_mountain", 
-          "horse_facilities", "lake_view", "laundry_room", "ocean_view", 
-          "river_view", "rv_or_boat_parking", "senior_community", "single_story", 
-          "spa_or_hot_tub", "swimming_pool", "two_or_more_stories", "waterfront"
+        c(
+          "basement",
+          "carport",
+          "central_air",
+          "central_heat",
+          "community_boat_facilities",
+          "community_clubhouse",
+          "community_golf",
+          "community_security_features",
+          "community_spa_or_hot_tub",
+          "community_swimming_pool",
+          "community_tennis_court",
+          "corner_lot",
+          "cul_de_sac",
+          "den_or_office",
+          "dining_room",
+          "disability_features",
+          "family_room",
+          "fireplace",
+          "forced_air",
+          "garage_2_or_more",
+          "golf_course_lot_or_frontage",
+          "hardwood_floors",
+          "hill_mountain",
+          "horse_facilities",
+          "lake_view",
+          "laundry_room",
+          "ocean_view",
+          "river_view",
+          "rv_or_boat_parking",
+          "senior_community",
+          "single_story",
+          "spa_or_hot_tub",
+          "swimming_pool",
+          "two_or_more_stories",
+          "waterfront"
         )
       
     )
@@ -99,8 +176,8 @@ dictionary_listing_features <-
     
     if (generate_new_cookies) {
       new_cookie <- .generate_cookies()
-      df_headers <- 
-        df_headers %>% 
+      df_headers <-
+        df_headers %>%
         mutate(cookie = new_cookie)
     }
     
@@ -496,7 +573,8 @@ dictionary_search <-
         searchFacetsToDTM = "pf_not_visible",
         searchFeaturesToDTM = list(),
         pos = "",
-        page_size = 50L, # 2500L
+        page_size = 50L,
+        # 2500L
         viewport_height = 1000L,
         pin_height = 240L,
         page = 1L
@@ -621,18 +699,18 @@ dictionary_search <-
     }
     
     if (!features %>% purrr::is_null()) {
-      f_t <- 
+      f_t <-
         features %>% str_to_lower()
       
       df_features <-
-        dictionary_listing_features() %>% 
+        dictionary_listing_features() %>%
         mutate(nameFeature = nameFeature %>% str_to_lower())
       
-      feature_slugs <- 
-        df_features %>% 
-        filter(nameFeature %in% f_t) %>% 
-        pull(slugFeature) %>% 
-        unique() %>% 
+      feature_slugs <-
+        df_features %>%
+        filter(nameFeature %in% f_t) %>%
+        pull(slugFeature) %>%
+        unique() %>%
         str_c(collapse = ",")
       
       data$facets$features_hash <-
@@ -651,17 +729,17 @@ dictionary_search <-
     
     
     if (!property_type %>% purrr::is_null()) {
-      p_t <- 
+      p_t <-
         property_type %>% str_to_lower()
       df_types <-
-        dictionary_property_types() %>% 
+        dictionary_property_types() %>%
         mutate(nameType = nameType %>% str_to_lower())
       
-      property_slugs <- 
-        df_types %>% 
-        filter(nameType %in% p_t) %>% 
-        pull(slugType) %>% 
-        unique() %>% 
+      property_slugs <-
+        df_types %>%
+        filter(nameType %in% p_t) %>%
+        pull(slugType) %>%
+        unique() %>%
         str_c(collapse = ",")
       
       
@@ -706,7 +784,7 @@ dictionary_search <-
     if (!age_min %>% purrr::is_null()) {
       data$facets$age_min <- age_min
     }
-
+    
     if (!include_pending_contingency %>% purrr::is_null()) {
       data$facets$include_pending_contingency <-
         include_pending_contingency
@@ -719,7 +797,7 @@ dictionary_search <-
 .get_location_counts <-
   function(location_name = 10016,
            search_type = "city",
-           features =NULL,
+           features = NULL,
            city_isolated = NULL,
            county_isolated = NULL,
            zipcode_isolated = NULL,
@@ -746,55 +824,62 @@ dictionary_search <-
            include_pending_contingency = TRUE,
            generate_new_cookies = F) {
     url <- "https://www.realtor.com/search_result_count"
-    headers = 
+    headers =
       .generate_headers(generate_new_cookies = generate_new_cookies)
     
-    data <-
-      .generate_data(
-        location_name = location_name,
-        search_type = search_type,
-        page = 1,
-        city_isolated = city_isolated,
-        county_isolated = county_isolated,
-        zipcode_isolated = zipcode_isolated,
-        state_isolated = state_isolated,
-        only_open_houses = only_open_houses,
-        street_isolated = street_isolated,
-        neighborhood_isolated = neighborhood_isolated,
-        beds_min = beds_min,
-        beds_max = beds_max,
-        baths_min = baths_min ,
-        baths_max = baths_max,
-        price_min = price_min,
-        price_max = price_max,
-        features = features,
-        property_type = property_type,
-        sqft_min = sqft_min,
-        sqft_max = sqft_max,
-        acre_min = acre_min,
-        acre_max = acre_max,
-        age_min = age_min,
-        age_max = age_max,
-        days_on_market = days_on_market,
-        pending = pending,
-        is_new_construction = is_new_construction,
-        include_pending_contingency = include_pending_contingency
-      )
-    
+      data <-
+        .generate_data(
+          location_name = location_name,
+          search_type = search_type,
+          page = 1,
+          city_isolated = city_isolated,
+          county_isolated = county_isolated,
+          zipcode_isolated = zipcode_isolated,
+          state_isolated = state_isolated,
+          only_open_houses = only_open_houses,
+          street_isolated = street_isolated,
+          neighborhood_isolated = neighborhood_isolated,
+          beds_min = beds_min,
+          beds_max = beds_max,
+          baths_min = baths_min ,
+          baths_max = baths_max,
+          price_min = price_min,
+          price_max = price_max,
+          features = features,
+          property_type = property_type,
+          sqft_min = sqft_min,
+          sqft_max = sqft_max,
+          acre_min = acre_min,
+          acre_max = acre_max,
+          age_min = age_min,
+          age_max = age_max,
+          days_on_market = days_on_market,
+          pending = pending,
+          is_new_construction = is_new_construction,
+          include_pending_contingency = include_pending_contingency
+        )
+      
     df_params <-
       .parse_data_parameters(data_param = data)
     
-    response  <-
-      Post(
-        url = url,
-        headers = headers,
-        data = data %>% toJSON(auto_unbox = T)
-      )
+    
+    df_call <- generate_url_reference()
+    
+    h <-
+      new_handle(verbose = F,
+                 useragent =  df_call$urlReferer) %>%
+      handle_setopt(copypostfields = data %>% toJSON(auto_unbox = T),
+                    customrequest = "POST") %>%
+      handle_setheaders(.list = headers %>% as.list()) 
+    
+    resp <-
+      curl_fetch_memory(url = url, handle = h)
     
     json_data <-
-      response$content %>%
+      resp$content %>%
+      rawToChar() %>% 
       fromJSON(flatten = T, simplifyVector = T)
-    
+  
     count <-
       json_data$properties_count
     
@@ -817,8 +902,8 @@ dictionary_search <-
   }
 
 #' Listing count
-#' 
-#' This function returns a summary of the 
+#'
+#' This function returns a summary of the
 #' number of total listings for your specified locations
 #' and parameters
 #'
@@ -870,7 +955,7 @@ dictionary_search <-
 #' "Bethesda, MD"),
 #'  is_new_construction = TRUE
 #'  )
-#'  
+#'
 #'  df_nc %>%
 #'  select(locationSearch, countListings)
 
@@ -1047,19 +1132,25 @@ listing_counts <-
         headers <-
           .generate_headers(generate_new_cookies = generate_new_cookies)
         
-        response  <-
-          Post(
-            url = "https://www.realtor.com/search_result.json",
-            headers = headers,
-            data = data %>% toJSON(auto_unbox = T)
-          )
+        df_call <- generate_url_reference()
+        
+        h <-
+          new_handle(verbose = F,
+                     useragent =  df_call$urlReferer) %>%
+          handle_setopt(copypostfields = data %>% toJSON(auto_unbox = T),
+                        customrequest = "POST") %>%
+          handle_setheaders(.list = headers %>% as.list())
+        
+        resp <-
+          curl_fetch_memory(url =  "https://www.realtor.com/search_result.json", handle = h)
         
         json_data <-
-          response$content %>%
+          resp$content %>%
+          rawToChar() %>%
           fromJSON(flatten = T, simplifyVector = T)
         
-        
-        data_properties <- json_data$results$property$items
+        data_properties <-
+          json_data$results$property$items
         
         all_data <-
           data_properties %>%
@@ -1068,6 +1159,7 @@ listing_counts <-
         
         all_data <-
           all_data %>%
+          select(-one_of("typeProperty")) %>%
           left_join(df_params %>% mutate(numberPage = as.numeric(numberPage))) %>%
           select(names(df_params), everything()) %>%
           suppressMessages()
@@ -1077,15 +1169,16 @@ listing_counts <-
     
     all_properties %>%
       select(-numberPage) %>%
-      distinct()
+      distinct() %>%
+      select(locationSearch, everything())
   }
 
 #' Mapped listing data
-#' 
-#' This function returns data 
+#'
+#' This function returns data
 #' from an API that maps the most
 #' pertient matches to a users input.
-#' 
+#'
 #' This function is faster than \code{listings}
 #' but returns less detailed information.
 #'
@@ -1127,24 +1220,24 @@ listing_counts <-
 #' @family listing search
 #' @family detailed search
 #' @export
-#' @examples 
+#' @examples
 #' ## New Construction Waterfront actual mapped listings
 #' library(dplyr)
 #' library(realtR)
 #' df_new_water <-
 #'  map_listings( locations = c("Miami Beach, FL", "Naples, FL"),
-#' features = "Waterfront", is_new_construction = TRUE ) 
-#' 
+#' features = "Waterfront", is_new_construction = TRUE )
+#'
 #' df_new_water %>%
-#' glimpse() 
-#' 
-#' df_new_water %>% 
-#' group_by(cityProperty, stateProperty, typeProperty) %>% 
+#' glimpse()
+#'
+#' df_new_water %>%
+#' group_by(cityProperty, stateProperty, typeProperty) %>%
 #' summarise( meanPSF = mean(priceListingPerSF, na.rm = T),
 #' meanPrice = mean(priceListing, na.rm = T), countListings = n()) %>%
 #' ungroup()
-#' 
-#' 
+#'
+#'
 map_listings <-
   function(locations = NULL,
            search_type = "city",
@@ -1177,7 +1270,7 @@ map_listings <-
     .get_location_listings_json_safe <-
       purrr::possibly(.get_location_listings_json, data_frame())
     
-    all_data <- 
+    all_data <-
       locations %>%
       map_df(function(location) {
         .get_location_listings_json(
@@ -1210,7 +1303,7 @@ map_listings <-
           generate_new_cookies = generate_new_cookies,
           only_open_houses = only_open_houses
         )
-      }) %>% 
+      }) %>%
       remove_na()
     
     all_data
@@ -1261,7 +1354,7 @@ map_listings <-
   function(generate_new_cookies = F) {
     df_call <- generate_url_reference()
     
-    df_headers <- 
+    df_headers <-
       .headers_search_json_base() %>%
       mutate(`user-agent` = df_call$userAgent)
     
@@ -1269,8 +1362,8 @@ map_listings <-
     
     if (generate_new_cookies) {
       new_cookie <- .generate_cookies()
-      df_headers <- 
-        df_headers %>% 
+      df_headers <-
+        df_headers %>%
         mutate(cookie = new_cookie)
     }
     df_headers
@@ -1393,13 +1486,23 @@ map_listings <-
         df_params <-
           .parse_data_parameters(data_param = data)
         
-        page  <-
-          Post(
-            url = url,
-            headers = headers,
-            data = data %>% toJSON(auto_unbox = T),
-            parse_html = T
-          )
+        df_call <- generate_url_reference()
+        
+        h <-
+          new_handle(verbose = F,
+                     useragent =  df_call$urlReferer) %>%
+          handle_setopt(copypostfields = data %>% toJSON(auto_unbox = T),
+                        customrequest = "POST") %>%
+          handle_setheaders(.list = headers %>% as.list()) 
+        
+        resp <-
+          curl_fetch_memory(url = url, handle = h)
+        content <- 
+          resp$content %>%
+          rawToChar()
+        
+        page <- 
+          .parse_content_to_page(content = content)
         
         fact_nodes <-
           page %>%

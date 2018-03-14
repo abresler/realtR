@@ -80,7 +80,7 @@ see \link{dictionary_property_types} for options}
 a \code{data_frame}
 }
 \description{
-This function returns a summary of the 
+This function returns a summary of the
 number of total listings for your specified locations
 and parameters
 }
@@ -94,7 +94,7 @@ locations = c("Miami Beach, FL", "SOMA, San Francisco, CA", 10013,
 "Bethesda, MD"),
  is_new_construction = TRUE
  )
- 
+
  df_nc \%>\%
  select(locationSearch, countListings)
 }

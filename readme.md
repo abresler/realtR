@@ -4,16 +4,8 @@ realtR
 ## Installation
 
 ``` r
-devtools::install_github("abresler/requestsR")
 devtools::install_github("abresler/realtR")
 ```
-
-## Requirements
-
-This package handles some complicated web request tasks and because of
-this in order to use this package you need a working version of Python,
-the requests module and my
-[requestsR](https://github.com/abresler/requestsR) package.
 
 ### realtR
 

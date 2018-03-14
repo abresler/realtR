@@ -11,7 +11,7 @@ a \code{data_frame}
 }
 \description{
 This function returns a dictionary
-of searchable property features.  These features 
+of searchable property features.  These features
 can be used as search parameters in the \link{count_listings}, \link{listings}, \link{listing_counts}
 and \link{map_listings} functions.
 }

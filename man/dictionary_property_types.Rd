@@ -10,7 +10,7 @@ dictionary_property_types()
 a \code{data_frame}
 }
 \description{
-Searchable property types 
+Searchable property types
 for isolating listings
 }
 \examples{

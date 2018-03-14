@@ -2,12 +2,14 @@
 
 .curl_page <-
   function(url) {
-    h <-
-      curl::new_handle(accept_encoding = NULL, verbose = F)
     df_call <- generate_url_reference()
     h <-
-      h %>%
-      curl::handle_setheaders("user-agent" = df_call$userAgent)
+      
+      curl::new_handle(
+        accept_encoding = NULL,
+        verbose = F,
+        useragent =  df_call$urlReferer
+      )
     
     page <-
       curl::curl(url, handle = h) %>%
@@ -22,13 +24,13 @@
 
 .curl_json <-
   function(url) {
-    h <-
-      curl::new_handle(accept_encoding = NULL, verbose = F)
     df_call <- generate_url_reference()
-    
     h <-
-      h %>%
-      curl::handle_setheaders("user-agent" = df_call$userAgent)
+      curl::new_handle(
+        accept_encoding = NULL,
+        verbose = F,
+        useragent =  df_call$urlReferer
+      )
     
     json_data <-
       curl::curl(url, handle = h) %>%
@@ -692,8 +694,8 @@ parse_location <-
 .parse_market_data_url <-
   function(url = "https://www.realtor.com/median_prices?city=Bethesda&state_code=MD") {
     data <-
-      url %>% 
-      .curl_json() %>% 
+      url %>%
+      .curl_json() %>%
       jsonlite::fromJSON(
         simplifyVector = T,
         simplifyDataFrame = T,
@@ -737,37 +739,16 @@ parse_location <-
 .parse_market_data_urls <-
   function(urls = "https://www.realtor.com/median_prices?city=Bethesda&state_code=MD",
            return_message = TRUE) {
-    df <-
-      data_frame()
-    
-    success <- function(res) {
-      url <-
-        res$url
-      
-      if (return_message) {
-        glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-          message()
-      }
-      .parse_market_data_url_safe <-
-        purrr::possibly(.parse_market_data_url , data_frame())
-      
-      all_data <-
-        .parse_market_data_url_safe(url = url)
-      
-      
-      df <<-
-        df %>%
-        bind_rows(all_data)
-    }
-    failure <- function(msg) {
-      data_frame()
-    }
+    .parse_market_data_url_safe <-
+      purrr::possibly(.parse_market_data_url, data_frame())
     urls %>%
-      map(function(x) {
-        curl_fetch_multi(url = x, success, failure)
+      map_df(function(url) {
+        if (return_message) {
+          glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+            message()
+        }
+        .parse_market_data_url_safe(url = url)
       })
-    multi_run()
-    df
   }
 
 #' Median market statistics
@@ -971,7 +952,7 @@ median_prices <-
 .parse_market_trend_url <-
   function(url = "https://www.realtor.com/local/markettrends/city/Marietta_GA") {
     json_data <-
-      .curl_json(url = url) %>% 
+      .curl_json(url = url) %>%
       jsonlite::fromJSON(flatten = T, simplifyDataFrame = T)
     
     df_geo <-
@@ -1049,45 +1030,27 @@ median_prices <-
       suppressMessages() %>%
       suppressWarnings()
     
+    closeAllConnections()
     data
     
     
   }
 
+
 .parse_market_trend_urls <-
   function(urls = "https://www.realtor.com/local/markettrends/city/Marietta_GA",
            return_message = TRUE) {
-    df <-
-      data_frame()
-    
-    success <- function(res) {
-      url <-
-        res$url
-      
-      if (return_message) {
-        glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-          message()
-      }
-      .parse_market_trend_url_safe <-
-        purrr::possibly(.parse_market_trend_url , data_frame())
-      
-      all_data <-
-        .parse_market_trend_url_safe(url = url)
-      
-      
-      df <<-
-        df %>%
-        bind_rows(all_data)
-    }
-    failure <- function(msg) {
-      data_frame()
-    }
+    .parse_market_trend_url_safe <-
+      purrr::possibly(.parse_market_trend_url, data_frame())
     urls %>%
-      map(function(x) {
-        curl_fetch_multi(url = x, success, failure)
+      map_df(function(url) {
+        if (return_message) {
+          glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+            message()
+        }
+        .parse_market_trend_url_safe(url = url)
       })
-    multi_run()
-    df
+    
   }
 
 #' Market trends
@@ -1124,7 +1087,7 @@ trends <-
       purrr::possibly(.generate_market_trend_urls, data_frame())
     
     df_urls <-
-      .generate_market_trend_urls_safe(locations = as.character(locations))
+      .generate_market_trend_urls(locations = as.character(locations))
     
     if (df_urls %>% nrow() == 0) {
       "No results" %>% message()
@@ -1135,13 +1098,11 @@ trends <-
       purrr::possibly(.parse_market_trend_urls, data_frame())
     
     all_data <-
-      .parse_market_trend_urls_safe(urls = df_urls$urlAPI, return_message = return_message)
+      .parse_market_trend_urls(urls = df_urls$urlAPI, return_message = return_message)
     
     all_data <-
       all_data %>%
-      left_join(df_urls %>% select(one_of(c(
-        "locationSearch", "urlAPI"
-      )))) %>%
+      left_join(df_urls, by = 'urlAPI') %>%
       dplyr::select(
         one_of(
           "dateData",
@@ -1193,7 +1154,7 @@ trends <-
   function(url = "https://www.realtor.com/validate_geo?location=Easton%2C+MD&retain_secondary_facets=true&include_zip=false&search_controller=Search%3A%3APropertiesController") {
     data <-
       url %>%
-      .curl_json() %>% 
+      .curl_json() %>%
       jsonlite::fromJSON(flatten = T, simplifyDataFrame = T) %>%
       flatten_df() %>%
       as_data_frame()
@@ -1230,37 +1191,16 @@ trends <-
 .parse_validation_urls <-
   function(urls = "https://www.realtor.com/validate_geo?location=Easton%2C+MD&retain_secondary_facets=true&include_zip=false&search_controller=Search%3A%3APropertiesController",
            return_message = TRUE) {
-    df <-
-      data_frame()
-    
-    success <- function(res) {
-      url <-
-        res$url
-      
-      if (return_message) {
-        glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-          message()
-      }
-      .parse_validation_url_safe <-
-        purrr::possibly(.parse_validation_url , data_frame())
-      
-      all_data <-
-        .parse_validation_url_safe(url = url)
-      
-      
-      df <<-
-        df %>%
-        bind_rows(all_data)
-    }
-    failure <- function(msg) {
-      data_frame()
-    }
+    .parse_validation_url_safe <-
+      purrr::possibly(.parse_validation_url, data_frame())
     urls %>%
-      map(function(x) {
-        curl_fetch_multi(url = x, success, failure)
+      map_df(function(url) {
+        if (return_message) {
+          glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+            message()
+        }
+        .parse_validation_url_safe(url = url)
       })
-    multi_run()
-    df
   }
 
 
@@ -1397,7 +1337,7 @@ validate_locations <-
   function(url = "https://www.realtor.com/home_page/vitality?location=Bethesda%2C+MD") {
     data <-
       url %>%
-      .curl_json() %>% 
+      .curl_json() %>%
       jsonlite::fromJSON(flatten = T, simplifyDataFrame = T)
     
     df_names <- dictionary_realtor_names()
@@ -1465,37 +1405,16 @@ validate_locations <-
 .parse_market_vitality_urls <-
   function(urls =  "https://www.realtor.com/home_page/vitality?location=Bethesda%2C+MD",
            return_message = T) {
-    df <-
-      data_frame()
-    
-    success <- function(res) {
-      url <-
-        res$url
-      
-      if (return_message) {
-        glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-          message()
-      }
-      .parse_market_vitality_url_safe <-
-        purrr::possibly(.parse_market_vitality_url , data_frame())
-      
-      all_data <-
-        .parse_market_vitality_url_safe(url = url)
-      
-      
-      df <<-
-        df %>%
-        bind_rows(all_data)
-    }
-    failure <- function(msg) {
-      data_frame()
-    }
+    .parse_market_vitality_url_safe <-
+      purrr::possibly(.parse_market_vitality_url, data_frame())
     urls %>%
-      map(function(x) {
-        curl_fetch_multi(url = x, success, failure)
+      map_df(function(url) {
+        if (return_message) {
+          glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+            message()
+        }
+        .parse_market_vitality_url_safe(url = url)
       })
-    multi_run()
-    df
   }
 
 
@@ -1612,8 +1531,10 @@ vitality <-
       left_join(df_urls %>% select(one_of(c(
         "locationSearch", "urlAPI"
       )))) %>%
+      mutate(dateData = Sys.Date()) %>%
       select(one_of(
         c(
+          "dateData",
           "locationSearch",
           "nameCity",
           "stateSearch",
@@ -1655,7 +1576,7 @@ generate_coordinate_slug <-
   function(url = "https://www.realtor.com/browse_modules/homes_near_street?postal_code=20816vis_id=6b0d44ae-f4d6-41f0-8feb-e6491ab43fe9&mcm_id=03714656198478469204855792545062287725&city=New+York&coordinates=40.74516%2C-73.97852") {
     data <-
       url %>%
-      .curl_json() %>% 
+      .curl_json() %>%
       jsonlite::fromJSON(
         simplifyVector = T,
         simplifyDataFrame = T,
@@ -1859,39 +1780,17 @@ generate_coordinate_slug <-
 .parse_search_pages <-
   function(urls = "https://www.realtor.com/realestateandhomes-search/Bethesda_MD/pg-10",
            return_message = TRUE) {
-    df <-
-      data_frame()
+    .parse_search_page_safe <-
+      purrr::possibly(.parse_search_page, data_frame())
     
-    success <- function(res) {
-      url <-
-        res$url
-      
-      if (return_message) {
-        glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-          message()
-      }
-      .parse_search_page_safe <-
-        purrr::possibly(.parse_search_page , data_frame())
-      
-      all_data <-
-        .parse_search_page_safe(url = url)
-      
-      
-      df <<-
-        df %>%
-        bind_rows(all_data)
-    }
-    failure <- function(msg) {
-      data_frame()
-    }
     urls %>%
-      map(function(x) {
-        curl_fetch_multi(url = x, success, failure)
+      map_df(function(url) {
+        if (return_message) {
+          glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+            message()
+        }
+        .parse_search_page_safe(url = url)
       })
-    multi_run()
-    closeAllConnections()
-    gc()
-    df
   }
 
 location_listings <-
@@ -2038,17 +1937,19 @@ table_listings <-
       .munge_realtor() %>%
       suppressMessages()
     
-    photo_urls <- page %>% html_nodes('#ldpPhotoshero img') %>% html_attr('data-src')
+    photo_urls <-
+      page %>% html_nodes('#ldpPhotoshero img') %>% html_attr('data-src')
     
     if (photo_urls %>% length() > 0) {
       photo_urls <- photo_urls[!photo_urls %>% is.na()]
-      photo_urls <- photo_urls[!photo_urls %>% str_detect("w60_h60")]
+      photo_urls <-
+        photo_urls[!photo_urls %>% str_detect("w60_h60")]
       
-      if (photo_urls %>% length() > 0){
-      data <- 
-        data %>% 
-        mutate(urlImage = photo_urls %>% sample(1),
-               dataPhotos = list(data_frame(urlPhotoProperty = photo_urls)))
+      if (photo_urls %>% length() > 0) {
+        data <-
+          data %>%
+          mutate(urlImage = photo_urls %>% sample(1),
+                 dataPhotos = list(data_frame(urlPhotoProperty = photo_urls)))
       }
     }
     
@@ -2092,7 +1993,7 @@ table_listings <-
     }
     
     other_agent <- page %>% html_nodes('#ldp-branding .font-bold')
-  
+    
     if (other_agent %>% length() > 0) {
       df_broker_1 <-
         1:length(other_agent) %>%
@@ -2107,7 +2008,7 @@ table_listings <-
             data_frame(item = attributes %>% names(),
                        id = attributes %>% as.character(),
                        value) %>%
-            mutate(idRow = x) %>% 
+            mutate(idRow = x) %>%
             filter(item == 'data-label')
           df
         }) %>%
@@ -2244,7 +2145,7 @@ table_listings <-
     
     
     
- 
+    
     if (feature_nodes %>% length() > 0 && include_features) {
       features <- feature_nodes %>% html_text()
       data <-
@@ -2339,20 +2240,22 @@ parse_listing_urls <-
            include_features = F,
            sleep_time = 1,
            return_message = TRUE) {
-    .parse_listing_url_safe <- 
+    .parse_listing_url_safe <-
       purrr::possibly(.parse_listing_url, data_frame())
-    all_data <- 
-      urls %>% 
-      map_df(function(url){
+    all_data <-
+      urls %>%
+      map_df(function(url) {
         if (return_message) {
-        glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-          message()
+          glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+            message()
         }
         .parse_listing_url_safe(url = url,
-                           include_features = include_features,
-                           sleep_time = sleep_time)
+                                include_features = include_features,
+                                sleep_time = sleep_time)
       })
     
-    all_data %>% 
+    all_data %>%
+      mutat(dateData = Sys.Date()) %>%
+      select(dateData, everything()) %>%
       .munge_realtor()
   }

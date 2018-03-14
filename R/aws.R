@@ -49,7 +49,7 @@ dictionary_geo_names <-
   function(url = "https://parser-external.geo.moveaws.com/suggest?input=Gre&limit=100&client_id=rdcV8&area_types=neighborhood%2Ccity%2Ccounty%2Cpostal_code%2Caddress%2Cbuilding%2Cstreet%2Cschool%2CFuck") {
     data <-
       url %>%
-      .curl_json() %>% 
+      .curl_json() %>%
       jsonlite::fromJSON(
         simplifyVector = T,
         simplifyDataFrame = T,
@@ -169,37 +169,17 @@ generate_geo_urls <-
 parse_geo_urls <-
   function(urls = "https://parser-external.geo.moveaws.com/suggest?input=bethesda&limit=100&client_id=rdcV8&area_types=neighborhood,city,county,postal_code,address",
            return_message = T) {
-    df <-
-      data_frame()
+    .parse_geo_query_safe <-
+      purrr::possibly(.parse_geo_query, data_frame())
     
-    success <- function(res) {
-      url <-
-        res$url
-      
-      if (return_message) {
-        glue::glue("Parsing {url}") %>%
-          message()
-      }
-      .parse_geo_query_safe <-
-        purrr::possibly(.parse_geo_query , data_frame())
-      
-      all_data <-
-        .parse_geo_query_safe(url = url)
-      
-      
-      df <<-
-        df %>%
-        bind_rows(all_data)
-    }
-    failure <- function(msg) {
-      data_frame()
-    }
     urls %>%
-      map(function(x) {
-        curl_fetch_multi(url = x, success, failure)
+      map_df(function(url) {
+        if (return_message) {
+          glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+            message()
+        }
+        .parse_geo_query_safe(url = url)
       })
-    multi_run()
-    df
   }
 
 #' Location geocoder
