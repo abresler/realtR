@@ -202,10 +202,10 @@ parse_geo_urls <-
     df
   }
 
-#' Geocodes location
+#' Location geocoder
 #'
 #' This function geocodes a users vector of locations
-#' an returns a \code{data_frame} with the results
+#' and returns a \code{data_frame} with the corresponding results
 #'
 #' @param locations vector of locations
 #' @param search_types  vector of search parameters options include \itemize{

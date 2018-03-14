@@ -1,0 +1,31 @@
+url: http://asbcllc.com/realtR/
+
+template:
+  params:
+    bootswatch: united
+
+home:
+  strip_header: true
+
+
+
+navbar:
+  left:
+  - text: ASBC LLC
+    href: http://asbcllc.com/
+  - text: "Examples and Tutorials"
+    menu:
+      - text: "Introduction to realtR"
+        href: http://rstudio-pubs-static.s3.amazonaws.com/212788_b319809622a942b4a760d307a4cfe636.html
+  - text: Reference
+    href: reference/index.html
+  right:
+  - icon: fa-github fa-lg
+    href: https://github.com/abresler/realtR
+  - icon: fa-twitter fa-lg
+    href: https://twitter.com/abresler
+  - icon: fa-linkedin fa-lg
+    href: https://www.linkedin.com/in/abresler
+  - icon: fa-dollar fa-lg
+    href: http://www.asbcllc.com/portfolio_investments
+

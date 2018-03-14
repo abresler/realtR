@@ -2,7 +2,7 @@
 % Please edit documentation in R/aws.R
 \name{geocode}
 \alias{geocode}
-\title{Geocodes location}
+\title{Location geocoder}
 \usage{
 geocode(locations = NULL, search_types = c("neighborhood", "city", "county",
   "postal_code", "address", "building", "street", "school"), limit = 100,
@@ -32,7 +32,7 @@ a \code{data_frame}
 }
 \description{
 This function geocodes a users vector of locations
-an returns a \code{data_frame} with the results
+and returns a \code{data_frame} with the corresponding results
 }
 \examples{
 geocode(locations = c("Palm Springs", "Bethesda", 10016), limit = 100)
