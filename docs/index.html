@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Toolkit to make property search suck less • realtR</title>
+<title>Real Estate's maxim gun • realtR</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/united/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
@@ -91,22 +91,17 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"abresler/requestsR"</span>)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"abresler/realtR"</span>)</a></code></pre></div>
-</div>
-<div id="requirements" class="section level2">
-<h2 class="hasAnchor">
-<a href="#requirements" class="anchor"></a>Requirements</h2>
-
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"abresler/realtR"</span>)</a></code></pre></div>
 <div id="realtr" class="section level3">
 <h3 class="hasAnchor">
 <a href="#realtr" class="anchor"></a>realtR</h3>
-<p>There are few service industries worse than the residential real estate brokerage industry.</p>
-<p>Industy actors generally are some of the most overpaid, dishonest, people you will come across. They generally hoard information, make-up information, aren’t held accountable and often time have no idea what is actually going in the market. They are a cartel and ensure regardless of what happens, if a transaction closes they get paid.</p>
+<p>There are few service industries worse than the real estate brokerage industry.</p>
+<p>Industy actors generally are some of the most overpaid, dishonest, people you will come across. They hoard information, lie, rarely are held accountable and often time have no what is truly going on. They are a wel organized political cartel who ensure regardless of what happens, they get paid all the while increasing the cost of housing.</p>
 <p>The consumer has a hard time educating themselves and can be at the mercy of these snake-oil salesmen.</p>
-<p>The time has come to change that and <code>realtR</code> goes a <strong>long</strong> way towards doing that by empowering anyone who knows a bit of R with API wrappers giving you access to nearly all of the available information on listings throughout the United States and much much more.</p>
-<p>In a few lines of code you will have as much or more information than brokers and you can use it however you chose but my intention is to help you hold your broker accountable.</p>
-<p>In addition to listing data the package provides users access to the most robust geocoding tool I have ever come across and a host of market information.</p>
+<p>The time has come to change this and <code>realtR</code> goes a <strong>long</strong> way towards doing that by empowering anyone who knows a bit of R with access to nearly all of the available information on listings throughout the United States and much much more.</p>
+<p>In a few lines of code you will have as much, or more information than brokers.</p>
+<p>In addition to listing data the package provides users access to the most robust geocoding tool I’ve come across a host of current and historic meta-level market information and much, much more.</p>
+<p>Have fun with this tool and please use it to further the cause transparency and accountability in and an industry devoid of it.</p>
 </div>
 </div>
 <div id="functions" class="section level2">
@@ -114,29 +109,31 @@
 <a href="#functions" class="anchor"></a>Functions</h2>
 <ul>
 <li>
-<code><a href="reference/geocode.html">geocode()</a></code> : Batch geocoding tool</li>
+<code><a href="reference/geocode.html">geocode()</a></code> : Batch geocoder</li>
 <li>
-<code><a href="reference/listing_counts.html">listing_counts()</a></code> :</li>
+<code><a href="reference/listing_counts.html">listing_counts()</a></code> : Area summary listings</li>
 <li>
-<code><a href="reference/listings.html">listings()</a></code> :</li>
+<code><a href="reference/listings.html">listings()</a></code> : Area detailed listings</li>
 <li>
-<code><a href="reference/vitality.html">vitality()</a></code> :</li>
+<code><a href="reference/vitality.html">vitality()</a></code> : Area market vitality</li>
 <li>
-<code><a href="reference/trends.html">trends()</a></code> :</li>
+<code><a href="reference/trends.html">trends()</a></code> : Area historic trends</li>
 <li>
-<code><a href="reference/map_listings.html">map_listings()</a></code> :</li>
+<code><a href="reference/map_listings.html">map_listings()</a></code> : Area properties featured on seach maps</li>
 <li>
-<code><a href="reference/median_prices.html">median_prices()</a></code> :</li>
+<code><a href="reference/median_prices.html">median_prices()</a></code> : Area median prices</li>
 <li>
-<code>market_trends()</code> :</li>
+<code>mortgage_rates()</code> : Current mortgage rates</li>
 </ul>
 </div>
 <div id="dictionaries" class="section level2">
 <h2 class="hasAnchor">
 <a href="#dictionaries" class="anchor"></a>Dictionaries</h2>
 <ul>
-<li><code><a href="reference/dictionary_property_types.html">dictionary_property_types()</a></code></li>
-<li><code><a href="reference/dictionary_listing_features.html">dictionary_listing_features()</a></code></li>
+<li>
+<code><a href="reference/dictionary_property_types.html">dictionary_property_types()</a></code> : Searchable property types</li>
+<li>
+<code><a href="reference/dictionary_listing_features.html">dictionary_listing_features()</a></code> : Searchable property features</li>
 </ul>
 </div>
 </div>
@@ -149,10 +146,6 @@
 <h2>Developers</h2>
 <ul class="list-unstyled">
 <li>Alex Bresler <br><small class="roles"> Author, maintainer </small> </li>
-</ul>
-<h2>Dev status</h2>
-<ul class="list-unstyled">
-<li><a href="https://github.com/abresler/requestsR">requestsR</a></li>
 </ul>
 </div>
 
