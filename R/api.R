@@ -1096,7 +1096,10 @@ trends <-
     
     all_data <-
       all_data %>%
-      left_join(df_urls, by = 'urlAPI') %>%
+      select(-one_of(c(
+        "stateSearch", "citySearch", "zipcodeSearch"
+      ))) %>%
+      left_join(df_urls) %>%
       dplyr::select(
         one_of(
           "dateData",
