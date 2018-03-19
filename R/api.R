@@ -536,8 +536,8 @@ mortage_rates <-
           'pct15YearFixed',
           'pct5OneARM',
           'pct20YearFixed',
-          'pct30YeaFixedFHA',
           'pct30YearFixedFHA',
+          'pct30YearFixedVA',
           'pct10YearFixed',
           'pct7OneARM'
         ),
