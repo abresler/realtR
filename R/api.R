@@ -17,8 +17,6 @@
       str_c(collapse = "") %>%
       xml2::read_html()
     
-    closeAllConnections()
-    
     page
   }
 
@@ -35,9 +33,7 @@
     json_data <-
       curl::curl(url, handle = h) %>%
       readr::read_lines()
-    
-    closeAllConnections()
-    json_data
+        json_data
     
   }
 
@@ -1029,9 +1025,7 @@ median_prices <-
       )), everything()) %>%
       suppressMessages() %>%
       suppressWarnings()
-    
-    closeAllConnections()
-    data
+        data
     
     
   }
