@@ -1211,6 +1211,16 @@ trends <-
         str_trim() %>%
         parse_location()
       
+      
+      if (df_loc_slug %>% tibble::has_name("streetOrNeighborhoodSearch")) {
+        street_slug <- 
+          df_loc_slug$streetOrNeighborhoodSearch %>% 
+          str_replace_all("\\ ", "%20")
+        street_slug <- street_slug %>% str_c("_")
+      } else {
+        street_slug <- ''
+      }
+      
       city <-
         df_loc_slug$citySearch
       
@@ -1225,7 +1235,7 @@ trends <-
       }
       
       location_slug <-
-        glue::glue("{city_slug}_{state}")
+        glue::glue("{street_slug}{city_slug}_{state}")
       
       url <-
         glue::glue(
