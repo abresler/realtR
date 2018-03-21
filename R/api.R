@@ -1675,7 +1675,9 @@ property_near <-
 #' @export
 #'
 #' @examples
-#' locations <-  c("2449 Tracy Place, NW, Washington DC", )
+#' locations <-  c("2449 Tracy Place, NW, Washington DC", "Sunset Island, Miami Beach, FL" )
+#' properties_near(locations = locations)
+
 properties_near <-
   function(locations = NULL,
            return_message = TRUE) {
