@@ -1978,6 +1978,7 @@ table_listings <-
   function(url = "https://www.realtor.com/realestateandhomes-detail/5301-Westbard-Cir-Apt-323_Bethesda_MD_20816_M63437-59115",
            include_features = T,
            sleep_time = NULL) {
+    options(warn = 0)
     page <-
       .curl_page(url = url)
     
@@ -2003,7 +2004,8 @@ table_listings <-
             fact_node %>% html_nodes("div") %>% html_text()
           if (x %in%  c(3, 5)) {
             value <-
-              readr::parse_number(div_text[[2]])
+              readr::parse_number(div_text[[2]]) %>% 
+              suppressWarnings()
           }
         }
         
@@ -2137,7 +2139,8 @@ table_listings <-
         html_nodes('.neighborhood-local-item p') %>% 
         html_text() %>% 
         readr::parse_number() %>% 
-        suppressMessages()
+        suppressMessages() %>% 
+        suppressWarnings()
     
       if (length(hood_details) >= 2 && length(hood_stats) == 4) {
         df_hood <- 
@@ -2581,7 +2584,8 @@ parse_listing_urls <-
         }
         .parse_listing_url_safe(url = url,
                                 include_features = include_features,
-                                sleep_time = sleep_time)
+                                sleep_time = sleep_time) %>% 
+          suppressWarnings()
       })
     
     all_data %>%
