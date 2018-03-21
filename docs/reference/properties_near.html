@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • realtR</title>
+<title>Properties near a location — properties_near • realtR</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -37,7 +37,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -105,124 +105,52 @@
       </header>
 
       <div class="row">
-  <div class="col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>
-        Reference
-        <small>version&nbsp;0.10104</small>
-      </h1>
+    <h1>Properties near a location</h1>
     </div>
 
-    <div class="contents">
-      <table class="ref-index">
+    
+    <p>This function returns 50
+properties near a specified location.</p>
+    
 
-      <colgroup>
-        <col class="alias" />
-        <col class="title" />
-      </colgroup>
+    <pre class="usage"><span class='fu'>properties_near</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>return_message</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>locations</th>
+      <td><p>a vector of locations</p></td>
+    </tr>
+    <tr>
+      <th>return_message</th>
+      <td><p>if <code>TRUE</code> retuns a message</p></td>
+    </tr>
+    </table>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-      <tbody>
-        <tr>
-          <th colspan="2">
-            <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-            <p class="section-desc"></p>
-          </th>
-        </tr>
-        <tr>
-          <!--  -->
-          <td>
-            <p><code><a href="dictionary_listing_features.html">dictionary_listing_features</a></code> </p>
-          </td>
-          <td><p>Property feature dictionary</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="dictionary_property_types.html">dictionary_property_types</a></code> </p>
-          </td>
-          <td><p>Property type dictionary</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="geocode.html">geocode</a></code> </p>
-          </td>
-          <td><p>Location geocoder</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="listing_counts.html">listing_counts</a></code> </p>
-          </td>
-          <td><p>Listing count</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="listings.html">listings</a></code> </p>
-          </td>
-          <td><p>MLS listing data</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="map_listings.html">map_listings</a></code> </p>
-          </td>
-          <td><p>Mapped listing data</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="median_prices.html">median_prices</a></code> </p>
-          </td>
-          <td><p>Median market statistics</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="mortage_rates.html">mortage_rates</a></code> </p>
-          </td>
-          <td><p>Motgage Rates</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="parse_listing_urls.html">parse_listing_urls</a></code> </p>
-          </td>
-          <td><p>Parse listing urls</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="properties_near.html">properties_near</a></code> </p>
-          </td>
-          <td><p>Properties near a location</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="realtoR.html">realtoR</a></code> </p>
-          </td>
-          <td><p>realtR</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="table_listings.html">table_listings</a></code> </p>
-          </td>
-          <td><p>Property listing table</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="trends.html">trends</a></code> </p>
-          </td>
-          <td><p>Market trends</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="vitality.html">vitality</a></code> </p>
-          </td>
-          <td><p>Market vitality</p></td>
-        </tr>
-      </tbody>
-      </table>
-    </div>
+    <p>The location can be an exact address, zipcode
+city or a neighborhood.</p>
+    
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><span class='co'># NOT RUN {</span>
+<span class='no'>locations</span> <span class='kw'>&lt;-</span>  <span class='fu'>c</span>(<span class='st'>"2449 Tracy Place, NW, Washington DC"</span>, )
+<span class='co'># }</span></pre>
   </div>
-
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+      
+      <li><a href="#details">Details</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
     </ul>
+
   </div>
 </div>
 

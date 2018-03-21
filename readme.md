@@ -42,8 +42,9 @@ transparency and accountability in and an industry devoid of it.
   - `listing_counts()` : Area summary listings
   - `listings()` : Area detailed listings
   - `vitality()` : Area market vitality
+  - `properties_near()` : Listings near a location
   - `trends()` : Area historic trends
-  - `map_listings()` : Area properties featured on seach maps
+  - `map_listings()` : Featured listings from a map
   - `median_prices()` : Area median prices
   - `mortgage_rates()` : Current mortgage rates
 
