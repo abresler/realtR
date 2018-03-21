@@ -52,3 +52,9 @@ transparency and accountability in and an industry devoid of it.
 
   - `dictionary_property_types()` : Searchable property types
   - `dictionary_listing_features()` : Searchable property features
+
+## Tools
+
+  - `summarise_broker_bullshit()` : Takes a long-winded broker
+    description of a property and summarises into `n` sentences using
+    the [PageRank](https://en.wikipedia.org/wiki/PageRank) algorithm

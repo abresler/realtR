@@ -55,7 +55,8 @@
       data <-
         data %>%
         mutate_at(num_names,
-                  funs(. %>% readr::parse_number()))
+                  funs(. %>% readr::parse_number())) %>% 
+        suppressWarnings() %>% suppressMessages()
       
     }
     
@@ -1375,7 +1376,7 @@ validate_locations <-
              everything()) %>%
       remove_na() %>%
       select(-one_of("slugLDP")) %>%
-      suppressMessages()
+      suppressWarnings() %>% suppressMessages()
     
     data <-
       data[c(
@@ -1710,7 +1711,7 @@ properties_near <-
     str_trim() %>%
     readr::parse_number() %>%
     max(na.rm = T) %>%
-    suppressWarnings()
+    suppressWarnings() %>% suppressMessages()
 }
 
 .generate_search_urls <-
@@ -2115,7 +2116,8 @@ table_listings <-
     listing <-
       page %>% html_nodes('#ldp-pricewrap span') %>% html_text()
     if (listing %>% length() > 0) {
-      listing <- listing %>% readr::parse_number() %>% suppressWarnings()
+      listing <- listing %>% readr::parse_number() %>% 
+        suppressWarnings() %>% suppressMessages()
       listing <- listing[!listing %>% is.na()]
       data <-
         data %>%
@@ -2316,7 +2318,9 @@ table_listings <-
             property_meta[[x]] %>% html_attrs()
           
           value <-
-            property_meta[x] %>% html_text() %>% as.character() %>% readr::parse_number() %>% as.character()
+            property_meta[x] %>% html_text() %>% as.character() %>% readr::parse_number() %>%
+            suppressWarnings() %>% suppressMessages() %>% 
+            as.character()
           
           df <-
             data_frame(item = attributes %>% names(),
@@ -2372,7 +2376,7 @@ table_listings <-
         mutate(numberListing = 1:n()) %>%
         select(-idEvent) %>%
         select(numberListing, everything()) %>% 
-        suppressWarnings()
+        suppressWarnings() %>% suppressMessages()
       
       data <- 
         data %>% 
@@ -2406,7 +2410,8 @@ table_listings <-
         suppressMessages()
       
       area_sf <-
-        page %>% html_nodes('.col-sm-1') %>% html_text() %>% readr::parse_number() %>% suppressWarnings()
+        page %>% html_nodes('.col-sm-1') %>% html_text() %>% readr::parse_number() %>%
+        suppressWarnings() %>% suppressMessages()
       
       
       df_comps <-
@@ -2416,7 +2421,8 @@ table_listings <-
       
       if (area_sf %>% length()-1 == nrow(df_comps)) {
         area_sf <-
-          area_sf[2:length(area_sf)] %>% readr::parse_number() %>% suppressWarnings()
+          area_sf[2:length(area_sf)] %>% readr::parse_number() %>% 
+          suppressWarnings() %>% suppressMessages()
         
         df_comps <- 
           df_comps %>% 
@@ -2444,7 +2450,7 @@ table_listings <-
           select(numberProperty, item, value) %>%
           ungroup() %>%
           mutate(value = value %>% readr::parse_number()) %>%
-          suppressWarnings() %>%
+          suppressWarnings() %>% suppressMessages() %>% 
           spread(item, value)
         
         df_comps <-
@@ -2471,7 +2477,8 @@ table_listings <-
       lot_nodes <- page %>% html_nodes(".hidden-xxs.col-sm-2") %>% html_text()
       
       if (length(lot_nodes) - 1 == nrow(df_comps)) {
-        lots <- lot_nodes[2:length(lot_nodes)] %>% readr::parse_number() %>% suppressMessages()
+        lots <- lot_nodes[2:length(lot_nodes)] %>% readr::parse_number() %>% 
+          suppressWarnings() %>% suppressMessages()
         df_comps <- 
           df_comps %>% 
           mutate(areaLotSF = lots)
@@ -2488,7 +2495,8 @@ table_listings <-
     
     if (taxes %>% length > 0) {
       tax_data <- 
-        page %>% html_nodes("#ldp-history-taxes td") %>% html_text() %>% readr::parse_number()
+        page %>% html_nodes("#ldp-history-taxes td") %>% html_text() %>% readr::parse_number() %>% 
+        suppressWarnings() %>% suppressMessages()
       
       times <-
         length(tax_data) %/% 3

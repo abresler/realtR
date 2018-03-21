@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Properties near a location — properties_near • realtR</title>
+<title>Clean Broker Bull Shit — summarise_broker_bullshit • realtR</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -107,48 +107,58 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Properties near a location</h1>
+    <h1>Clean Broker Bull Shit</h1>
     </div>
 
     
-    <p>This function returns 50
-properties near a specified location.</p>
+    <p>This function takes a 
+vector descriptions and cleans
+them into a concise sentence or 
+sentences</p>
     
 
-    <pre class="usage"><span class='fu'>properties_near</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>return_message</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>summarise_broker_bullshit</span>(<span class='no'>descriptions</span>, <span class='no'>tagger</span>, <span class='kw'>sentences</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>return_message</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>locations</th>
-      <td><p>a vector of locations</p></td>
+      <th>descriptions</th>
+      <td><p>vector of descriptions</p></td>
+    </tr>
+    <tr>
+      <th>tagger</th>
+      <td><p>a udpipe object - this is the english dictionary on your computer from the udpipe package</p></td>
+    </tr>
+    <tr>
+      <th>sentences</th>
+      <td><p>number of sentences to whittle down to</p></td>
     </tr>
     <tr>
       <th>return_message</th>
-      <td><p>if <code>TRUE</code> retuns a message</p></td>
+      <td><p>if <code>TRUE</code> returns messages</p></td>
     </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>The location can be an exact address, zipcode
-city or a neighborhood.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='no'>locations</span> <span class='kw'>&lt;-</span>  <span class='fu'>c</span>(<span class='st'>"2449 Tracy Place, NW, Washington DC"</span>, <span class='st'>"Sunset Island, Miami Beach, FL"</span> )
-<span class='fu'>properties_near</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='no'>locations</span>)
+<span class='no'>broker_bs</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"This Tashmoo Woods End-Unit Condo Is Simply A Step Above The Rest. The Light And Bright Living Room Has Soaring Cathedral Ceilings, Fireplace, Hardwood Floors And French Doors That Open To A Deck. Eat-In Kitchen W/Newer Appliances And An Abundance Of Cabinets. Dining Area Off Of Living Room. A Den And Full Bath Finish The 1St Floor. The Second Level Features 2 Spacious Bedrooms With En Suites. The Master Has A Tiled Bath With Jacuzzi Tub, Double Vanity And Shower. One Of The Unique Features Of This Unit Is The Full, Partially Finished, Walkout Basement. Just Out The Front Door Is An Outdoor Shower, Storage Area And Detached Garage. Enormous Deck. Central Ac. Dehumidification System. Conveniently Located To All Of The Association Amenities Which Include A Swimming Pool W/Pool House, Wifi &amp; Lounge Chairs, Tennis Courts, Playground, Basketball Court, Private Beach On The Vineyard Sound And A Small Dock On Lake Tashmoo.easy Access To Town, Ferries, Golf &amp; More."</span>)
+<span class='fu'>library</span>(<span class='no'>textrank</span>)
+<span class='fu'>library</span>(<span class='no'>udpipe</span>)
+<span class='no'>tagger</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/udpipe/topics/udpipe_load_model'>udpipe_load_model</a></span>(<span class='kw'>file</span> <span class='kw'>=</span> <span class='no'>path_to_model</span>)
+<span class='fu'>summarise_broker_bullshit</span>(<span class='kw'>descriptions</span> <span class='kw'>=</span> <span class='no'>broker_bs</span>, <span class='kw'>tagger</span> <span class='kw'>=</span> <span class='no'>tagger</span>, <span class='kw'>sentences</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>return_message</span> <span class='kw'>=</span> <span class='no'>T</span>)
+
+
+
 <span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#details">Details</a></li>
-      
+            
       <li><a href="#examples">Examples</a></li>
     </ul>
 
