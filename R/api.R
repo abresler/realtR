@@ -508,7 +508,7 @@ dictionary_realtor_names <-
 
 # https://www.realtor.com/mrtg_handler/get_trends_data
 
-#' Motgage Rates
+#' Mortgage Rates
 #'
 #' Returns a variety of
 #' interest rates for various
@@ -520,8 +520,8 @@ dictionary_realtor_names <-
 #' @export
 #' @family interest rates
 #' @examples
-#' mortage_rates(return_wide = F)
-mortage_rates <-
+#' mortgage_rates(return_wide = F)
+mortgage_rates <-
   function(return_wide = F) {
     data <-
       "https://www.realtor.com/mrtg_handler/get_trends_data" %>%
@@ -2478,6 +2478,31 @@ table_listings <-
                countComps = dataComps %>% map_dbl(nrow))
     }
     
+    taxes <- page %>% html_nodes("#ldp-history-taxes .content-indent")
+    
+    
+    if (taxes %>% length > 0) {
+      tax_data <- 
+        page %>% html_nodes("#ldp-history-taxes td") %>% html_text() %>% readr::parse_number()
+      
+      times <-
+        length(tax_data) %/% 3
+      items <- 
+        rep(c("yearTaxes", "amountTaxes", "amountTaxableValue"), times)
+      
+      df_taxes <- data_frame(item = items, value = tax_data) %>%
+        group_by(item) %>%
+        mutate(idEvent = 1:n()) %>%
+        ungroup() %>%
+        spread(item, value) %>%
+        select(yearTaxes, amountTaxes, amountTaxableValue)
+      
+      data <-
+        data %>% 
+        mutate(dataTaxes = list(df_taxes))
+    }
+    
+    
     schools <-
       page %>% html_nodes("#load-more-schools")
     
@@ -2558,7 +2583,7 @@ parse_listing_urls <-
       })
     
     all_data %>%
-      mutat(dateData = Sys.Date()) %>%
+      mutate(dateData = Sys.Date()) %>%
       select(dateData, everything()) %>%
       .munge_realtor()
   }
