@@ -2603,10 +2603,51 @@ parse_listing_urls <-
           suppressWarnings()
       })
     
-    all_data %>%
+    all_data <- 
+      all_data %>%
       mutate(dateData = Sys.Date()) %>%
       select(dateData, everything()) %>%
       .munge_realtor()
+    
+    all_data <- df_15_random
+    
+    if (all_data %>% tibble::has_name("dataComps")) {
+      all_data <- 
+        all_data %>% 
+        mutate(hasComps = dataComps %>% map_dbl(length) > 0)
+    }
+    
+    if (all_data %>% tibble::has_name("dataTaxes")) {
+      all_data <- 
+        all_data %>% 
+        mutate(hasTaxes = dataTaxes %>% map_dbl(length) > 0)
+    }
+    
+    if (all_data %>% tibble::has_name("dataPhotos")) {
+      all_data <- 
+        all_data %>% 
+        mutate(hasPhotos = dataPhotos %>% map_dbl(length) > 0)
+    }
+    
+    if (all_data %>% tibble::has_name("dataSchool")) {
+      all_data <- 
+        all_data %>% 
+        mutate(hasSchools = dataSchool %>% map_dbl(length) > 0)
+    }
+    
+    if (all_data %>% tibble::has_name("dataNeighborhood")) {
+      all_data <- 
+        all_data %>% 
+        mutate(hasNeighborhood = dataNeighborhood %>% map_dbl(length) > 0)
+    }
+    
+    if (all_data %>% tibble::has_name("dataListingHistory")) {
+      all_data <- 
+        all_data %>% 
+        mutate(hasListingHistory = dataListingHistory %>% map_dbl(length) > 0)
+    }
+    
+    all_data
   }
 
 
