@@ -2036,7 +2036,8 @@ table_listings <-
         data <-
           data %>%
           mutate(urlImage = photo_urls %>% sample(1),
-                 dataPhotos = list(data_frame(urlPhotoProperty = photo_urls)))
+                 dataPhotos = list(data_frame(urlPhotoProperty = photo_urls)),
+                 countPhotos = dataPhotos %>% map_dbl(nrow))
       }
     }
     
@@ -2289,11 +2290,13 @@ table_listings <-
         select(-id) %>%
         suppressMessages()
     }
+    
     if (feature_nodes %>% length() > 0 && include_features) {
       features <- feature_nodes %>% html_text()
+      df_features <- data_frame(descriptionFeature = features)
       data <-
         data %>%
-        mutate(listFeatures = list(features))
+        mutate(dataFeatures = list(df_features))
     }
     
     url_vr <-
@@ -2490,12 +2493,16 @@ table_listings <-
                countComps = dataComps %>% map_dbl(nrow))
     }
     
-    taxes <- page %>% html_nodes("#ldp-history-taxes .content-indent")
+    taxes <-
+      page %>% 
+      html_nodes("#ldp-history-taxes td") %>% html_text() %>% readr::parse_number() %>% 
+      suppressWarnings() %>% suppressMessages()
     
     
     if (taxes %>% length > 0) {
       tax_data <- 
-        page %>% html_nodes("#ldp-history-taxes td") %>% html_text() %>% readr::parse_number() %>% 
+        page %>% 
+        html_nodes("#ldp-history-taxes td") %>% html_text() %>% readr::parse_number() %>% 
         suppressWarnings() %>% suppressMessages()
       
       times <-
@@ -2517,7 +2524,7 @@ table_listings <-
     
     
     schools <-
-      page %>% html_nodes("#load-more-schools")
+      page %>% html_nodes('#load-more-schools td') %>% html_text() %>% str_trim()
     
     if (schools %>% length() > 0) {
       value <-
