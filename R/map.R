@@ -1875,6 +1875,14 @@ listings <-
         )
       })
     
-    all_data %>%
-      remove_columns()
+    all_data <- 
+      all_data %>%
+      remove_columns() %>% 
+      group_by(urlListing) %>% 
+      mutate(idListing = 1:n()) %>% 
+      filter(idListing == min(idListing)) %>% 
+      ungroup() %>% 
+      select(-idListing)
+    
+    all_data
   }
