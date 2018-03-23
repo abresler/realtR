@@ -46,15 +46,6 @@
 dictionary_property_types <-
   function() {
     data_frame(
-      slugType = c(
-        "single-family-home",
-        "condo-townhome-row-home-co-op",
-        "condo-townhome-row-home-co-op",
-        "multi-family-home",
-        "mfd-mobile-home",
-        "farms-ranches",
-        "land"
-      ),
       nameType = c(
         "House",
         "Condo",
@@ -63,6 +54,15 @@ dictionary_property_types <-
         "Mobile Home",
         "Farm",
         "Land"
+      ),
+      slugType = c(
+        "single-family-home",
+        "condo-townhome-row-home-co-op",
+        "condo-townhome-row-home-co-op",
+        "multi-family-home",
+        "mfd-mobile-home",
+        "farms-ranches",
+        "land"
       )
     )
   }
