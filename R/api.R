@@ -1141,6 +1141,14 @@ trends <-
         gather(metric, value, -gather_cols, na.rm = T)
     }
     
+    if (locations %>% str_to_lower() %>% str_detect("county")) {
+      if (all_data %>% tibble::has_name("citySearch")) {
+        all_data <- 
+          all_data %>% 
+          rename(cityCountySearch = citySearch)
+      }
+    }
+    
     all_data %>%
       remove_columns()
     
