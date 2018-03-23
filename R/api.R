@@ -1141,7 +1141,7 @@ trends <-
         gather(metric, value, -gather_cols, na.rm = T)
     }
     
-    if (locations %>% str_to_lower() %>% str_detect("county")) {
+    if (locations %>% str_to_lower() %>% str_detect("county") %>% sum(na.rm = T) >= 1) {
       if (all_data %>% tibble::has_name("citySearch")) {
         all_data <- 
           all_data %>% 
@@ -2226,6 +2226,8 @@ table_listings <-
     if (broker_name_contact %>% length() > 0) {
       values <-
         broker_name_contact  %>% html_text() %>% str_trim()
+      
+      values <- values[!values %>% str_to_lower() == "by"]
       
       df_agent <-
         1:length(broker_name_contact) %>%
