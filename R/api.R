@@ -2655,6 +2655,13 @@ parse_listing_urls <-
         mutate(hasListingHistory = dataListingHistory %>% map_dbl(length) > 0)
     }
     
+    if (all_data %>% tibble::has_name("nameAgent")) {
+      all_data <- 
+        all_data %>% 
+        mutate(nameAgent = nameAgent %>% str_replace_all("\\, Agent|\\, Broker", "") %>% str_trim() %>% 
+                 str_to_upper())
+    }
+    
     all_data
   }
 
