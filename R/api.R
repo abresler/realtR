@@ -2617,8 +2617,6 @@ parse_listing_urls <-
       select(dateData, everything()) %>%
       .munge_realtor()
     
-    all_data <- df_15_random
-    
     if (all_data %>% tibble::has_name("dataComps")) {
       all_data <- 
         all_data %>% 
