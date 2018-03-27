@@ -1372,7 +1372,7 @@ map_listings <-
 
 
 .get_location_listings <-
-  function(location_name = 10016,
+  function(location_name = 94123,
            search_type = "city",
            city_isolated = NULL,
            county_isolated = NULL,
@@ -1397,7 +1397,7 @@ map_listings <-
            age_max = NULL,
            days_on_market = NULL,
            pending = NULL,
-           is_new_construction =  NULL,
+           is_new_construction =  T,
            generate_new_cookies = T,
            include_pending_contingency = TRUE) {
     df_count <-
@@ -1717,13 +1717,15 @@ map_listings <-
       })
     
     df_count_merge <-
-      df_count %>% select(-one_of(
+      df_count %>%
+      select(-one_of(
         c(
           "cityProperty",
           "urlListing",
           "countListings",
           "numberPage",
-          "typeProperty"
+          "typeProperty",
+          "zipcodeProperty"
         )
       ))
     
@@ -1841,10 +1843,10 @@ listings <-
                       data_frame())
     
     all_data <-
-      locations %>%
+      locations %>% 
       map_df(function(location) {
         .get_location_listings_safe(
-          location_name = location,
+          location_name = as.character(location),
           search_type = search_type,
           city_isolated = city_isolated,
           county_isolated = county_isolated,
@@ -1873,7 +1875,8 @@ listings <-
           features = features,
           only_open_houses = only_open_houses
         )
-      })
+      }) %>% 
+      suppressWarnings()
     
     all_data <- 
       all_data %>%

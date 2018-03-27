@@ -46,6 +46,8 @@ transparency and accountability in and an industry devoid of it.
   - `trends()` : Area historic trends
   - `map_listings()` : Featured listings from a map
   - `median_prices()` : Area median prices
+  - `parse_listing_urls()` : Parses out all information from a listing
+    url
   - `mortgage_rates()` : Current mortgage rates
 
 ## Dictionaries
