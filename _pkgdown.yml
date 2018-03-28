@@ -16,7 +16,7 @@ navbar:
   - text: "Examples and Tutorials"
     menu:
       - text: "Introduction to realtR"
-        href: http://rstudio-pubs-static.s3.amazonaws.com/212788_b319809622a942b4a760d307a4cfe636.html
+        href: http://asbcllc.com/r_packages/realtR/2018/introduction/index.html
   - text: Reference
     href: reference/index.html
   right:

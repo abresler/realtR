@@ -9,32 +9,32 @@ devtools::install_github("abresler/realtR")
 
 ### realtR
 
-There are few service industries worse than the real estate brokerage
-industry.
+There are few service industries worse than residential real estate
+brokerage industry.
 
-Industy actors generally are some of the most overpaid, dishonest,
-people you will come across. They hoard information, lie, rarely are
-held accountable and often time have no what is truly going on. They are
-a wel organized political cartel who ensure regardless of what happens,
-they get paid all the while increasing the cost of housing.
+Industry actors are some of the most overpaid, dishonest, people you
+will encounter.
+
+They hoard information, lie, are rarely held accountable for anything
+they do. They are a well organized political cartel who ensure
+regardless of what happens, they get paid a sizable chunk of the overall
+proceeds from a transaction.
 
 The consumer has a hard time educating themselves and can be at the
 mercy of these snake-oil salesmen.
 
-The time has come to change this and `realtR` goes a **long** way
-towards doing that by empowering anyone who knows a bit of R with access
-to nearly all of the available information on listings throughout the
-United States and much much more.
+The time has come to change for and `realtR` goes a **long** way towards
+doing this.
 
-In a few lines of code you will have as much, or more information than
-brokers.
+Anyone with a bit of R skills now has easy functional access to property
+information for every location in the United States.
 
-In addition to listing data the package provides users access to the
-most robust geocoding tool I’ve come across a host of current and
-historic meta-level market information and much, much more.
+With a few lines of R code you will have access to at-least as much, and
+in most cases, \<<strong>MORE</strong> information than brokers.
 
-Have fun with this tool and please use it to further the cause
-transparency and accountability in and an industry devoid of it.
+You can take a look at a bit of what the package does in
+\<<a href="http://asbcllc.com/r_packages/realtR/2018/introduction/index.html" title="intro" target="_blank">this
+introductory tutorial</a>.
 
 ## Functions
 
@@ -46,17 +46,16 @@ transparency and accountability in and an industry devoid of it.
   - `trends()` : Area historic trends
   - `map_listings()` : Featured listings from a map
   - `median_prices()` : Area median prices
-  - `parse_listing_urls()` : Parses out all information from a listing
-    url
-  - `mortgage_rates()` : Current mortgage rates
+  - `parse_listing_urls()` : Detailed property listing information
+  - `mortgage_rates()` : Rolling 30 day mortgage rates by product
 
 ## Dictionaries
 
-  - `dictionary_property_types()` : Searchable property types
-  - `dictionary_listing_features()` : Searchable property features
+  - `dictionary_property_types()` : Search-able property types
+  - `dictionary_listing_features()` : Search-able property features
 
-## Tools
+## Fun Tools
 
-  - `summarise_broker_bullshit()` : Takes a long-winded broker
-    description of a property and summarises into `n` sentences using
-    the [PageRank](https://en.wikipedia.org/wiki/PageRank) algorithm
+  - `summarise_broker_bullshit()` : Summarizes a long-winded broker
+    property description into `n` sentences using the
+    [PageRank](https://en.wikipedia.org/wiki/PageRank) algorithm
