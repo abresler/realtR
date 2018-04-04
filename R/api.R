@@ -1642,7 +1642,10 @@ property_near <-
            return_message = T) {
     df_loc <-
       geocode(locations = location,
-              return_message = return_message) %>% dplyr::slice(1)
+              return_message = return_message) %>%
+      filter(!is.na(latitudeLocation))    %>%
+      dplyr::slice(1) %>%
+      remove_na()
     
     url <-
       .generate_near_url(latitude = df_loc$latitudeLocation,
@@ -1663,7 +1666,7 @@ property_near <-
       suppressMessages() %>%
       .munge_realtor()
     
-    data$urlListing <- 
+    data$urlListing <-
       data$urlListing %>% str_replace_all("https://www.realtor.com//", "https://www.realtor.com/")
     
     data
@@ -1678,7 +1681,7 @@ property_near <-
 #' city or a neighborhood.
 #'
 #' @param locations a vector of locations
-#' @param return_message if \code{TRUE} retuns a message
+#' @param return_message if \code{TRUE} returns a message
 #'
 #' @return
 #' @export
@@ -1943,7 +1946,7 @@ location_listings <-
 #' unless \link{listings()} does not work for your search.
 #'
 #' @param locations vector of table listings
-#' @param include_features if \code{TRUE} includes property featues from pages
+#' @param include_features if \code{TRUE} includes property features from pages
 #' @param radius if not \code{NULL} additional search radius
 #' @param parse_property_details if \code{TRUE}
 #' @param return_message if \code{TRUE} returns messages

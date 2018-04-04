@@ -57,7 +57,7 @@ see \link{dictionary_property_types} for options}
 
 \item{sqft_min}{if not \code{NULL} minimum square footage}
 
-\item{sqft_max}{if not \code{NULL} maximum square footbge}
+\item{sqft_max}{if not \code{NULL} maximum square footage}
 
 \item{acre_min}{if not \code{NULL} minimum acres}
 
@@ -71,7 +71,7 @@ see \link{dictionary_property_types} for options}
 
 \item{pending}{if \code{TRUE} include pending}
 
-\item{is_new_construction}{if \code{TRUE} isolates to new constructioon}
+\item{is_new_construction}{if \code{TRUE} isolates to new construction}
 
 \item{generate_new_cookies}{generate new cookies}
 

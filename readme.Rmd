@@ -51,3 +51,5 @@ You can take a look at a bit of what the package does in <a href="http://asbcllc
 ## Fun Tools
 
 * `summarise_broker_bullshit()` : Summarizes a long-winded broker property description into `n` sentences using the [PageRank](https://en.wikipedia.org/wiki/PageRank) algorithm
+
+[![Travis build status](https://travis-ci.org/abresler/realtR.svg?branch=master)](https://travis-ci.org/abresler/realtR)

@@ -59,3 +59,6 @@ introductory tutorial</a>.
   - `summarise_broker_bullshit()` : Summarizes a long-winded broker
     property description into `n` sentences using the
     [PageRank](https://en.wikipedia.org/wiki/PageRank) algorithm
+
+[![Travis build
+status](https://travis-ci.org/abresler/realtR.svg?branch=master)](https://travis-ci.org/abresler/realtR)

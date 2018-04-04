@@ -10,7 +10,7 @@ table_listings(locations, include_features = F, radius = NULL,
 \arguments{
 \item{locations}{vector of table listings}
 
-\item{include_features}{if \code{TRUE} includes property featues from pages}
+\item{include_features}{if \code{TRUE} includes property features from pages}
 
 \item{radius}{if not \code{NULL} additional search radius}
 

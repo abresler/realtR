@@ -9,7 +9,7 @@ properties_near(locations = NULL, return_message = TRUE)
 \arguments{
 \item{locations}{a vector of locations}
 
-\item{return_message}{if \code{TRUE} retuns a message}
+\item{return_message}{if \code{TRUE} returns a message}
 }
 \description{
 This function returns 50

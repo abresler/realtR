@@ -19,7 +19,12 @@ dictionary_geo_names <-
         "full_address",
         "prop_status",
         "street",
-        "mpr_id"
+        "mpr_id",
+        "street_number",
+        "street_name",
+        "street_suffix",
+        "street_dir",
+        "street_post_dir"
       ),
       nameActual =  c(
         "typeArea",
@@ -39,7 +44,12 @@ dictionary_geo_names <-
         "nameAddress",
         "statusProperty",
         "nameStreet",
-        "idMPR"
+        "idMPR",
+        "numberStreet",
+        "nameStreetAbbr",
+        "suffixStreet",
+        "directionStreet",
+        "directionStreetPost"
       )
     )
   }
@@ -239,5 +249,6 @@ geocode <-
       suppressMessages()
     
     all_data %>%
+      mutate_all(funs(ifelse(. == "", NA, .))) %>% 
       remove_columns()
   }

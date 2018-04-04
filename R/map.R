@@ -929,14 +929,14 @@ dictionary_search <-
 #' @param price_min if not \code{NULL} minimum price
 #' @param price_max if not \code{NULL} maximum price
 #' @param sqft_min if not \code{NULL} minimum square footage
-#' @param sqft_max if not \code{NULL} maximum square footbge
+#' @param sqft_max if not \code{NULL} maximum square footage
 #' @param acre_min if not \code{NULL} minimum acres
 #' @param acre_max if not \code{NULL} maximum acres
 #' @param age_min if not \code{NULL} minimum age
 #' @param age_max if not \code{NULL} maximum age
 #' @param days_on_market if not \code{NULL} count of days on market
 #' @param pending if \code{TRUE} include pending
-#' @param is_new_construction if \code{TRUE} isolates to new constructioon
+#' @param is_new_construction if \code{TRUE} isolates to new construction
 #' @param include_pending_contingency if \code{TRUE} also includes pending and contingent sales
 #' @param only_open_houses if \code{TRUE} isolates open houses
 #' #'
@@ -1177,7 +1177,7 @@ listing_counts <-
 #'
 #' This function returns data
 #' from an API that maps the most
-#' pertient matches to a users input.
+#' pertinent matches to a users input.
 #'
 #' This function is faster than \code{listings}
 #' but returns less detailed information.
@@ -1204,14 +1204,14 @@ listing_counts <-
 #' @param price_min if not \code{NULL} minimum price
 #' @param price_max if not \code{NULL} maximum price
 #' @param sqft_min if not \code{NULL} minimum square footage
-#' @param sqft_max if not \code{NULL} maximum square footbge
+#' @param sqft_max if not \code{NULL} maximum square footage
 #' @param acre_min if not \code{NULL} minimum acres
 #' @param acre_max if not \code{NULL} maximum acres
 #' @param age_min if not \code{NULL} minimum age
 #' @param age_max if not \code{NULL} maximum age
 #' @param days_on_market if not \code{NULL} count of days on market
 #' @param pending if \code{TRUE} include pending
-#' @param is_new_construction if \code{TRUE} isolates to new constructioon
+#' @param is_new_construction if \code{TRUE} isolates to new construction
 #' @param include_pending_contingency if \code{TRUE} also includes pending and contingent sales
 #' @param only_open_houses if \code{TRUE} isolates open houses
 #' @param generate_new_cookies generate new cookies
@@ -1775,14 +1775,14 @@ map_listings <-
 #' @param price_min if not \code{NULL} minimum price
 #' @param price_max if not \code{NULL} maximum price
 #' @param sqft_min if not \code{NULL} minimum square footage
-#' @param sqft_max if not \code{NULL} maximum square footbge
+#' @param sqft_max if not \code{NULL} maximum square footage
 #' @param acre_min if not \code{NULL} minimum acres
 #' @param acre_max if not \code{NULL} maximum acres
 #' @param age_min if not \code{NULL} minimum age
 #' @param age_max if not \code{NULL} maximum age
 #' @param days_on_market if not \code{NULL} count of days on market
 #' @param pending if \code{TRUE} include pending
-#' @param is_new_construction if \code{TRUE} isolates to new constructioon
+#' @param is_new_construction if \code{TRUE} isolates to new construction
 #' @param include_pending_contingency if \code{TRUE} also includes pending and contingent sales
 #' @param only_open_houses if \code{TRUE} isolates open houses
 #' @param generate_new_cookies generate new cookies
