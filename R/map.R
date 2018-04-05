@@ -639,7 +639,8 @@ dictionary_search <-
            is_new_construction =  NULL,
            include_pending_contingency = TRUE) {
     options(scipen = 99999)
-    location_name <- as.character(location_name)
+    location_name <- 
+      as.character(location_name)
     
     data <-
       .data_base()
@@ -823,41 +824,46 @@ dictionary_search <-
            is_new_construction =  NULL,
            include_pending_contingency = TRUE,
            generate_new_cookies = F) {
+    
+    if (location_name %>% str_to_lower() %>% str_detect("county")) {
+      search_type <- "county"
+    }
+    
     url <- "https://www.realtor.com/search_result_count"
     headers =
       .generate_headers(generate_new_cookies = generate_new_cookies)
     
-      data <-
-        .generate_data(
-          location_name = location_name,
-          search_type = search_type,
-          page = 1,
-          city_isolated = city_isolated,
-          county_isolated = county_isolated,
-          zipcode_isolated = zipcode_isolated,
-          state_isolated = state_isolated,
-          only_open_houses = only_open_houses,
-          street_isolated = street_isolated,
-          neighborhood_isolated = neighborhood_isolated,
-          beds_min = beds_min,
-          beds_max = beds_max,
-          baths_min = baths_min ,
-          baths_max = baths_max,
-          price_min = price_min,
-          price_max = price_max,
-          features = features,
-          property_type = property_type,
-          sqft_min = sqft_min,
-          sqft_max = sqft_max,
-          acre_min = acre_min,
-          acre_max = acre_max,
-          age_min = age_min,
-          age_max = age_max,
-          days_on_market = days_on_market,
-          pending = pending,
-          is_new_construction = is_new_construction,
-          include_pending_contingency = include_pending_contingency
-        )
+    data <-
+      .generate_data(
+        location_name = location_name,
+        search_type = search_type,
+        page = 1,
+        city_isolated = city_isolated,
+        county_isolated = county_isolated,
+        zipcode_isolated = zipcode_isolated,
+        state_isolated = state_isolated,
+        only_open_houses = only_open_houses,
+        street_isolated = street_isolated,
+        neighborhood_isolated = neighborhood_isolated,
+        beds_min = beds_min,
+        beds_max = beds_max,
+        baths_min = baths_min ,
+        baths_max = baths_max,
+        price_min = price_min,
+        price_max = price_max,
+        features = features,
+        property_type = property_type,
+        sqft_min = sqft_min,
+        sqft_max = sqft_max,
+        acre_min = acre_min,
+        acre_max = acre_max,
+        age_min = age_min,
+        age_max = age_max,
+        days_on_market = days_on_market,
+        pending = pending,
+        is_new_construction = is_new_construction,
+        include_pending_contingency = include_pending_contingency
+      )
       
     df_params <-
       .parse_data_parameters(data_param = data)
@@ -1083,6 +1089,7 @@ listing_counts <-
         features = features,
         only_open_houses = only_open_houses
       )
+    
     
     pages <-
       df_count$countListings %/% 50
@@ -1400,22 +1407,28 @@ map_listings <-
            is_new_construction =  T,
            generate_new_cookies = T,
            include_pending_contingency = TRUE) {
+    if (location_name %>% str_to_lower() %>% str_detect("county")) {
+      search_type <- "county"
+    }
+    listing_counts.safe <- purrr::possibly(listing_counts, data_frame())
     df_count <-
-      .get_location_counts(
-        location_name = location_name,
+      listing_counts.safe(
+        locations = location_name,
         search_type = search_type,
-        city_isolated = city_isolated,
+        features = features,
+        city_isolated = city_isolated ,
         county_isolated = county_isolated,
         zipcode_isolated = zipcode_isolated,
-        state_isolated = state_isolated,
+        state_isolated = state_isolated ,
         street_isolated = street_isolated,
         neighborhood_isolated = neighborhood_isolated,
         beds_min = beds_min,
-        beds_max = beds_max,
-        baths_min = baths_min ,
+        beds_max = beds_max ,
+        baths_min = baths_min,
         baths_max = baths_max,
-        price_min = price_min,
+        price_min = price_min ,
         price_max = price_max,
+        only_open_houses = only_open_houses,
         property_type = property_type,
         sqft_min = sqft_min,
         sqft_max = sqft_max,
@@ -1424,14 +1437,14 @@ map_listings <-
         age_min = age_min,
         age_max = age_max,
         days_on_market = days_on_market,
+        generate_new_cookies = generate_new_cookies,
         pending = pending,
         is_new_construction = is_new_construction,
-        include_pending_contingency = include_pending_contingency,
-        features = features,
-        generate_new_cookies = generate_new_cookies,
-        only_open_houses = only_open_houses
+        include_pending_contingency = include_pending_contingency
       )
-    
+    if (df_count %>% nrow() == 0) {
+      return(invisible())
+    }
     pages <-
       df_count$countListings %/% 50
     
@@ -1442,7 +1455,7 @@ map_listings <-
     
     all_properties <-
       1:pages %>%
-      map_df(function(page_no) {
+      map_df(purrr::possibly(function(page_no) {
         glue::glue("Parsing page {page_no} of {pages} for location {location_name}") %>% message()
         
         if (page_no == 1) {
@@ -1493,15 +1506,16 @@ map_listings <-
                      useragent =  df_call$urlReferer) %>%
           handle_setopt(copypostfields = data %>% toJSON(auto_unbox = T),
                         customrequest = "POST") %>%
-          handle_setheaders(.list = headers %>% as.list()) 
+          handle_setheaders(.list = headers %>% as.list())
         
         resp <-
           curl_fetch_memory(url = url, handle = h)
-        content <- 
+        
+        content <-
           resp$content %>%
           rawToChar()
         
-        page <- 
+        page <-
           .parse_content_to_page(content = content)
         
         fact_nodes <-
@@ -1695,7 +1709,7 @@ map_listings <-
             
           })
         
-        data_prop <-
+        df_prop <-
           data_prop %>%
           left_join(dictionary_css_page() %>% rename(name = id)) %>%
           select(numberListing, nameActual, value) %>%
@@ -1713,8 +1727,8 @@ map_listings <-
           suppressMessages() %>%
           mutate(numberPage = page_no) %>%
           select(numberPage, everything())
-        data_prop
-      })
+        df_prop
+      }, data_frame()))
     
     df_count_merge <-
       df_count %>%

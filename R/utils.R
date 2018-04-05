@@ -63,7 +63,7 @@ generate_url_reference <-
       sample(1)
     
     tl_domain <-
-      c('.com', '.gov', '.org', '.mil', '.co') %>%
+      c('.com', '.gov', '.org') %>%
       sample(1)
     
     word_length <-
