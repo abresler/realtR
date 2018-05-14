@@ -23,5 +23,3 @@ Other listing search: \code{\link{dictionary_listing_features}},
   \code{\link{listing_counts}}, \code{\link{listings}},
   \code{\link{map_listings}}
 }
-\concept{dictionary}
-\concept{listing search}

@@ -1,4 +1,4 @@
-# gdeltr2::load_needed_packages(c("jsonlite", "purrr", "tidyr", "glue", "stringr", "curl", "dplyr", "rvest", 'lubridate', "requestsR"))
+# gdeltr2::load_needed_packages(c("jsonlite", "purrr", "tidyr", "glue", "stringr", "curl", "dplyr", "rvest", 'lubridate', "requestsR", "stringi"))
 
 .curl_page <-
   function(url) {
@@ -2589,7 +2589,7 @@ table_listings <-
 #'
 #' @param urls vector of urls
 #' @param include_features if \code{TRUE} includes features
-#' @param return_message if \code{TRUE} returns a message
+#' @param return_message if \code{TRUE} returns a message - default \code{FALSE}
 #' @param sleep_time sleep time in between url
 #'
 #' @return a \code{data_frame}
@@ -2663,6 +2663,12 @@ parse_listing_urls <-
         all_data %>% 
         mutate(nameAgent = nameAgent %>% str_replace_all("\\, Agent|\\, Broker", "") %>% str_trim() %>% 
                  str_to_upper())
+    }
+    
+    if (all_data %>% tibble::has_name("statusListing")) {
+      all_data <- 
+        all_data %>% 
+        mutate(statusListingDetail =  statusListing)
     }
     
     all_data

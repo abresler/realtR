@@ -37,4 +37,3 @@ and returns a \code{data_frame} with the corresponding results
 \examples{
 geocode(locations = c("Palm Springs", "Bethesda", 10016), limit = 100)
 }
-\concept{geocoder}

@@ -25,6 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Clean Broker Bull Shit — summarise_broker_bullshit" />
 
 <meta property="og:description" content="This function takes a 
@@ -43,8 +46,6 @@ sentences" />
 <![endif]-->
 
 
-
-
   </head>
 
   <body>
@@ -60,7 +61,7 @@ sentences" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">realtR</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1010603</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.101061</span>
       </span>
     </div>
 
@@ -120,19 +121,22 @@ sentences" />
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Clean Broker Bull Shit</h1>
     
+    <div class="hidden name"><code>summarise_broker_bullshit.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>This function takes a 
 vector descriptions and cleans
 them into a concise sentence or 
 sentences</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>summarise_broker_bullshit</span>(<span class='no'>descriptions</span>, <span class='no'>tagger</span>, <span class='kw'>sentences</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='kw'>return_message</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
@@ -160,16 +164,14 @@ sentences</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
+    <pre class="examples"><div class='input'>
 <span class='no'>broker_bs</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"This Tashmoo Woods End-Unit Condo Is Simply A Step Above The Rest. The Light And Bright Living Room Has Soaring Cathedral Ceilings, Fireplace, Hardwood Floors And French Doors That Open To A Deck. Eat-In Kitchen W/Newer Appliances And An Abundance Of Cabinets. Dining Area Off Of Living Room. A Den And Full Bath Finish The 1St Floor. The Second Level Features 2 Spacious Bedrooms With En Suites. The Master Has A Tiled Bath With Jacuzzi Tub, Double Vanity And Shower. One Of The Unique Features Of This Unit Is The Full, Partially Finished, Walkout Basement. Just Out The Front Door Is An Outdoor Shower, Storage Area And Detached Garage. Enormous Deck. Central Ac. Dehumidification System. Conveniently Located To All Of The Association Amenities Which Include A Swimming Pool W/Pool House, Wifi &amp; Lounge Chairs, Tennis Courts, Playground, Basketball Court, Private Beach On The Vineyard Sound And A Small Dock On Lake Tashmoo.easy Access To Town, Ferries, Golf &amp; More."</span>)
 <span class='fu'>library</span>(<span class='no'>textrank</span>)
 <span class='fu'>library</span>(<span class='no'>udpipe</span>)
-<span class='no'>tagger</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/udpipe/topics/udpipe_load_model'>udpipe_load_model</a></span>(<span class='kw'>file</span> <span class='kw'>=</span> <span class='no'>path_to_model</span>)
-<span class='fu'>summarise_broker_bullshit</span>(<span class='kw'>descriptions</span> <span class='kw'>=</span> <span class='no'>broker_bs</span>, <span class='kw'>tagger</span> <span class='kw'>=</span> <span class='no'>tagger</span>, <span class='kw'>sentences</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>return_message</span> <span class='kw'>=</span> <span class='no'>T</span>)
+<span class='no'>tagger</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/udpipe/topics/udpipe_load_model'>udpipe_load_model</a></span>(<span class='kw'>file</span> <span class='kw'>=</span> <span class='no'>path_to_model</span>)</div><div class='output co'>#&gt; <span class='error'>Error in path.expand(file): object 'path_to_model' not found</span></div><div class='input'><span class='fu'>summarise_broker_bullshit</span>(<span class='kw'>descriptions</span> <span class='kw'>=</span> <span class='no'>broker_bs</span>, <span class='kw'>tagger</span> <span class='kw'>=</span> <span class='no'>tagger</span>, <span class='kw'>sentences</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>return_message</span> <span class='kw'>=</span> <span class='no'>T</span>)</div><div class='output co'>#&gt; <span class='error'>Error in udpipe_annotate(object = tagger, x = text): object 'tagger' not found</span></div><div class='input'>
 
 
-
-<span class='co'># }</span></pre>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

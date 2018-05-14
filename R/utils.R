@@ -164,3 +164,59 @@ parse_css_name <-
     }
     data_frame(nameActual = actual_name, value)
   }
+
+
+#' Join meta level listing data and detailed listing data
+#'
+#' @param data_listings \code{data_frame} from \code{listings} function
+#' @param data_detailed_listings \code{data_frame} from \code{parse_listing_urls}
+#'
+#' @return a \code{data_frame}
+#' @export
+#'
+#' @examples
+join_listing_data <- 
+  function(data_listings, data_detailed_listings) {
+    data <- 
+      data_detailed_listings %>%
+      select(-one_of(
+        c(
+          "statusListing",
+          "urlImage",
+          "addressProperty",
+          "cityProperty",
+          "stateProperty",
+          "zipcodeProperty",
+          "priceListing",
+          "areaPropertySF",
+          "countBaths",
+          "countBeds",
+          "sizeLotAcres",
+          "nameBrokerage",
+          "pricePerSFListing"
+        )
+      )) %>%
+      left_join(data_listings) %>% 
+      suppressMessages()
+    
+    data <-
+      data %>%
+      mutate(idRow = 1:n()) %>%
+      left_join(
+        data_detailed_listings %>%
+          mutate(idRow = 1:n()) %>%
+          filter(hasPhotos) %>%
+          dplyr::select(idRow, dataPhotos) %>%
+          unnest() %>%
+          group_by(idRow) %>%
+          sample_n(1) %>%
+          ungroup()
+      ) %>%
+      select(-idRow) %>%
+      suppressMessages()
+    data <-
+      data %>% 
+      mutate(urlImage = case_when(is.na(urlImage) ~ urlPhotoProperty,
+                                  TRUE ~ urlImage))
+    data
+  }

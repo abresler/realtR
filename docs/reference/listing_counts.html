@@ -25,6 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Listing count — listing_counts" />
 
 <meta property="og:description" content="This function returns a summary of the
@@ -42,8 +45,6 @@ and parameters" />
 <![endif]-->
 
 
-
-
   </head>
 
   <body>
@@ -59,7 +60,7 @@ and parameters" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">realtR</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1010603</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.101061</span>
       </span>
     </div>
 
@@ -119,18 +120,21 @@ and parameters" />
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Listing count</h1>
     
+    <div class="hidden name"><code>listing_counts.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>This function returns a summary of the
 number of total listings for your specified locations
 and parameters</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>listing_counts</span>(<span class='no'>locations</span>, <span class='kw'>search_type</span> <span class='kw'>=</span> <span class='st'>"city"</span>, <span class='kw'>features</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>city_isolated</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>county_isolated</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>zipcode_isolated</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
@@ -268,26 +272,37 @@ see <a href='dictionary_property_types.html'>dictionary_property_types</a> for o
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p>Other listing search: <code><a href='dictionary_listing_features.html'>dictionary_listing_features</a></code>,
+    <div class='dont-index'><p>Other listing search: <code><a href='dictionary_listing_features.html'>dictionary_listing_features</a></code>,
   <code><a href='dictionary_property_types.html'>dictionary_property_types</a></code>,
-  <code><a href='listings.html'>listings</a></code>, <code><a href='map_listings.html'>map_listings</a></code></p>
+  <code><a href='listings.html'>listings</a></code>, <code><a href='map_listings.html'>map_listings</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'>library</span>(<span class='no'>dplyr</span>)
-<span class='fu'>library</span>(<span class='no'>realtR</span>)
+    <pre class="examples"><div class='input'><span class='fu'>library</span>(<span class='no'>dplyr</span>)</div><div class='output co'>#&gt; <span class='message'></span>
+#&gt; <span class='message'>Attaching package: ‘dplyr’</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:realtR’:</span>
+#&gt; <span class='message'></span>
+#&gt; <span class='message'>    intersect, setdiff, union</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:testthat’:</span>
+#&gt; <span class='message'></span>
+#&gt; <span class='message'>    matches</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:stats’:</span>
+#&gt; <span class='message'></span>
+#&gt; <span class='message'>    filter, lag</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:base’:</span>
+#&gt; <span class='message'></span>
+#&gt; <span class='message'>    intersect, setdiff, setequal, union</span></div><div class='input'><span class='fu'>library</span>(<span class='no'>realtR</span>)
 <span class='co'>## New Construction in selected markets</span>
 <span class='no'>df_nc</span> <span class='kw'>&lt;-</span>
 <span class='fu'>listing_counts</span>(
 <span class='kw'>locations</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Miami Beach, FL"</span>, <span class='st'>"SOMA, San Francisco, CA"</span>, <span class='fl'>10013</span>,
 <span class='st'>"Bethesda, MD"</span>),
  <span class='kw'>is_new_construction</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
- )
-
+ )</div><div class='output co'>#&gt; <span class='message'>Parsing validate_geo?location=Miami%20Beach_FL&amp;retain_secondary_facets=true&amp;include_zip=false&amp;search_controller=Search%3A%3APropertiesController</span></div><div class='output co'>#&gt; <span class='message'>Missing school</span></div><div class='output co'>#&gt; <span class='message'>Parsing validate_geo?location=SOMA_San%20Francisco_CA&amp;retain_secondary_facets=true&amp;include_zip=false&amp;search_controller=Search%3A%3APropertiesController</span></div><div class='output co'>#&gt; <span class='message'>Missing school</span></div><div class='output co'>#&gt; <span class='message'>Parsing validate_geo?location=10013&amp;retain_secondary_facets=true&amp;include_zip=false&amp;search_controller=Search%3A%3APropertiesController</span></div><div class='output co'>#&gt; <span class='message'>Parsing validate_geo?location=Bethesda_MD&amp;retain_secondary_facets=true&amp;include_zip=false&amp;search_controller=Search%3A%3APropertiesController</span></div><div class='input'>
  <span class='no'>df_nc</span> <span class='kw'>%&gt;%</span>
- <span class='fu'><a href='http://dplyr.tidyverse.org/reference/select.html'>select</a></span>(<span class='no'>locationSearch</span>, <span class='no'>countListings</span>)
-<span class='co'># }</span></pre>
+ <span class='fu'><a href='http://dplyr.tidyverse.org/reference/select.html'>select</a></span>(<span class='no'>locationSearch</span>, <span class='no'>countListings</span>)</div><div class='output co'>#&gt; # A tibble: 4 x 2
+#&gt;   locationSearch          countListings
+#&gt;   &lt;chr&gt;                           &lt;int&gt;
+#&gt; 1 Miami Beach, FL                   123
+#&gt; 2 SOMA, San Francisco, CA           113
+#&gt; 3 10013                              21
+#&gt; 4 Bethesda, MD                      130</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

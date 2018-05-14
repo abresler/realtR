@@ -103,5 +103,3 @@ Other listing search: \code{\link{dictionary_listing_features}},
   \code{\link{dictionary_property_types}},
   \code{\link{listings}}, \code{\link{map_listings}}
 }
-\concept{listing search}
-\concept{summary search}

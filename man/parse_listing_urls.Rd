@@ -14,7 +14,7 @@ parse_listing_urls(urls = NULL, include_features = F, sleep_time = 1,
 
 \item{sleep_time}{sleep time in between url}
 
-\item{return_message}{if \code{TRUE} returns a message}
+\item{return_message}{if \code{TRUE} returns a message - default \code{FALSE}}
 }
 \value{
 a \code{data_frame}

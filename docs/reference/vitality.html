@@ -25,6 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Market vitality — vitality" />
 
 <meta property="og:description" content="Acquires meta level information
@@ -42,8 +45,6 @@ most recent time period" />
 <![endif]-->
 
 
-
-
   </head>
 
   <body>
@@ -59,7 +60,7 @@ most recent time period" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">realtR</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1010603</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.101061</span>
       </span>
     </div>
 
@@ -119,18 +120,21 @@ most recent time period" />
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Market vitality</h1>
     
+    <div class="hidden name"><code>vitality.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Acquires meta level information
 for specified locations as of the
 most recent time period</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>vitality</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>return_message</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
     
@@ -158,9 +162,15 @@ a city name and a comma ie "Brooklyn, NY" or a zipcode</p></td>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'>vitality</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"La Jolla, CA"</span>, <span class='st'>"Manhattan, NY"</span>, <span class='st'>"Bethany, DE"</span>, <span class='st'>"10016"</span>))
-<span class='co'># }</span></pre>
+    <pre class="examples"><div class='input'><span class='fu'>vitality</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"La Jolla, CA"</span>, <span class='st'>"Manhattan, NY"</span>, <span class='st'>"Bethany, DE"</span>, <span class='st'>"10016"</span>))</div><div class='output co'>#&gt; <span class='message'>Parsing home_page/vitality?location=La%20Jolla%20CA</span></div><div class='output co'>#&gt; <span class='message'>Parsing home_page/vitality?location=Manhattan%20NY</span></div><div class='output co'>#&gt; <span class='message'>Parsing home_page/vitality?location=Bethany%20DE</span></div><div class='output co'>#&gt; <span class='message'>Parsing home_page/vitality?location=10016</span></div><div class='output co'>#&gt; # A tibble: 4 x 9
+#&gt;   dateData   locationSearch countForSale countNewListings countOpenHouse
+#&gt;   &lt;date&gt;     &lt;chr&gt;                 &lt;int&gt;            &lt;int&gt;          &lt;int&gt;
+#&gt; 1 2018-05-14 La Jolla, CA            277               58             16
+#&gt; 2 2018-05-14 Manhattan, NY         10270             1065            590
+#&gt; 3 2018-05-14 Bethany, DE             212               18              4
+#&gt; 4 2018-05-14 10016                   622               54             32
+#&gt; # ... with 4 more variables: countSoldRecently &lt;int&gt;, countForeclosures &lt;int&gt;,
+#&gt; #   countPriceReduced &lt;int&gt;, dataListingsRecent &lt;list&gt;</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

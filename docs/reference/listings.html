@@ -25,6 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="MLS listing data — listings" />
 
 <meta property="og:description" content="Returns MLS data for
@@ -39,8 +42,6 @@ specified locations and parameters" />
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
-
-
 
 
   </head>
@@ -58,7 +59,7 @@ specified locations and parameters" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">realtR</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1010603</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.101061</span>
       </span>
     </div>
 
@@ -118,17 +119,20 @@ specified locations and parameters" />
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>MLS listing data</h1>
     
+    <div class="hidden name"><code>listings.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Returns MLS data for
 specified locations and parameters</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>listings</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>search_type</span> <span class='kw'>=</span> <span class='st'>"city"</span>, <span class='kw'>city_isolated</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>county_isolated</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>zipcode_isolated</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>state_isolated</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
@@ -269,14 +273,13 @@ see <a href='dictionary_property_types.html'>dictionary_property_types</a> for o
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p>Other listing search: <code><a href='dictionary_listing_features.html'>dictionary_listing_features</a></code>,
+    <div class='dont-index'><p>Other listing search: <code><a href='dictionary_listing_features.html'>dictionary_listing_features</a></code>,
   <code><a href='dictionary_property_types.html'>dictionary_property_types</a></code>,
-  <code><a href='listing_counts.html'>listing_counts</a></code>, <code><a href='map_listings.html'>map_listings</a></code></p>
+  <code><a href='listing_counts.html'>listing_counts</a></code>, <code><a href='map_listings.html'>map_listings</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'>library</span>(<span class='no'>realtR</span>)
+    <pre class="examples"><div class='input'><span class='fu'>library</span>(<span class='no'>realtR</span>)
  <span class='fu'>library</span>(<span class='no'>dplyr</span>)
  <span class='no'>df_big_ass_houses_with_pools</span> <span class='kw'>&lt;-</span>
  <span class='fu'>listings</span>(
@@ -290,8 +293,7 @@ see <a href='dictionary_property_types.html'>dictionary_property_types</a> for o
  <span class='kw'>beds_min</span> <span class='kw'>=</span> <span class='fl'>4</span>,
  <span class='kw'>features</span> <span class='kw'>=</span> <span class='st'>'Swimming Pool'</span>,
  <span class='kw'>sqft_min</span> <span class='kw'>=</span> <span class='fl'>3000</span>
- )
-<span class='co'># }</span></pre>
+ )</div><div class='output co'>#&gt; <span class='message'>Parsing validate_geo?location=Buckhead_Atlanta_GA&amp;retain_secondary_facets=true&amp;include_zip=false&amp;search_controller=Search%3A%3APropertiesController</span></div><div class='output co'>#&gt; <span class='message'>Parsing page 1 of 2 for location Buckhead, Atlanta, GA</span></div><div class='output co'>#&gt; <span class='message'>Parsing page 2 of 2 for location Buckhead, Atlanta, GA</span></div><div class='output co'>#&gt; <span class='message'>Parsing validate_geo?location=90210&amp;retain_secondary_facets=true&amp;include_zip=false&amp;search_controller=Search%3A%3APropertiesController</span></div><div class='output co'>#&gt; <span class='message'>Parsing page 1 of 2 for location 90210</span></div><div class='output co'>#&gt; <span class='message'>Parsing page 2 of 2 for location 90210</span></div><div class='output co'>#&gt; <span class='message'>Parsing validate_geo?location=Greenwich_CT&amp;retain_secondary_facets=true&amp;include_zip=false&amp;search_controller=Search%3A%3APropertiesController</span></div><div class='output co'>#&gt; <span class='message'>Parsing page 1 of 4 for location Greenwich, CT</span></div><div class='output co'>#&gt; <span class='message'>Parsing page 2 of 4 for location Greenwich, CT</span></div><div class='output co'>#&gt; <span class='message'>Parsing page 3 of 4 for location Greenwich, CT</span></div><div class='output co'>#&gt; <span class='message'>Parsing page 4 of 4 for location Greenwich, CT</span></div><div class='output co'>#&gt; <span class='message'>Parsing validate_geo?location=Malibu_CA&amp;retain_secondary_facets=true&amp;include_zip=false&amp;search_controller=Search%3A%3APropertiesController</span></div><div class='output co'>#&gt; <span class='message'>Parsing page 1 of 1 for location Malibu, CA</span></div><div class='output co'>#&gt; <span class='message'>Parsing validate_geo?location=Soho_New%20York_NY&amp;retain_secondary_facets=true&amp;include_zip=false&amp;search_controller=Search%3A%3APropertiesController</span></div><div class='output co'>#&gt; <span class='message'>Parsing page 1 of 1 for location Soho, New York, NY</span></div><div class='output co'>#&gt; <span class='error'>Error in grouped_df_impl(data, unname(vars), drop): Column `urlListing` is unknown</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

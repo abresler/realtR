@@ -4,6 +4,7 @@ realtR
 ## Installation
 
 ``` r
+devtools::install_github("hadley/emo")
 devtools::install_github("abresler/realtR")
 ```
 

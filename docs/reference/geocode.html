@@ -25,6 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Location geocoder — geocode" />
 
 <meta property="og:description" content="This function geocodes a users vector of locations
@@ -39,8 +42,6 @@ and returns a data_frame with the corresponding results" />
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
-
-
 
 
   </head>
@@ -58,7 +59,7 @@ and returns a data_frame with the corresponding results" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">realtR</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1010603</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.101061</span>
       </span>
     </div>
 
@@ -118,17 +119,20 @@ and returns a data_frame with the corresponding results" />
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Location geocoder</h1>
     
+    <div class="hidden name"><code>geocode.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>This function geocodes a users vector of locations
 and returns a <code>data_frame</code> with the corresponding results</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>geocode</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>search_types</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"neighborhood"</span>, <span class='st'>"city"</span>, <span class='st'>"county"</span>,
   <span class='st'>"postal_code"</span>, <span class='st'>"address"</span>, <span class='st'>"building"</span>, <span class='st'>"street"</span>, <span class='st'>"school"</span>), <span class='kw'>limit</span> <span class='kw'>=</span> <span class='fl'>100</span>,
@@ -173,9 +177,24 @@ and returns a <code>data_frame</code> with the corresponding results</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'>geocode</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Palm Springs"</span>, <span class='st'>"Bethesda"</span>, <span class='fl'>10016</span>), <span class='kw'>limit</span> <span class='kw'>=</span> <span class='fl'>100</span>)
-<span class='co'># }</span></pre>
+    <pre class="examples"><div class='input'><span class='fu'>geocode</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Palm Springs"</span>, <span class='st'>"Bethesda"</span>, <span class='fl'>10016</span>), <span class='kw'>limit</span> <span class='kw'>=</span> <span class='fl'>100</span>)</div><div class='output co'>#&gt; <span class='message'>Parsing https://parser-external.geo.moveaws.com/suggest?input=Palm%20Springs&amp;limit=100&amp;client_id=rdcV8&amp;area_types=neighborhood,city,county,postal_code,address,building,street,school</span></div><div class='output co'>#&gt; <span class='message'>Parsing https://parser-external.geo.moveaws.com/suggest?input=Bethesda&amp;limit=100&amp;client_id=rdcV8&amp;area_types=neighborhood,city,county,postal_code,address,building,street,school</span></div><div class='output co'>#&gt; <span class='message'>Parsing https://parser-external.geo.moveaws.com/suggest?input=10016&amp;limit=100&amp;client_id=rdcV8&amp;area_types=neighborhood,city,county,postal_code,address,building,street,school</span></div><div class='output co'>#&gt; # A tibble: 228 x 18
+#&gt;    nameLocationSear… typeArea slugLocation   scorePrediction nameCity slugState
+#&gt;    &lt;chr&gt;             &lt;chr&gt;    &lt;chr&gt;                    &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;    
+#&gt;  1 Palm Springs      city     city:ca_palm-…            27.5 Palm Sp… CA       
+#&gt;  2 Palm Springs      city     city:fl_palm-…            27.2 Palm Sp… FL       
+#&gt;  3 Palm Springs      city     city:fl_palm-…            26.9 Palm Sp… FL       
+#&gt;  4 Palm Springs      neighbo… neigh:ca_palm…            26.6 Palm Sp… CA       
+#&gt;  5 Palm Springs      school   school:071717…            26.5 West Pa… FL       
+#&gt;  6 Palm Springs      neighbo… neigh:ca_palm…            26.5 Palm Sp… CA       
+#&gt;  7 Palm Springs      neighbo… neigh:ca_palm…            26.5 Palm Sp… CA       
+#&gt;  8 Palm Springs      school   school:071717…            26.5 Palm Sp… FL       
+#&gt;  9 Palm Springs      neighbo… neigh:fl_hial…            26.5 Hialeah  FL       
+#&gt; 10 Palm Springs      neighbo… neigh:ca_palm…            26.5 Palm Sp… CA       
+#&gt; # ... with 218 more rows, and 12 more variables: codeCountry &lt;chr&gt;,
+#&gt; #   nameNeighborhood &lt;chr&gt;, idSchool &lt;dbl&gt;, nameSchool &lt;chr&gt;,
+#&gt; #   addressStreet &lt;chr&gt;, zipcodeLocation &lt;chr&gt;, hasCatchment &lt;lgl&gt;,
+#&gt; #   longitudeLocation &lt;dbl&gt;, latitudeLocation &lt;dbl&gt;, idMPR &lt;dbl&gt;,
+#&gt; #   nameAddress &lt;chr&gt;, statusProperty &lt;chr&gt;</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

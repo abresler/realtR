@@ -25,6 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Market trends — trends" />
 
 <meta property="og:description" content="This function returns market
@@ -42,8 +45,6 @@ for the user's specified locations" />
 <![endif]-->
 
 
-
-
   </head>
 
   <body>
@@ -59,7 +60,7 @@ for the user's specified locations" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">realtR</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1010603</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.101061</span>
       </span>
     </div>
 
@@ -119,18 +120,21 @@ for the user's specified locations" />
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Market trends</h1>
     
+    <div class="hidden name"><code>trends.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>This function returns market
 trend information dating back to 2015
 for the user's specified locations</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>trends</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>return_wide</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>return_message</span> <span class='kw'>=</span> <span class='no'>T</span>, <span class='no'>...</span>)</pre>
     
@@ -162,9 +166,7 @@ a city name and a comma ie "Brooklyn, NY" or a zipcode</p></td>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'>trends</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Greenwich, CT"</span>, <span class='st'>"New London, CT"</span>, <span class='st'>"Woodside, CA"</span>, <span class='fl'>90210</span>), <span class='kw'>return_message</span> <span class='kw'>=</span> <span class='no'>F</span>, <span class='kw'>return_wide</span> <span class='kw'>=</span> <span class='no'>T</span>)
-<span class='co'># }</span></pre>
+    <pre class="examples"><div class='input'><span class='fu'>trends</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Greenwich, CT"</span>, <span class='st'>"New London, CT"</span>, <span class='st'>"Woodside, CA"</span>, <span class='fl'>90210</span>), <span class='kw'>return_message</span> <span class='kw'>=</span> <span class='no'>F</span>, <span class='kw'>return_wide</span> <span class='kw'>=</span> <span class='no'>T</span>)</div><div class='output co'>#&gt; <span class='error'>Error: `by` required, because the data sources have no common variables</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

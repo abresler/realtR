@@ -25,6 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Mapped listing data — map_listings" />
 
 <meta property="og:description" content="This function returns data
@@ -42,8 +45,6 @@ pertinent matches to a users input." />
 <![endif]-->
 
 
-
-
   </head>
 
   <body>
@@ -59,7 +60,7 @@ pertinent matches to a users input." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">realtR</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1010603</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.101061</span>
       </span>
     </div>
 
@@ -119,18 +120,21 @@ pertinent matches to a users input." />
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Mapped listing data</h1>
     
+    <div class="hidden name"><code>map_listings.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>This function returns data
 from an API that maps the most
 pertinent matches to a users input.</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>map_listings</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>search_type</span> <span class='kw'>=</span> <span class='st'>"city"</span>, <span class='kw'>city_isolated</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>county_isolated</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>zipcode_isolated</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>state_isolated</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
@@ -276,31 +280,27 @@ but returns less detailed information.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p>Other listing search: <code><a href='dictionary_listing_features.html'>dictionary_listing_features</a></code>,
+    <div class='dont-index'><p>Other listing search: <code><a href='dictionary_listing_features.html'>dictionary_listing_features</a></code>,
   <code><a href='dictionary_property_types.html'>dictionary_property_types</a></code>,
-  <code><a href='listing_counts.html'>listing_counts</a></code>, <code><a href='listings.html'>listings</a></code></p>
+  <code><a href='listing_counts.html'>listing_counts</a></code>, <code><a href='listings.html'>listings</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='co'>## New Construction Waterfront actual mapped listings</span>
+    <pre class="examples"><div class='input'><span class='co'>## New Construction Waterfront actual mapped listings</span>
 <span class='fu'>library</span>(<span class='no'>dplyr</span>)
 <span class='fu'>library</span>(<span class='no'>realtR</span>)
 <span class='no'>df_new_water</span> <span class='kw'>&lt;-</span>
  <span class='fu'>map_listings</span>( <span class='kw'>locations</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Miami Beach, FL"</span>, <span class='st'>"Naples, FL"</span>),
-<span class='kw'>features</span> <span class='kw'>=</span> <span class='st'>"Waterfront"</span>, <span class='kw'>is_new_construction</span> <span class='kw'>=</span> <span class='fl'>TRUE</span> )
-
+<span class='kw'>features</span> <span class='kw'>=</span> <span class='st'>"Waterfront"</span>, <span class='kw'>is_new_construction</span> <span class='kw'>=</span> <span class='fl'>TRUE</span> )</div><div class='output co'>#&gt; <span class='message'>Parsing validate_geo?location=Miami%20Beach_FL&amp;retain_secondary_facets=true&amp;include_zip=false&amp;search_controller=Search%3A%3APropertiesController</span></div><div class='output co'>#&gt; <span class='message'>Parsing page 1 of 1 for location Miami Beach, FL</span></div><div class='output co'>#&gt; <span class='message'>Parsing 1</span></div><div class='output co'>#&gt; <span class='message'>Parsing 2</span></div><div class='output co'>#&gt; <span class='message'>Parsing 3</span></div><div class='output co'>#&gt; <span class='message'>Parsing 4</span></div><div class='output co'>#&gt; <span class='message'>Parsing 5</span></div><div class='output co'>#&gt; <span class='message'>Parsing 6</span></div><div class='output co'>#&gt; <span class='message'>Parsing 7</span></div><div class='output co'>#&gt; <span class='message'>Parsing 8</span></div><div class='output co'>#&gt; <span class='message'>Parsing 9</span></div><div class='output co'>#&gt; <span class='message'>Parsing 10</span></div><div class='output co'>#&gt; <span class='message'>Parsing 11</span></div><div class='output co'>#&gt; <span class='message'>Parsing 12</span></div><div class='output co'>#&gt; <span class='message'>Parsing 13</span></div><div class='output co'>#&gt; <span class='message'>Parsing 14</span></div><div class='output co'>#&gt; <span class='message'>Parsing 15</span></div><div class='output co'>#&gt; <span class='message'>Parsing 16</span></div><div class='output co'>#&gt; <span class='message'>Parsing 17</span></div><div class='output co'>#&gt; <span class='message'>Parsing 18</span></div><div class='output co'>#&gt; <span class='message'>Parsing 19</span></div><div class='output co'>#&gt; <span class='message'>Parsing 20</span></div><div class='output co'>#&gt; <span class='message'>Parsing 21</span></div><div class='output co'>#&gt; <span class='message'>Parsing 22</span></div><div class='output co'>#&gt; <span class='message'>Parsing 23</span></div><div class='output co'>#&gt; <span class='message'>Parsing 24</span></div><div class='output co'>#&gt; <span class='message'>Parsing 25</span></div><div class='output co'>#&gt; <span class='message'>Parsing 26</span></div><div class='output co'>#&gt; <span class='message'>Parsing 27</span></div><div class='output co'>#&gt; <span class='message'>Parsing 28</span></div><div class='output co'>#&gt; <span class='message'>Parsing 29</span></div><div class='output co'>#&gt; <span class='message'>Parsing 30</span></div><div class='output co'>#&gt; <span class='message'>Parsing 31</span></div><div class='output co'>#&gt; <span class='message'>Parsing 32</span></div><div class='output co'>#&gt; <span class='message'>Parsing 33</span></div><div class='output co'>#&gt; <span class='message'>Parsing 34</span></div><div class='output co'>#&gt; <span class='message'>Parsing 35</span></div><div class='output co'>#&gt; <span class='message'>Parsing 36</span></div><div class='output co'>#&gt; <span class='message'>Parsing 37</span></div><div class='output co'>#&gt; <span class='message'>Parsing 38</span></div><div class='output co'>#&gt; <span class='message'>Parsing 39</span></div><div class='output co'>#&gt; <span class='message'>Parsing 40</span></div><div class='output co'>#&gt; <span class='message'>Parsing 41</span></div><div class='output co'>#&gt; <span class='message'>Parsing 42</span></div><div class='output co'>#&gt; <span class='message'>Parsing 43</span></div><div class='output co'>#&gt; <span class='message'>Parsing 44</span></div><div class='output co'>#&gt; <span class='message'>Parsing 45</span></div><div class='output co'>#&gt; <span class='message'>Parsing 46</span></div><div class='output co'>#&gt; <span class='message'>Parsing 47</span></div><div class='output co'>#&gt; <span class='message'>Parsing 48</span></div><div class='output co'>#&gt; <span class='message'>Parsing 49</span></div><div class='output co'>#&gt; <span class='message'>Parsing 50</span></div><div class='output co'>#&gt; <span class='message'>Missing is_tcpa_message_enabled</span></div><div class='output co'>#&gt; <span class='error'>Error in mutate_impl(.data, dots): Evaluation error: is.character(x) is not TRUE.</span></div><div class='input'>
 <span class='no'>df_new_water</span> <span class='kw'>%&gt;%</span>
-<span class='fu'><a href='http://dplyr.tidyverse.org/reference/reexports.html'>glimpse</a></span>()
-
+<span class='fu'><a href='http://dplyr.tidyverse.org/reference/reexports.html'>glimpse</a></span>()</div><div class='output co'>#&gt; <span class='error'>Error in eval(lhs, parent, parent): object 'df_new_water' not found</span></div><div class='input'>
 <span class='no'>df_new_water</span> <span class='kw'>%&gt;%</span>
 <span class='fu'><a href='http://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span>(<span class='no'>cityProperty</span>, <span class='no'>stateProperty</span>, <span class='no'>typeProperty</span>) <span class='kw'>%&gt;%</span>
 <span class='fu'><a href='http://dplyr.tidyverse.org/reference/summarise.html'>summarise</a></span>( <span class='kw'>meanPSF</span> <span class='kw'>=</span> <span class='fu'>mean</span>(<span class='no'>priceListingPerSF</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='no'>T</span>),
 <span class='kw'>meanPrice</span> <span class='kw'>=</span> <span class='fu'>mean</span>(<span class='no'>priceListing</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='no'>T</span>), <span class='kw'>countListings</span> <span class='kw'>=</span> <span class='fu'><a href='http://dplyr.tidyverse.org/reference/n.html'>n</a></span>()) <span class='kw'>%&gt;%</span>
-<span class='fu'><a href='http://dplyr.tidyverse.org/reference/group_by.html'>ungroup</a></span>()
+<span class='fu'><a href='http://dplyr.tidyverse.org/reference/group_by.html'>ungroup</a></span>()</div><div class='output co'>#&gt; <span class='error'>Error in eval(lhs, parent, parent): object 'df_new_water' not found</span></div><div class='input'>
 
-
-<span class='co'># }</span></pre>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

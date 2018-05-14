@@ -25,6 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Mortgage Rates — mortgage_rates" />
 
 <meta property="og:description" content="Returns a variety of
@@ -42,8 +45,6 @@ mortgage types." />
 <![endif]-->
 
 
-
-
   </head>
 
   <body>
@@ -59,7 +60,7 @@ mortgage types." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">realtR</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1010603</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.101061</span>
       </span>
     </div>
 
@@ -119,18 +120,21 @@ mortgage types." />
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Mortgage Rates</h1>
     
+    <div class="hidden name"><code>mortgage_rates.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Returns a variety of
 interest rates for various
 mortgage types.</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>mortgage_rates</span>(<span class='kw'>return_wide</span> <span class='kw'>=</span> <span class='no'>F</span>)</pre>
     
@@ -149,9 +153,20 @@ mortgage types.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'>mortgage_rates</span>(<span class='kw'>return_wide</span> <span class='kw'>=</span> <span class='no'>F</span>)
-<span class='co'># }</span></pre>
+    <pre class="examples"><div class='input'><span class='fu'>mortgage_rates</span>(<span class='kw'>return_wide</span> <span class='kw'>=</span> <span class='no'>F</span>)</div><div class='output co'>#&gt; # A tibble: 240 x 5
+#&gt;    dateData   typeRate          durationLoanMonths typeBenchmark  value
+#&gt;    &lt;date&gt;     &lt;chr&gt;                          &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt;
+#&gt;  1 2018-03-29 pct30YearFixed                   360 fixed         0.044 
+#&gt;  2 2018-03-29 pct15YearFixed                   180 fixed         0.0385
+#&gt;  3 2018-03-29 pct5OneARM                        60 floating      0.0413
+#&gt;  4 2018-03-29 pct20YearFixed                   240 fixed         0.042 
+#&gt;  5 2018-03-29 pct30YearFixedFHA                360 fixed         0.0406
+#&gt;  6 2018-03-29 pct30YearFixedVA                 360 fixed         0.04  
+#&gt;  7 2018-03-29 pct10YearFixed                   120 fixed         0.0358
+#&gt;  8 2018-03-29 pct7OneARM                        84 floating      0.0417
+#&gt;  9 2018-03-30 pct30YearFixed                   360 fixed         0.0439
+#&gt; 10 2018-03-30 pct15YearFixed                   180 fixed         0.0385
+#&gt; # ... with 230 more rows</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

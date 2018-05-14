@@ -25,6 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Property feature dictionary — dictionary_listing_features" />
 
 <meta property="og:description" content="This function returns a dictionary
@@ -43,8 +46,6 @@ and map_listings functions." />
 <![endif]-->
 
 
-
-
   </head>
 
   <body>
@@ -60,7 +61,7 @@ and map_listings functions." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">realtR</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1010603</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.101061</span>
       </span>
     </div>
 
@@ -120,19 +121,22 @@ and map_listings functions." />
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Property feature dictionary</h1>
     
+    <div class="hidden name"><code>dictionary_listing_features.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>This function returns a dictionary
 of searchable property features.  These features
 can be used as search parameters in the count_listings, <a href='listings.html'>listings</a>, <a href='listing_counts.html'>listing_counts</a>
 and <a href='map_listings.html'>map_listings</a> functions.</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>dictionary_listing_features</span>()</pre>
         
@@ -142,16 +146,27 @@ and <a href='map_listings.html'>map_listings</a> functions.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p>Other dictionary: <code><a href='dictionary_property_types.html'>dictionary_property_types</a></code></p>
+    <div class='dont-index'><p>Other dictionary: <code><a href='dictionary_property_types.html'>dictionary_property_types</a></code></p>
 <p>Other listing search: <code><a href='dictionary_property_types.html'>dictionary_property_types</a></code>,
   <code><a href='listing_counts.html'>listing_counts</a></code>, <code><a href='listings.html'>listings</a></code>,
-  <code><a href='map_listings.html'>map_listings</a></code></p>
+  <code><a href='map_listings.html'>map_listings</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'>dictionary_listing_features</span>()
-<span class='co'># }</span></pre>
+    <pre class="examples"><div class='input'><span class='fu'>dictionary_listing_features</span>()</div><div class='output co'>#&gt; # A tibble: 35 x 2
+#&gt;    nameFeature         slugFeature                
+#&gt;    &lt;chr&gt;               &lt;chr&gt;                      
+#&gt;  1 Basement            basement                   
+#&gt;  2 Garage              carport                    
+#&gt;  3 Central Air         central_air                
+#&gt;  4 Central Heat        central_heat               
+#&gt;  5 Boat Facilities     community_boat_facilities  
+#&gt;  6 Community Clubhouse community_clubhouse        
+#&gt;  7 Community Golf      community_golf             
+#&gt;  8 Community Security  community_security_features
+#&gt;  9 Community Spa       community_spa_or_hot_tub   
+#&gt; 10 Community Pool      community_swimming_pool    
+#&gt; # ... with 25 more rows</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
