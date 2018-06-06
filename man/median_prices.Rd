@@ -28,3 +28,4 @@ by commas.
 \examples{
 median_prices(locations = c("Greenwich, CT", "New London, CT", "Woodside, CA", "Park Slope, Brooklyn, NY"))
 }
+\concept{market information}

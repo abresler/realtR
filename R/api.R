@@ -55,7 +55,7 @@
       data <-
         data %>%
         mutate_at(num_names,
-                  funs(. %>% readr::parse_number())) %>% 
+                  funs(. %>% as.character() %>% readr::parse_number())) %>% 
         suppressWarnings() %>% suppressMessages()
       
     }
@@ -381,7 +381,8 @@ dictionary_realtor_names <-
         'is_basic_opt_out',
         'has_matterport',
         'agentId',
-        'is_short_sale'
+        'is_short_sale',
+        "school"
       ),
       nameActual = c(
         "pricePerSF",
@@ -499,7 +500,8 @@ dictionary_realtor_names <-
         'isBasicOptOut',
         'hasMatterPort',
         'idAgent',
-        'isShortSale'
+        'isShortSale',
+        "nameSchool"
       )
     )
   }
@@ -1376,8 +1378,8 @@ validate_locations <-
       data_listings %>%
       purrr::set_names(actual_names) %>%
       mutate(
-        priceListing = priceListing %>% readr::parse_number(),
-        areaPropertySF = areaPropertySF %>% readr::parse_number(),
+        priceListing = priceListing %>% as.character() %>% readr::parse_number(),
+        areaPropertySF = areaPropertySF %>% as.character() %>% readr::parse_number(),
         urlListing = glue::glue("https://www.realtor.com/{slugLDP}") %>% as.character()
       ) %>%
       select(idListing, addressDisplay, statusListing,
@@ -1720,6 +1722,7 @@ properties_near <-
     str_split("\n") %>%
     flatten_chr() %>%
     str_trim() %>%
+    as.character() %>% 
     readr::parse_number() %>%
     max(na.rm = T) %>%
     suppressWarnings() %>% suppressMessages()
@@ -2016,7 +2019,7 @@ table_listings <-
             fact_node %>% html_nodes("div") %>% html_text()
           if (x %in%  c(3, 5)) {
             value <-
-              readr::parse_number(div_text[[2]]) %>% 
+              readr::parse_number(as.character(div_text[[2]])) %>% 
               suppressWarnings()
           }
         }
@@ -2046,9 +2049,11 @@ table_listings <-
       if (photo_urls %>% length() > 0) {
         data <-
           data %>%
-          mutate(urlImage = photo_urls %>% sample(1),
-                 dataPhotos = list(data_frame(urlPhotoProperty = photo_urls)),
-                 countPhotos = dataPhotos %>% map_dbl(nrow))
+          mutate(
+            urlImage = photo_urls %>% sample(1),
+            dataPhotos = list(data_frame(urlPhotoProperty = photo_urls)),
+            countPhotos = dataPhotos %>% map_dbl(nrow)
+          )
       }
     }
     
@@ -2128,7 +2133,7 @@ table_listings <-
     listing <-
       page %>% html_nodes('#ldp-pricewrap span') %>% html_text()
     if (listing %>% length() > 0) {
-      listing <- listing %>% readr::parse_number() %>% 
+      listing <- listing %>% as.character() %>% readr::parse_number() %>%
         suppressWarnings() %>% suppressMessages()
       listing <- listing[!listing %>% is.na()]
       data <-
@@ -2139,34 +2144,35 @@ table_listings <-
     hood_detail <- page %>% html_nodes("#ldp-neighborhood-section .padding-bottom")
     
     if (hood_detail %>% length() > 0) {
-      hood_details <- 
-        hood_detail %>% 
+      hood_details <-
+        hood_detail %>%
         html_nodes('a') %>% html_text() %>% str_trim()
       
-      urls <- 
-        hood_detail %>% 
+      urls <-
+        hood_detail %>%
         html_nodes('a') %>% html_attr('href') %>%
-        str_c("https://www.realtor.com/",.)
+        str_c("https://www.realtor.com/", .)
       
-      hood_stats <- 
-        page %>% 
-        html_nodes('.neighborhood-local-item p') %>% 
-        html_text() %>% 
-        readr::parse_number() %>% 
-        suppressMessages() %>% 
+      hood_stats <-
+        page %>%
+        html_nodes('.neighborhood-local-item p') %>%
+        html_text() %>%
+        as.character() %>% 
+        readr::parse_number() %>%
+        suppressMessages() %>%
         suppressWarnings()
-    
+      
       if (length(hood_details) >= 2 && length(hood_stats) == 4) {
-        df_hood <- 
+        df_hood <-
           data_frame(
-          item = c(
-            "priceListingMedianNeighborhood",
-            "priceSaleMedianNeighborHood",
-            "countDaysOnMarketMedianNeighborhood",
-            "pricePerSFSaleMedianNeighborhood"
-          ),
-          value = hood_stats
-        ) %>%
+            item = c(
+              "priceListingMedianNeighborhood",
+              "priceSaleMedianNeighborHood",
+              "countDaysOnMarketMedianNeighborhood",
+              "pricePerSFSaleMedianNeighborhood"
+            ),
+            value = hood_stats
+          ) %>%
           spread(item, value) %>%
           mutate(
             nameNeighborhood = hood_details[[1]],
@@ -2177,12 +2183,12 @@ table_listings <-
           select(nameCity, nameNeighborhood, everything())
         
         data <-
-          data %>% 
+          data %>%
           mutate(dataNeighborhood = list(df_hood))
       }
       
       if (length(hood_details) >= 2 && length(hood_stats) == 2) {
-        df_hood <- 
+        df_hood <-
           data_frame(
             item = c(
               "priceListingMedianNeighborhood",
@@ -2200,7 +2206,7 @@ table_listings <-
           select(nameCity, nameNeighborhood, everything())
         
         data <-
-          data %>% 
+          data %>%
           mutate(dataNeighborhood = list(df_hood))
       }
       
@@ -2335,7 +2341,7 @@ table_listings <-
           
           value <-
             property_meta[x] %>% html_text() %>% as.character() %>% readr::parse_number() %>%
-            suppressWarnings() %>% suppressMessages() %>% 
+            suppressWarnings() %>% suppressMessages() %>%
             as.character()
           
           df <-
@@ -2371,14 +2377,15 @@ table_listings <-
       
     }
     
-    listing_history <- 
+    listing_history <-
       page %>% html_nodes("#ldp-history-price td") %>% html_text()
     
     if (listing_history %>% length() > 0) {
       times <- length(listing_history) %/% 3
-      items <- rep(c("dateListing", "descriptionEvent", "priceListing"), times)
+      items <-
+        rep(c("dateListing", "descriptionEvent", "priceListing"), times)
       
-      df_listings <- 
+      df_listings <-
         data_frame(item = items, value = listing_history) %>%
         group_by(item) %>%
         mutate(idEvent = 1:n()) %>%
@@ -2386,17 +2393,17 @@ table_listings <-
         spread(item, value) %>%
         mutate(
           dateListing = dateListing %>% lubridate::mdy(),
-          priceListing = priceListing %>% readr::parse_number()
+          priceListing = priceListing %>% as.character() %>% readr::parse_number()
         ) %>%
         arrange(dateListing) %>%
         mutate(numberListing = 1:n()) %>%
         select(-idEvent) %>%
-        select(numberListing, everything()) %>% 
+        select(numberListing, everything()) %>%
         suppressWarnings() %>% suppressMessages()
       
-      data <- 
-        data %>% 
-        mutate(dataListingHistory = list(df_listings)) %>% 
+      data <-
+        data %>%
+        mutate(dataListingHistory = list(df_listings)) %>%
         mutate(countListings = dataListingHistory %>% map_dbl(nrow))
       
     }
@@ -2410,38 +2417,37 @@ table_listings <-
       
       addresses <- seq_along(homes) %>%
         map_chr(function(x) {
-          homes[[x]] %>% str_trim() %>% str_split("\\ ") %>%  flatten_chr() %>% discard( ~
-                                                                                           .x == "") %>%
+          homes[[x]] %>% str_trim() %>% str_split("\\ ") %>%  flatten_chr() %>% discard(~
+                                                                                          .x == "") %>%
             str_c(collapse = " ") %>% str_replace_all("\\This Home ", "")
         })
       
       price_estimate <-
         page %>% html_nodes('.col-xxs-3') %>% html_text()
       
-    
-    start <- length(price_estimate) -  length(addresses) + 1
+      
+      start <- length(price_estimate) -  length(addresses) + 1
       
       price_estimate <-
-        price_estimate[start:length(price_estimate)]  %>% readr::parse_number() %>% suppressWarnings() %>% 
+        price_estimate[start:length(price_estimate)]  %>% as.character() %>% readr::parse_number() %>% suppressWarnings() %>%
         suppressMessages()
       
       area_sf <-
-        page %>% html_nodes('.col-sm-1') %>% html_text() %>% readr::parse_number() %>%
+        page %>% html_nodes('.col-sm-1') %>% html_text() %>% as.character() %>% readr::parse_number() %>%
         suppressWarnings() %>% suppressMessages()
       
       
       df_comps <-
-        data_frame(
-          addresseComp = addresses,
-          priceEstimate = price_estimate)
+        data_frame(addresseComp = addresses,
+                   priceEstimate = price_estimate)
       
-      if (area_sf %>% length()-1 == nrow(df_comps)) {
+      if (area_sf %>% length() - 1 == nrow(df_comps)) {
         area_sf <-
-          area_sf[2:length(area_sf)] %>% readr::parse_number() %>% 
+          area_sf[2:length(area_sf)] %>% as.character() %>% readr::parse_number() %>%
           suppressWarnings() %>% suppressMessages()
         
-        df_comps <- 
-          df_comps %>% 
+        df_comps <-
+          df_comps %>%
           mutate(areaPropertySF = area_sf)
       }
       
@@ -2465,8 +2471,8 @@ table_listings <-
           mutate(numberProperty = 1:n()) %>%
           select(numberProperty, item, value) %>%
           ungroup() %>%
-          mutate(value = value %>% readr::parse_number()) %>%
-          suppressWarnings() %>% suppressMessages() %>% 
+          mutate(value = value %>% as.character() %>% readr::parse_number()) %>%
+          suppressWarnings() %>% suppressMessages() %>%
           spread(item, value)
         
         df_comps <-
@@ -2477,50 +2483,53 @@ table_listings <-
           select(-numberProperty)
         
       }
-     
-      links <- page %>% html_nodes("#ldp-home-values a") %>% html_attr('href')
-      links <- 
-        links[!links %>% is.na()] %>% str_c("https://www.realtor.com/realestateandhomes-detail",.)
+      
+      links <-
+        page %>% html_nodes("#ldp-home-values a") %>% html_attr('href')
+      links <-
+        links[!links %>% is.na()] %>% str_c("https://www.realtor.com/realestateandhomes-detail", .)
       
       listing_comps <- c(url, links)
       
       if (length(listing_comps) == nrow(df_comps)) {
-        df_comps <- 
-          df_comps %>% 
+        df_comps <-
+          df_comps %>%
           mutate(urlListingComp = listing_comps)
       }
       
-      lot_nodes <- page %>% html_nodes(".hidden-xxs.col-sm-2") %>% html_text()
+      lot_nodes <-
+        page %>% html_nodes(".hidden-xxs.col-sm-2") %>% html_text()
       
       if (length(lot_nodes) - 1 == nrow(df_comps)) {
-        lots <- lot_nodes[2:length(lot_nodes)] %>% readr::parse_number() %>% 
+        lots <-
+          lot_nodes[2:length(lot_nodes)] %>% as.character() %>%  readr::parse_number() %>%
           suppressWarnings() %>% suppressMessages()
-        df_comps <- 
-          df_comps %>% 
+        df_comps <-
+          df_comps %>%
           mutate(areaLotSF = lots)
       }
       
-      data <- 
-        data %>% 
+      data <-
+        data %>%
         mutate(dataComps = list(df_comps),
                countComps = dataComps %>% map_dbl(nrow))
     }
     
     taxes <-
-      page %>% 
-      html_nodes("#ldp-history-taxes td") %>% html_text() %>% readr::parse_number() %>% 
+      page %>%
+      html_nodes("#ldp-history-taxes td") %>% html_text() %>% as.character() %>% readr::parse_number() %>%
       suppressWarnings() %>% suppressMessages()
     
     
     if (taxes %>% length > 0) {
-      tax_data <- 
-        page %>% 
-        html_nodes("#ldp-history-taxes td") %>% html_text() %>% readr::parse_number() %>% 
+      tax_data <-
+        page %>%
+        html_nodes("#ldp-history-taxes td") %>% html_text() %>% as.character() %>% readr::parse_number() %>%
         suppressWarnings() %>% suppressMessages()
       
       times <-
         length(tax_data) %/% 3
-      items <- 
+      items <-
         rep(c("yearTaxes", "amountTaxes", "amountTaxableValue"), times)
       
       df_taxes <- data_frame(item = items, value = tax_data) %>%
@@ -2531,7 +2540,7 @@ table_listings <-
         select(yearTaxes, amountTaxes, amountTaxableValue)
       
       data <-
-        data %>% 
+        data %>%
         mutate(dataTaxes = list(df_taxes))
     }
     
@@ -2543,31 +2552,32 @@ table_listings <-
       value <-
         page %>% html_nodes('#load-more-schools td') %>% html_text() %>% str_trim()
       repeats <- length(value) %/% 2
-      item <- 
-        rep(c("ratingSchool","nameSchool"), repeats)
-      df_school <- 
-        data_frame(item, value) %>% 
-        group_by(item) %>% 
-        mutate(numberSchool = 1:n()) %>% 
-        ungroup() %>% 
-        spread(item, value) %>% 
+      item <-
+        rep(c("ratingSchool", "nameSchool"), repeats)
+      df_school <-
+        data_frame(item, value) %>%
+        group_by(item) %>%
+        mutate(numberSchool = 1:n()) %>%
+        ungroup() %>%
+        spread(item, value) %>%
         mutate_at('ratingSchool',
-                  funs(. %>% readr::parse_number())) %>% 
-        suppressMessages() %>% 
+                  funs(. %>%  as.character() %>% readr::parse_number())) %>%
+        suppressMessages() %>%
         suppressWarnings()
       
-      urlSchool <- 
-        page %>% 
-        html_nodes('#load-more-schools .text-align-center+ td a') %>% 
-        html_attr('href') %>% 
-        str_c("https://www.realtor.com/local/schools/montauk-school_0751452801", .)
+      urlSchool <-
+        page %>%
+        html_nodes('#load-more-schools .text-align-center+ td a') %>%
+        html_attr('href') %>%
+        str_c("https://www.realtor.com/local/schools/montauk-school_0751452801",
+              .)
       
-      df_school <- 
-        df_school %>% 
+      df_school <-
+        df_school %>%
         mutate(urlSchool)
       
-      data <- 
-        data %>% 
+      data <-
+        data %>%
         mutate(dataSchool = list(df_school))
     }
     

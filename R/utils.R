@@ -160,7 +160,7 @@ parse_css_name <-
       parse_for_text(css = css)
     
     if (is_numeric) {
-      value <- readr::parse_number(value)
+      value <- readr::parse_number(as.character(value))
     }
     data_frame(nameActual = actual_name, value)
   }

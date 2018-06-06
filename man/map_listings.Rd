@@ -113,3 +113,5 @@ Other listing search: \code{\link{dictionary_listing_features}},
   \code{\link{dictionary_property_types}},
   \code{\link{listing_counts}}, \code{\link{listings}}
 }
+\concept{detailed search}
+\concept{listing search}

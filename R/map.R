@@ -1852,6 +1852,7 @@ listings <-
     if (locations %>% purrr::is_null()) {
       stop("Enter locations")
     }
+    
     .get_location_listings_safe <-
       purrr::possibly(.get_location_listings,
                       data_frame())

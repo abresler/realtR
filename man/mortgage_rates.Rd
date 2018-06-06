@@ -20,3 +20,4 @@ mortgage types.
 \examples{
 mortgage_rates(return_wide = F)
 }
+\concept{interest rates}
