@@ -315,7 +315,7 @@ dictionary_listing_features <-
       spread(nameActual, value) %>%
       suppressMessages()
     
-    list_cols <- df_base_names <-
+    list_cols <- 
       df_class %>%
       filter(class %in% c("list")) %>%
       pull(column)
@@ -873,7 +873,7 @@ dictionary_search <-
     
     h <-
       new_handle(verbose = F,
-                 useragent =  df_call$urlReferer) %>%
+                   useragent =  df_call$userAgent) %>%
       handle_setopt(copypostfields = data %>% toJSON(auto_unbox = T),
                     customrequest = "POST") %>%
       handle_setheaders(.list = headers %>% as.list()) 
