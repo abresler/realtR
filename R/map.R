@@ -1379,7 +1379,7 @@ map_listings <-
 
 
 .get_location_listings <-
-  function(location_name = 94123,
+  function(location_name = 10016,
            search_type = "city",
            city_isolated = NULL,
            county_isolated = NULL,
@@ -1513,23 +1513,32 @@ map_listings <-
         
         content <-
           resp$content %>%
-          rawToChar()
+          rawToChar() %>% 
+          str_split("\n") %>% 
+          flatten_chr()
         
         page <-
           .parse_content_to_page(content = content)
         
         fact_nodes <-
           page %>%
-          html_nodes('li')
+          html_nodes('.js-record-user-activity')
         
         
         data_nodes <-
-          fact_nodes %>%
-          html_nodes(xpath = "//li[contains(concat(' ', @class, ' '), ' js-record-user-activity')]")
+          page %>% html_nodes(xpath = "//div[contains(@class, 'data')]")
+        
+        data_bed_bath <-
+          page %>% html_nodes('.prop-meta')
+        
+        data_photos <- 
+          page %>% html_nodes('.photo-wrap')
+        
+        data_detail_wrap <- 
+          page %>% html_nodes(".detail-wrap")
         
         lat_lon_nodes <-
-          data_nodes %>%
-          html_nodes(xpath = "//div[contains(concat(' ', @class, ' '), 'listing-geo sr-only')]")
+         page %>% html_nodes('.listing-geo')
         
         hood_nodes <-
           data_nodes %>%
@@ -1569,7 +1578,8 @@ map_listings <-
               fact_node %>%
               html_children()
             
-            data_atrs <- fact_node %>% html_attrs()
+            data_atrs <-
+              fact_node %>% html_attrs()
             
             df_attrs <-
               data_frame(name = names(data_atrs),

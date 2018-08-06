@@ -212,7 +212,7 @@ dictionary_css_page <-
         "statusProperty",
         "slugLDP",
         "slugHotBuy",
-        "remove_id",
+        "idRealtor",
         "typePropertySchema",
         "statusPromotion",
         "remove_schema",
@@ -400,7 +400,7 @@ dictionary_realtor_names <-
         "countBeds",
         "countBaths",
         "areaPropertySF",
-        "priceListing",
+        "priceListingDisplay",
         "idListing",
         "idProperty",
         "statusListing",
@@ -1011,14 +1011,24 @@ median_prices <-
       mutate_at(data %>% select(matches("pct")) %>% names(),
                 funs(. / 100)) %>%
       .munge_realtor()
+  
+    if (data %>% tibble::has_name("priceListingMedian")) {
+      data <-
+        data %>%
+        mutate(
+          areaPropertySFMedian = (priceListingMedian / pricePerSFMedian) %>% round(digits = 2)
+        )
+    }
     
-    data <-
-      data %>%
-      mutate(
-        areaPropertySFMedian = (priceListingMedian / pricePerSFMedian) %>% round(digits = 2),
-        pctRentYield = (priceRentMedian * 12) / priceListingMedian
-      ) %>%
-      mutate(urlAPI = url)
+    if (data %>% tibble::has_name("priceRentMedian")) {
+      data <- 
+        data %>% 
+        mutate(pctRentYield = (priceRentMedian * 12) / priceListingMedian)
+    }
+    
+    data <- 
+      data %>% 
+      mutate(urlAPI = url)  
     
     data <-
       data %>%
@@ -1028,7 +1038,7 @@ median_prices <-
       )), everything()) %>%
       suppressMessages() %>%
       suppressWarnings()
-        data
+    data
     
     
   }
@@ -1353,14 +1363,16 @@ validate_locations <-
 
 .parse_market_vitality_url <-
   function(url = "https://www.realtor.com/home_page/vitality?location=Bethesda%2C+MD") {
-    data <-
+    json_data <-
       url %>%
       .curl_json() %>%
       jsonlite::fromJSON(flatten = T, simplifyDataFrame = T)
     
     df_names <- dictionary_realtor_names()
     
-    data_listings <- data$new_listings %>% as_data_frame()
+    data <- json_data$data
+    data_listings <-
+      data$new_listings %>% as_data_frame()
     
     actual_names <-
       names(data_listings) %>%
