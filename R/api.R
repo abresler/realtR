@@ -33,7 +33,8 @@
     json_data <-
       curl::curl(url, handle = h) %>%
       readr::read_lines()
-        json_data
+    
+    json_data
     
   }
 
@@ -50,12 +51,19 @@
       dplyr::select(-matches("countyProperty")) %>%
       names()
     
+    data <- data %>% 
+      mutate_if(is.character,
+                funs(ifelse(. == "", NA_character_, .))) %>% 
+      dplyr::select(which(colMeans(is.na(.)) < 1))
+    
+    data <- data %>% select(-matches("remove"))
+    
     
     if (num_names %>% length() > 0) {
       data <-
         data %>%
         mutate_at(num_names,
-                  funs(. %>% as.character() %>% readr::parse_number())) %>% 
+                  funs(. %>% as.character() %>% readr::parse_number())) %>%
         suppressWarnings() %>% suppressMessages()
       
     }
@@ -108,13 +116,27 @@
       
     }
     
-    data <-
-      data %>%
-      mutate_if(is.character,
-                funs(ifelse(. == '', NA_character_, .))) %>%
-      remove_na()
+    date_names <-
+      names(data)[names(data) %>% str_detect("date[A-Z]")]
+    
+    date_names <- date_names[!date_names %>% str_detect("datetime")]
+    
+    if (date_names %>% length() > 0 ) {
+      data <- data %>% 
+        mutate_at(date_names, 
+                  funs(. %>% mdy()))
+    }
+    
+    datetime_names <- 
+      data %>% dplyr::select(matches("^datetime")) %>% names()
     
     
+    if (datetime_names %>% length() > 0 ) {
+      data <- 
+        data %>% 
+        mutate_at(datetime_names, funs(. %>% ymd_hms))
+    }
+  
     data
   }
 
@@ -188,7 +210,10 @@ dictionary_css_page <-
         "branding-office-name",
         "branding-office-phone",
         "property-meta-bath",
-        "property-baths-count"
+        "property-baths-count",
+        "data-featured", "data-type", "data-display_tcpa_message", 
+        "name", "description", "priceCurrency", "price", "category", 
+        "address", "startDate", "endDate"
         
         
       ),
@@ -258,7 +283,10 @@ dictionary_css_page <-
         "nameBrokerage",
         "phoneBrokerage",
         "countBaths",
-        "countBaths"
+        "countBaths",
+        "isFeatured", "typeProperty", "hasMessageTCPA", 
+        "nameListing", "descriptionListing", "currencyListing", "priceListing", "categoryListing", 
+        "addressListing", "datetimeListingStart", "datetimeListingEnd"
       )
     )
   }
@@ -382,7 +410,60 @@ dictionary_realtor_names <-
         'has_matterport',
         'agentId',
         'is_short_sale',
-        "school"
+        "school",
+        "sold_date",
+        "days_on_market",
+        "form_type",
+        "lead_type",
+        "show_contact_a_lender",
+        "show_veterans_united",
+        "sold_price_to_listing_price_diff",
+        "sold_price_difference_summary.is_lower",
+        "sold_price_difference_summary.price_display",
+        "form_type", "lead_type", "show_contact_a_lender", "show_veterans_united",
+        "has_private_showing", "is_pre_approved", "is_office_standard", 
+        "is_mortgage_feature", "should_suppress_ads", "show_porch_link", 
+        "is_new_construction", "should_suppress_listing_agent", "is_fios_supported", 
+        "is_fios_gige", "is_fios_sfu", "is_tcpa_message_enabled",
+        "agent_name", "broker_name", "broker_location", "broker_number", 
+        "broker_link", "mls_id", "mls_name", "mls_copy_right", "mls_abbreviation", 
+        "office_contact",
+        "plan_id",
+        "long",
+        "street",
+        "street_suffix",
+        "description",
+        "type",
+        "type_display",
+        "lot_size",
+        "lot_size_units",
+        "lot_size_units_display",
+        "permalink",
+        "beds_display",
+        "listed_date",
+        "listed_date_display",
+        "listing_age",
+        "price_per_sqft_display",
+        "year_built",
+        "geo_slug",
+        "photo_count",
+        "advertiser_id",
+        "neighborhood",
+        "virtual_tour_url",
+        "products",
+        "status_display",
+        "product_name",
+        "schools_info",
+        "active_status",
+        "property_status_display",
+        "office_advertiser_id",
+        "property_status",
+        "hoa_fee",
+        "mapUrl",
+        "nameStateProperty",
+        "garage", "agent_advertiser_id","broker_advertiser_id",
+        "stories", "list_date", "prop_type", "lot_size_display",
+        "matterport_url"
       ),
       nameActual = c(
         "pricePerSF",
@@ -399,8 +480,8 @@ dictionary_realtor_names <-
         "addressDisplay",
         "countBeds",
         "countBaths",
-        "areaPropertySF",
-        "priceListingDisplay",
+        "areaPropertySFDisplay",
+        "remove_priceListingDisplay",
         "idListing",
         "idProperty",
         "statusListing",
@@ -501,7 +582,61 @@ dictionary_realtor_names <-
         'hasMatterPort',
         'idAgent',
         'isShortSale',
-        "nameSchool"
+        "nameSchool",
+        "dateSold",
+        "countDaysOnMarket",
+        "typeForm",
+        "typeLead",
+        "hasLenderContact",
+        "hasVeternsUnited",
+        "amountDifferenceSoldToListing",
+        "isSalePriceLowerThanListing",
+        "amountDifferenceSoldToListingDisplay",
+        "typeForm", "typeLead", "hasLenderContact", "hasUnitedVeterans",
+        "hasPrivateShowings", "isPreApproved", "isOfficeStandard", 
+        "isMorgageFeatured", "hasAdsSuppressed", "hasPorchLink", 
+        "isNewConstruction", "hasListingAgentSuppressed", "isFiosSupported", 
+        "isFiosGIGE", "isFiosSFU", "hasMessageTCPA",
+        "nameAgent", "nameBrokerage", "locationBrokerage", "telephoneBrokerage", 
+        "urlBrokerage", "idMLS", "nameMLS", "copyrightMLS", "slugMLS", 
+        "telephoneOffice",
+        
+        "idPlan",
+        "longitudeProperty",
+        "numberStreet",
+        "suffixStreet",
+        "descriptionListing",
+        "remove_typeListing",
+        "typeUnit",
+        "areaLotSF",
+        "typeUnitsLot",
+        "remove_lot_size_units_display",
+        "slugLDP",
+        "remove_beds_display",
+        "datetimeListed",
+        "remove_listed_date_display",
+        "countDaysListed",
+        "remove_price_per_sqft_display",
+        "yearBuilt",
+        "slugGEO",
+        "countPhotos",
+        "idAdvertister",
+        "nameNeighborhood",
+        "urlVirtualTour",
+        "remove_products",
+        "remove_status_display",
+        "nameProduce",
+        "descriptionSchool",
+        "statusActive",
+        "remove_property_status_display",
+        "idAdvertiserOffice",
+        "statusProperty",
+        "amountHOA",
+        "urlGoogleMap",
+        "nameStateProperty",
+        "hasGarage", "idAgentAdvertiser","idBrokerageAdvertiser",
+        "countStories", "datetimeListed", "typeProperty", "remove_lot_size_display",
+        "urlMatterport"
       )
     )
   }
@@ -1624,7 +1759,8 @@ generate_coordinate_slug <-
       data$properties %>%
       as_data_frame()
     
-    df_names <- dictionary_realtor_names()
+    df_names <-
+      dictionary_realtor_names()
     actual_names <-
       names(df_properties) %>%
       map_chr(function(name) {
@@ -1717,7 +1853,7 @@ properties_near <-
     all_data <- 
       locations %>% 
       map_df(function(location){
-        property_near(location = location, 
+        property_near_safe(location = location, 
                       return_message = return_message)
       })
     
@@ -2031,7 +2167,7 @@ table_listings <-
             fact_node %>% html_nodes("div") %>% html_text()
           if (x %in%  c(3, 5)) {
             value <-
-              readr::parse_number(as.character(div_text[[2]])) %>% 
+              readr::parse_number(as.character(div_text[[2]])) %>%
               suppressWarnings()
           }
         }
@@ -2153,7 +2289,8 @@ table_listings <-
         mutate(priceListing = listing[[1]])
     }
     
-    hood_detail <- page %>% html_nodes("#ldp-neighborhood-section .padding-bottom")
+    hood_detail <-
+      page %>% html_nodes("#ldp-neighborhood-section .padding-bottom")
     
     if (hood_detail %>% length() > 0) {
       hood_details <-
@@ -2169,7 +2306,7 @@ table_listings <-
         page %>%
         html_nodes('.neighborhood-local-item p') %>%
         html_text() %>%
-        as.character() %>% 
+        as.character() %>%
         readr::parse_number() %>%
         suppressMessages() %>%
         suppressWarnings()
@@ -2322,7 +2459,8 @@ table_listings <-
         suppressMessages()
     }
     
-    if (feature_nodes %>% length() > 0 && include_features) {
+    if (feature_nodes %>% length() > 0 &&
+        include_features) {
       features <- feature_nodes %>% html_text()
       df_features <- data_frame(descriptionFeature = features)
       data <-
@@ -2421,110 +2559,113 @@ table_listings <-
     }
     
     comps <-
-      page %>% html_nodes('.col-xxs-3') %>% html_text()
+      page %>% html_nodes('.col-xxs-3') %>% html_text() %>% str_trim()
     
     if (comps %>% length > 0) {
-      homes <-
-        page %>% html_nodes("#ldp-home-values .ellipsis") %>% html_text() %>% str_trim() %>% str_split("\\:|\\,")
-      
-      addresses <- seq_along(homes) %>%
-        map_chr(function(x) {
-          homes[[x]] %>% str_trim() %>% str_split("\\ ") %>%  flatten_chr() %>% discard(~
-                                                                                          .x == "") %>%
-            str_c(collapse = " ") %>% str_replace_all("\\This Home ", "")
-        })
-      
-      price_estimate <-
-        page %>% html_nodes('.col-xxs-3') %>% html_text()
-      
-      
-      start <- length(price_estimate) -  length(addresses) + 1
-      
-      price_estimate <-
-        price_estimate[start:length(price_estimate)]  %>% as.character() %>% readr::parse_number() %>% suppressWarnings() %>%
-        suppressMessages()
-      
-      area_sf <-
-        page %>% html_nodes('.col-sm-1') %>% html_text() %>% as.character() %>% readr::parse_number() %>%
-        suppressWarnings() %>% suppressMessages()
-      
-      
-      df_comps <-
-        data_frame(addresseComp = addresses,
-                   priceEstimate = price_estimate)
-      
-      if (area_sf %>% length() - 1 == nrow(df_comps)) {
+      if (nchar(comps) > 20) {
+        homes <-
+          page %>% html_nodes("#ldp-home-values .ellipsis") %>% html_text() %>% str_trim() %>% str_split("\\:|\\,")
+        
+        addresses <- seq_along(homes) %>%
+          map_chr(function(x) {
+            homes[[x]] %>% str_trim() %>% str_split("\\ ") %>%  flatten_chr() %>% discard( ~
+                                                                                             .x == "") %>%
+              str_c(collapse = " ") %>% str_replace_all("\\This Home ", "")
+          })
+        
+        price_estimate <-
+          page %>% html_nodes('.col-xxs-3') %>% html_text()
+        
+        
+        start <- length(price_estimate) -  length(addresses) + 1
+        
+        price_estimate <-
+          price_estimate[start:length(price_estimate)]  %>% as.character() %>% readr::parse_number() %>% suppressWarnings() %>%
+          suppressMessages()
+        
         area_sf <-
-          area_sf[2:length(area_sf)] %>% as.character() %>% readr::parse_number() %>%
+          page %>% html_nodes('.col-sm-1') %>% html_text() %>% as.character() %>% readr::parse_number() %>%
           suppressWarnings() %>% suppressMessages()
         
-        df_comps <-
-          df_comps %>%
-          mutate(areaPropertySF = area_sf)
-      }
-      
-      if ((area_sf %>% length() - 3)  %/% 3 == nrow(df_comps)) {
-        area_sf <-
-          area_sf[4:length(area_sf)]
-        items <-
-          rep(c("countBeds", "countBathrooms", "areaPropertySF"),
-              times = nrow(df_comps))
-        
-        items <-
-          rep(c("countBeds", "countBathrooms", "areaPropertySF"),
-              times = nrow(df_comps))
-        df_bed_bath <-
-          data_frame(
-            idItem = rep(1:3, times = nrow(df_comps)),
-            item = items[1:length(area_sf)],
-            value = area_sf
-          ) %>%
-          group_by(item) %>%
-          mutate(numberProperty = 1:n()) %>%
-          select(numberProperty, item, value) %>%
-          ungroup() %>%
-          mutate(value = value %>% as.character() %>% readr::parse_number()) %>%
-          suppressWarnings() %>% suppressMessages() %>%
-          spread(item, value)
         
         df_comps <-
-          df_comps %>%
-          mutate(numberProperty = 1:n()) %>%
-          left_join(df_bed_bath) %>%
-          suppressMessages() %>%
-          select(-numberProperty)
+          data_frame(addresseComp = addresses,
+                     priceEstimate = price_estimate)
         
+        if (area_sf %>% length() - 1 == nrow(df_comps)) {
+          area_sf <-
+            area_sf[2:length(area_sf)] %>% as.character() %>% readr::parse_number() %>%
+            suppressWarnings() %>% suppressMessages()
+          
+          df_comps <-
+            df_comps %>%
+            mutate(areaPropertySF = area_sf)
+        }
+        
+        if ((area_sf %>% length() - 3)  %/% 3 == nrow(df_comps)) {
+          area_sf <-
+            area_sf[4:length(area_sf)]
+          items <-
+            rep(c("countBeds", "countBathrooms", "areaPropertySF"),
+                times = nrow(df_comps))
+          
+          items <-
+            rep(c("countBeds", "countBathrooms", "areaPropertySF"),
+                times = nrow(df_comps))
+          df_bed_bath <-
+            data_frame(
+              idItem = rep(1:3, times = nrow(df_comps)),
+              item = items[1:length(area_sf)],
+              value = area_sf
+            ) %>%
+            group_by(item) %>%
+            mutate(numberProperty = 1:n()) %>%
+            select(numberProperty, item, value) %>%
+            ungroup() %>%
+            mutate(value = value %>% as.character() %>% readr::parse_number()) %>%
+            suppressWarnings() %>% suppressMessages() %>%
+            spread(item, value)
+          
+          df_comps <-
+            df_comps %>%
+            mutate(numberProperty = 1:n()) %>%
+            left_join(df_bed_bath) %>%
+            suppressMessages() %>%
+            select(-numberProperty)
+          
+        }
+        
+        links <-
+          page %>% html_nodes("#ldp-home-values a") %>% html_attr('href')
+        links <-
+          links[!links %>% is.na()] %>% str_c("https://www.realtor.com/realestateandhomes-detail", .)
+        
+        listing_comps <- c(url, links)
+        
+        if (length(listing_comps) == nrow(df_comps)) {
+          df_comps <-
+            df_comps %>%
+            mutate(urlListingComp = listing_comps)
+        }
+        
+        lot_nodes <-
+          page %>% html_nodes(".hidden-xxs.col-sm-2") %>% html_text()
+        
+        if (length(lot_nodes) - 1 == nrow(df_comps)) {
+          lots <-
+            lot_nodes[2:length(lot_nodes)] %>% as.character() %>%  readr::parse_number() %>%
+            suppressWarnings() %>% suppressMessages()
+          df_comps <-
+            df_comps %>%
+            mutate(areaLotSF = lots)
+        }
+        
+        data <-
+          data %>%
+          mutate(dataComps = list(df_comps),
+                 countComps = dataComps %>% map_dbl(nrow))
       }
       
-      links <-
-        page %>% html_nodes("#ldp-home-values a") %>% html_attr('href')
-      links <-
-        links[!links %>% is.na()] %>% str_c("https://www.realtor.com/realestateandhomes-detail", .)
-      
-      listing_comps <- c(url, links)
-      
-      if (length(listing_comps) == nrow(df_comps)) {
-        df_comps <-
-          df_comps %>%
-          mutate(urlListingComp = listing_comps)
-      }
-      
-      lot_nodes <-
-        page %>% html_nodes(".hidden-xxs.col-sm-2") %>% html_text()
-      
-      if (length(lot_nodes) - 1 == nrow(df_comps)) {
-        lots <-
-          lot_nodes[2:length(lot_nodes)] %>% as.character() %>%  readr::parse_number() %>%
-          suppressWarnings() %>% suppressMessages()
-        df_comps <-
-          df_comps %>%
-          mutate(areaLotSF = lots)
-      }
-      
-      data <-
-        data %>%
-        mutate(dataComps = list(df_comps),
-               countComps = dataComps %>% map_dbl(nrow))
     }
     
     taxes <-
@@ -2605,20 +2746,7 @@ table_listings <-
     
   }
 
-#' Parse listing urls
-#'
-#' Parses a vector of listing urls
-#'
-#' @param urls vector of urls
-#' @param include_features if \code{TRUE} includes features
-#' @param return_message if \code{TRUE} returns a message - default \code{FALSE}
-#' @param sleep_time sleep time in between url
-#'
-#' @return a \code{data_frame}
-#' @export
-#'
-#' @examples
-parse_listing_urls <-
+.parse_listing_urls_html <-
   function(urls = NULL,
            include_features = F,
            sleep_time = 1,

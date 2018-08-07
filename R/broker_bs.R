@@ -32,8 +32,7 @@
     summary(tr, n = sentences) %>% str_c(collapse = "\n")
   
   if (return_message) {
-    emo_smily <- emo::ji("beaming_face_with_smiling_eyes")
-    glue::glue("\n\nThis is much better {emo_smily}\n\n\n{summary_sents}\n\n-----------\n\n") %>% message()
+    glue::glue("\n\nThis is much better\n\n\n{summary_sents}\n\n-----------\n\n") %>% message()
   }
   summary_sents
 }

@@ -14,7 +14,8 @@ listings(locations = NULL, search_type = "city",
   sqft_max = NULL, acre_min = NULL, acre_max = NULL,
   age_min = NULL, age_max = NULL, days_on_market = NULL,
   pending = NULL, is_new_construction = NULL,
-  generate_new_cookies = F, include_pending_contingency = TRUE)
+  generate_new_cookies = F, include_pending_contingency = TRUE,
+  sleep_time = 5)
 }
 \arguments{
 \item{locations}{vector of locations}
@@ -77,6 +78,8 @@ see \link{dictionary_property_types} for options}
 \item{generate_new_cookies}{generate new cookies}
 
 \item{include_pending_contingency}{if \code{TRUE} also includes pending and contingent sales}
+
+\item{sleep_time}{sleep time}
 }
 \value{
 a \code{data_frame}

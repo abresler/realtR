@@ -864,7 +864,7 @@ dictionary_search <-
         is_new_construction = is_new_construction,
         include_pending_contingency = include_pending_contingency
       )
-      
+    
     df_params <-
       .parse_data_parameters(data_param = data)
     
@@ -873,17 +873,17 @@ dictionary_search <-
     
     h <-
       new_handle(verbose = F,
-                   useragent =  df_call$userAgent) %>%
+                 useragent =  df_call$userAgent) %>%
       handle_setopt(copypostfields = data %>% toJSON(auto_unbox = T),
                     customrequest = "POST") %>%
-      handle_setheaders(.list = headers %>% as.list()) 
+      handle_setheaders(.list = headers %>% as.list())
     
     resp <-
       curl_fetch_memory(url = url, handle = h)
     
     json_data <-
       resp$content %>%
-      rawToChar() %>% 
+      rawToChar() %>%
       fromJSON(flatten = T, simplifyVector = T)
   
     count <-
@@ -1404,13 +1404,14 @@ map_listings <-
            age_max = NULL,
            days_on_market = NULL,
            pending = NULL,
-           is_new_construction =  T,
+           is_new_construction =  NULL,
            generate_new_cookies = T,
            include_pending_contingency = TRUE) {
     if (location_name %>% str_to_lower() %>% str_detect("county")) {
       search_type <- "county"
     }
     listing_counts.safe <- purrr::possibly(listing_counts, data_frame())
+    
     df_count <-
       listing_counts.safe(
         locations = location_name,
@@ -1442,6 +1443,7 @@ map_listings <-
         is_new_construction = is_new_construction,
         include_pending_contingency = include_pending_contingency
       )
+    
     if (df_count %>% nrow() == 0) {
       return(invisible())
     }
@@ -1513,133 +1515,98 @@ map_listings <-
         
         content <-
           resp$content %>%
-          rawToChar() %>% 
-          str_split("\n") %>% 
-          flatten_chr()
+          rawToChar() %>%
+          str_split("\n") %>%
+          flatten_chr() %>%
+          str_c(collapse = "")
         
         page <-
           .parse_content_to_page(content = content)
         
-        fact_nodes <-
-          page %>%
-          html_nodes('.js-record-user-activity')
-        
-        
-        data_nodes <-
-          page %>% html_nodes(xpath = "//div[contains(@class, 'data')]")
-        
-        data_bed_bath <-
-          page %>% html_nodes('.prop-meta')
-        
-        data_photos <- 
-          page %>% html_nodes('.photo-wrap')
-        
-        data_detail_wrap <- 
-          page %>% html_nodes(".detail-wrap")
-        
-        lat_lon_nodes <-
-         page %>% html_nodes('.listing-geo')
-        
-        hood_nodes <-
-          data_nodes %>%
-          html_nodes(xpath = "//div[contains(concat(' ', @class, ' '), 'srp-item-neighborhood ellipsis link-tertiary hidden-xxs hidden-xs-small')]")
+        page_nodes <-
+          page %>% html_nodes(".component_property-card")
         
         data_prop <-
-          seq_along(data_nodes) %>%
+          seq_along(page_nodes) %>%
           map_df(function(x) {
             fact_node <-
-              data_nodes[[x]]
+              page_nodes[[x]]
             
-            lat_lon_node <-
-              lat_lon_nodes[[x]]
+            if (fact_node %>% html_attr("class") %>% str_detect("ads-wrapper")) {
+              return(invisible())
+            }
             
-            #hood_node <-
-            # hood_nodes[[x]]
-            
-            # neighborhoods <-
-            #  hood_node %>%
-            # html_nodes("a") %>%
-            #html_text() %>%
-            #   str_c(collapse = ", ")
-            
-            lat_lon <-
-              lat_lon_node %>%
-              html_nodes('meta') %>%
-              html_attrs() %>%
-              purrr::flatten()
-            
-            df_lat_lon <-
-              data_frame(
-                name =  c('latitude', 'longitude'),
-                value = c(lat_lon[[1]], lat_lon[[3]])
-              )
-            
-            fact_children <-
+            wrap_nodes <-
               fact_node %>%
-              html_children()
+              html_nodes(".data-wrap") %>% html_attrs() %>% .[[1]]
+            
+            wrap_names <- names(wrap_nodes)
+            wrap_values <-
+              as.character(wrap_nodes)
+            
+            df_wrap <-
+              data_frame(name = wrap_names, value = wrap_values) %>% filter(!name == "class")
             
             data_atrs <-
               fact_node %>% html_attrs()
             
             df_attrs <-
               data_frame(name = names(data_atrs),
-                         value = data_atrs %>% as.character())
+                         value = data_atrs %>% as.character()) %>%
+              bind_rows(df_wrap) %>%
+              filter(!name %in%  c("class", "data-lead_attributes", "data-search_flags")) %>%
+              distinct()
             
             df_json_rows <-
               df_attrs %>%
               filter(name %in% c("data-lead_attributes", "data-search_flags"))
             
-            
-            
             df_base <-
               df_attrs %>%
-              filter(!name %in%  c("class", "data-lead_attributes", "data-search_flags")) %>%
-              bind_rows(df_lat_lon)
-            
-            property_features <-
-              fact_node %>%
-              html_nodes('.srp-item-property-meta') %>%
-              html_nodes('li')
-            
-            type_listing <-
-              fact_node %>%
-              html_nodes('.srp-property-type') %>%
-              html_text()
-            
-            status_listing <-
-              fact_node %>%
-              html_nodes('.label-wrapper span') %>%
-              html_text() %>%
-              str_trim()
+              filter(!name %in%  c("class", "data-lead_attributes", "data-search_flags"))
             
             
-            # if (neighborhoods %>% length() > 0 ) {
-            ##   df_base %>%
-            #  bind_rows(
-            #   data_frame(name = "nameNeighborhoods", value = neighborhoods)
-            #)
-            #           }
-            if (type_listing %>% length() > 0) {
-              df_base <-
-                df_base %>%
-                bind_rows(data_frame(name = "typeListing", value = type_listing))
-            }
+            meta_nodes <- fact_node %>% html_nodes('meta')
             
-            if (type_listing %>% length() > 0) {
-              df_base <-
-                df_base %>%
-                bind_rows(data_frame(name = "statusListing", value = status_listing))
-            }
+            meta_values <- meta_nodes %>% html_attr("content")
+            meta_names <-
+              meta_nodes %>% html_attr("itemprop")
             
-            if (property_features %>% length() > 0) {
-              name <-
-                property_features %>% html_attrs() %>% flatten_chr()
-              value <-
-                property_features %>% html_text()
-              df_base <-
-                df_base %>%
-                bind_rows(data_frame(name, value))
-            }
+            df_meta <-
+              data_frame(name = meta_names, value = meta_values)
+            
+            df_base <-
+              df_base %>%
+              bind_rows(df_meta) %>%
+              distinct()
+            
+            property_nodes <-
+              fact_node %>% html_nodes(".seo-wrap span")
+            property_names <-
+              property_nodes %>% html_attr("itemprop")
+            property_values <-
+              property_nodes %>% html_text() %>% str_trim() %>% gsub("\\s+", " ", .)
+            
+            df_property <-
+              data_frame(name = property_names, value = property_values) %>% filter(!value == "")
+            
+            df_base <-
+              df_base %>% bind_rows(df_property) %>% distinct()
+            
+            broker_node <-
+              fact_node %>% html_nodes(".broker-info span")
+            
+            broker_name <-
+              broker_node %>% html_attr("data-label") %>% discard(is.na)
+            broker_value <-
+              broker_node %>% html_text() %>% str_trim() %>% str_c(collapse = " ") %>% str_remove_all("Brokered by") %>% str_trim()
+            
+            df_broker <-
+              data_frame(name = broker_name, value = broker_value)
+            
+            bf_base <-
+              df_base %>% bind_rows(df_broker) %>% distinct()
+            
             
             if (df_json_rows %>% nrow() > 0) {
               df_json_data <-
@@ -1657,40 +1624,15 @@ map_listings <-
               
             }
             
-            
-            address_nodes <-
-              fact_node %>%
-              html_nodes(xpath = 'span') %>%
-              html_children()
-            
-            df_address <-
-              seq_along(address_nodes) %>%
-              map_df(function(x) {
-                name <-
-                  address_nodes[x] %>% html_attrs() %>%
-                  .[[1]] %>% as.character()
-                value <-
-                  address_nodes[x] %>% html_text()
-                data_frame(name, value)
-              })
-            
-            if (fact_node %>% html_nodes('.srp-item-broker-text-only span') %>% html_text() %>% length() > 0) {
-              df_base <-
-                df_base %>%
-                bind_rows(data_frame(
-                  name = c("broker"),
-                  value = fact_node %>% html_nodes('.srp-item-broker-text-only span') %>% html_text()
-                ))
-            }
-            
             has_image <-
               fact_node %>%
-              html_nodes('img') %>% length() > 0
+              html_nodes('.photo-wrap img') %>%
+              length() > 0
             
             if (has_image) {
               image_node <-
                 fact_node %>%
-                html_nodes('img')
+                html_nodes('.photo-wrap img')
               
               image_url <-
                 image_node %>%
@@ -1702,7 +1644,8 @@ map_listings <-
                 html_attr('title') %>%
                 .[[1]]
               
-              df_base <- df_base %>%
+              df_base <-
+                df_base %>%
                 bind_rows(data_frame(
                   name = c('addressPropertyFull', 'urlImage'),
                   value = c(address, image_url)
@@ -1711,8 +1654,19 @@ map_listings <-
             
             df_base <-
               df_base %>%
-              bind_rows(df_address) %>%
               mutate(numberListing = x) %>%
+              filter(
+                !name %in% c(
+                  "data-rank",
+                  "id",
+                  "brand",
+                  "productID",
+                  "image",
+                  "manufacturer",
+                  "URL",
+                  "category"
+                )
+              ) %>%
               select(numberListing, everything())
             
             df_base
@@ -1722,6 +1676,18 @@ map_listings <-
         df_prop <-
           data_prop %>%
           left_join(dictionary_css_page() %>% rename(name = id)) %>%
+          suppressMessages()
+        
+        if (df_prop %>% filter(nameActual %>% is.na()) %>% nrow() > 0) {
+          missing_names <- df_prop %>% filter(nameActual %>% is.na()) %>%
+            pull(name) %>%
+            unique() %>%
+            str_c(collapse = "\n")
+          glue::glue("Missing {missing_names}") %>% message()
+        }
+        
+        df_prop <-
+          df_prop %>%
           select(numberListing, nameActual, value) %>%
           mutate_all(funs(ifelse(. == "", NA_character_, .))) %>%
           filter(!is.na(value)) %>%
@@ -1732,7 +1698,10 @@ map_listings <-
           ungroup() %>%
           filter(id == min(id)) %>%
           select(-id) %>%
-          spread(nameActual, value) %>%
+          spread(nameActual, value)
+        
+        df_prop <-
+          df_prop %>%
           .munge_realtor() %>%
           suppressMessages() %>%
           mutate(numberPage = page_no) %>%
@@ -1766,6 +1735,12 @@ map_listings <-
     all_data <-
       all_data %>%
       mutate(urlListing = urlListing %>%  gsub("https://www.realtor.com//", "https://www.realtor.com/", .))
+    
+    all_data <- 
+      all_data %>%
+      mutate(
+        urlPropertyAPI =  glue::glue("https://www.realtor.com/property-overview/M{idProperty}") %>% as.character()
+      )
     
     all_data
   }
@@ -1810,6 +1785,7 @@ map_listings <-
 #' @param include_pending_contingency if \code{TRUE} also includes pending and contingent sales
 #' @param only_open_houses if \code{TRUE} isolates open houses
 #' @param generate_new_cookies generate new cookies
+#' @param sleep_time sleep time 
 #'
 #' @return a \code{data_frame}
 #' @export
@@ -1858,7 +1834,8 @@ listings <-
            pending = NULL,
            is_new_construction =  NULL,
            generate_new_cookies = F,
-           include_pending_contingency = TRUE) {
+           include_pending_contingency = TRUE,
+           sleep_time = 5) {
     if (locations %>% purrr::is_null()) {
       stop("Enter locations")
     }
@@ -1870,7 +1847,8 @@ listings <-
     all_data <-
       locations %>% 
       map_df(function(location) {
-        .get_location_listings_safe(
+        data <- 
+          .get_location_listings_safe(
           location_name = as.character(location),
           search_type = search_type,
           city_isolated = city_isolated,
@@ -1900,6 +1878,12 @@ listings <-
           features = features,
           only_open_houses = only_open_houses
         )
+        
+        if (!sleep_time %>% purrr::is_null()) {
+          Sys.sleep(time = sleep_time)
+        }
+        
+        data
       }) %>% 
       suppressWarnings()
     
