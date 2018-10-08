@@ -109,7 +109,7 @@
               )
             ) %>%
             mutate(idProperty) %>%
-            nest(-idProperty, .key = 'dataNeighborhood')
+            nest(-idProperty, .key = dataNeighborhood)
           return(df)
         }
         
@@ -130,7 +130,7 @@
             df %>%
             .munge_realtor() %>%
             mutate(idProperty) %>%
-            nest(-idProperty, .key = 'dataListingHistory')
+            nest(-idProperty, .key = dataListingHistory)
           return(df)
         }
         
@@ -138,7 +138,7 @@
           df <-
             df %>% select(urlPhoto = url) %>%
             mutate(idProperty) %>%
-            nest(-idProperty, .key = "dataPhotos")
+            nest(-idProperty, .key = dataPhotos)
           return(df)
         }
         
