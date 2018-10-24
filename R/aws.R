@@ -76,7 +76,7 @@ dictionary_geo_names <-
         df_row <- df_names %>% filter(nameGeo == name)
         if (df_row %>% nrow() == 0) {
           glue::glue("Missing {name}") %>%
-            message()
+            cat(fill = T)
           return(name)
         }
         df_row %>% pull(nameActual)
@@ -169,7 +169,7 @@ generate_geo_urls <-
       purrr::possibly(.generate_geo_url, data_frame())
     
     locations %>%
-      map_df(function(area) {
+      future_map_dfr(function(area) {
         .generate_geo_url(area_name = area,
                           limit = limit,
                           search_types = search_types)
@@ -183,10 +183,10 @@ parse_geo_urls <-
       purrr::possibly(.parse_geo_query, data_frame())
     
     urls %>%
-      map_df(function(url) {
+      future_map_dfr(function(url) {
         if (return_message) {
           glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-            message()
+            cat(fill = T)
         }
         .parse_geo_query_safe(url = url)
       })

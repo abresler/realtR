@@ -9,7 +9,7 @@
           filter(nameRealtor == x)
         
         if (df_row %>% nrow() == 0) {
-          glue::glue("Missing {x}") %>% message()
+          glue::glue("Missing {x}") %>% cat(fill = T)
           return(x)
         }
         df_row$nameActual %>% unique() %>% .[[1]]
@@ -46,7 +46,7 @@
     json_property <- json_data[["property"]]
     
     df_prop_cols <-
-      json_property %>% map(class) %>% flatten_df() %>% gather(item, value)
+      json_property %>% future_map(class) %>% flatten_df() %>% gather(item, value)
     
     df_base_cols <-
       df_prop_cols %>%
@@ -92,8 +92,8 @@
     
     data_cols <-
       df_cols %>%
-      map(function(column) {
-        column %>% message()
+      future_map(function(column) {
+        column %>% cat(fill = T)
         df <-
           json_property[[column]] %>% as_data_frame()
         
@@ -147,7 +147,7 @@
           
           df <-
             1:length(feature_names) %>%
-            map_df(function(x) {
+            future_map_dfr(function(x) {
               feature_name <-
                 feature_names[[x]]
               flattened_feature <-
@@ -197,7 +197,7 @@
     
     data_list_cols <-
       df_list_cols %>%
-      map(function(column) {
+      future_map(function(column) {
         if (column == "flags") {
           df <- json_property[[column]] %>% flatten_df()
           actual_names <-
@@ -260,7 +260,7 @@
           
           df <-
             1:length(feature_names) %>%
-            map(function(x) {
+            future_map(function(x) {
               feature_name <-
                 feature_names[[x]]
               df_feature <-
@@ -367,12 +367,12 @@ parse_listing_urls <-
       purrr::possibly(.parse_listing_api_url, data_frame())
     all_data <-
       urls %>%
-      map_df(function(url) {
+      future_map_dfr(function(url) {
         if (return_message) {
           glue::glue(
             "Parsing {url %>% str_replace_all('https://www.realtor.com/property-overview/', '')}"
           ) %>%
-            message()
+            cat(fill = T)
         }
         .parse_listing_api_url_safe(url = url,
                                     sleep_time = sleep_time) %>%

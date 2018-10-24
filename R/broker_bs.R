@@ -9,7 +9,7 @@
   original_sentences <- df_udpipe$sentence_id %>% max()
     
   if (return_message) {
-    glue::glue("\n\nCutting down these {original_sentences} sentence(s) of broker bullshit into {sentences} concise sentence(s) using the PageRank algorithm\n") %>% message()
+    glue::glue("\n\nCutting down these {original_sentences} sentence(s) of broker bullshit into {sentences} concise sentence(s) using the PageRank algorithm\n") %>% cat(fill = T)
   }
   
   
@@ -32,7 +32,7 @@
     summary(tr, n = sentences) %>% str_c(collapse = "\n")
   
   if (return_message) {
-    glue::glue("\n\nThis is much better\n\n\n{summary_sents}\n\n-----------\n\n") %>% message()
+    glue::glue("\n\nThis is much better\n\n\n{summary_sents}\n\n-----------\n\n") %>% cat(fill = T)
   }
   summary_sents
 }
@@ -73,7 +73,7 @@ summarise_broker_bullshit <-
     .broker_bs_safe <- 
       purrr::possibly(.broker_bs, data_frame())
     descriptions %>%
-      map_df(function(text) {
+      future_map_dfr(function(text) {
         resp <- .broker_bs(
           text = text,
           tagger = tagger,

@@ -138,7 +138,7 @@ get_page_attribute_data <-
       html_attrs()
     df_attrs <-
       1:length(page_attributes) %>%
-      map_df(function(x) {
+      future_map_dfr(function(x) {
         page_attributes[x] %>% flatten_df()
       })
     df_attrs

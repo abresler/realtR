@@ -175,7 +175,8 @@ dictionary_listing_features <-
     
     
     if (generate_new_cookies) {
-      new_cookie <- .generate_cookies()
+      new_cookie <- 
+        .generate_cookies()
       df_headers <-
         df_headers %>%
         mutate(cookie = new_cookie)
@@ -189,11 +190,11 @@ dictionary_listing_features <-
   function(data_properties) {
     all_results <-
       seq_along(data_properties) %>%
-      map_df(function(x) {
-        glue::glue("Parsing {x}") %>% message()
+      future_map_dfr(function(x) {
+        glue::glue("Parsing {x}") %>% cat(fill = T)
         data_row <- data_properties[[x]]
         df_col_types <-
-          data_row %>% map(class) %>% as_data_frame() %>%
+          data_row %>% future_map(class) %>% as_data_frame() %>%
           gather(column, type)
         
         remove <-
@@ -219,7 +220,7 @@ dictionary_listing_features <-
         
         df_list_class <-
           df_list %>%
-          map(class) %>%
+          future_map(class) %>%
           as_data_frame() %>%
           gather(column, class)
         
@@ -267,7 +268,7 @@ dictionary_listing_features <-
         df_row <- df_names %>% filter(nameRealtor == name)
         if (df_row %>% nrow() == 0) {
           glue::glue("Missing {name}") %>%
-            message()
+            cat(fill = T)
           return(name)
         }
         df_row %>%  pull(nameActual)
@@ -297,7 +298,7 @@ dictionary_listing_features <-
 .parse_data_parameters <-
   function(data_param) {
     df_class <-
-      data_param %>% map(class) %>% flatten_df() %>%
+      data_param %>% future_map(class) %>% flatten_df() %>%
       gather(column, class)
     
     df_base_names <-
@@ -997,7 +998,7 @@ listing_counts <-
     .get_location_counts_safe <-
       purrr::possibly(.get_location_counts, data_frame())
     locations %>%
-      map_df(function(location) {
+      future_map_dfr(function(location) {
         .get_location_counts(
           location_name = location,
           search_type = search_type,
@@ -1098,8 +1099,8 @@ listing_counts <-
     
     all_properties <-
       1:pages %>%
-      map_df(function(page) {
-        glue::glue("Parsing page {page} of {pages} for location {location_name}") %>% message()
+      future_map_dfr(function(page) {
+        glue::glue("Parsing page {page} of {pages} for location {location_name}") %>% cat(fill = T)
         
         data <-
           .generate_data(
@@ -1279,7 +1280,7 @@ map_listings <-
     
     all_data <-
       locations %>%
-      map_df(function(location) {
+      future_map_dfr(function(location) {
         .get_location_listings_json(
           location_name = location,
           search_type = search_type,
@@ -1457,8 +1458,8 @@ map_listings <-
     
     all_properties <-
       1:pages %>%
-      map_df(purrr::possibly(function(page_no) {
-        glue::glue("Parsing page {page_no} of {pages} for location {location_name}") %>% message()
+      future_map_dfr(purrr::possibly(function(page_no) {
+        glue::glue("Parsing page {page_no} of {pages} for location {location_name}") %>% cat(fill = T)
         
         if (page_no == 1) {
           url <-  "https://www.realtor.com/search_result"
@@ -1528,7 +1529,7 @@ map_listings <-
         
         data_prop <-
           seq_along(page_nodes) %>%
-          map_df(function(x) {
+          future_map_dfr(function(x) {
             fact_node <-
               page_nodes[[x]]
             
@@ -1611,7 +1612,7 @@ map_listings <-
             if (df_json_rows %>% nrow() > 0) {
               df_json_data <-
                 1:nrow(df_json_rows) %>%
-                map_df(function(x) {
+                future_map_dfr(function(x) {
                   df_json_rows %>% dplyr::slice(x) %>% pull(value) %>% jsonlite::fromJSON() %>%
                     flatten_df() %>%
                     mutate_all(as.character) %>%
@@ -1683,7 +1684,7 @@ map_listings <-
             pull(name) %>%
             unique() %>%
             str_c(collapse = "\n")
-          glue::glue("Missing {missing_names}") %>% message()
+          glue::glue("Missing {missing_names}") %>% cat(fill = T)
         }
         
         df_prop <-
@@ -1846,7 +1847,7 @@ listings <-
     
     all_data <-
       locations %>% 
-      map_df(function(location) {
+      future_map_dfr(function(location) {
         data <- 
           .get_location_listings_safe(
           location_name = as.character(location),

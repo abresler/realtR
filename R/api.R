@@ -820,7 +820,7 @@ parse_location <-
     .generate_market_url_safe <-
       purrr::possibly(.generate_market_url, data_frame())
     locations %>%
-      map_df(function(location_name) {
+      future_map_dfr(function(location_name) {
         .generate_market_url_safe(location_name = location_name)
       })
   }
@@ -848,7 +848,7 @@ parse_location <-
         df_row <- df_names %>% filter(nameRealtor == name)
         if (df_row %>% nrow() == 0) {
           glue::glue("Missing {name}") %>%
-            message()
+            cat(fill = T)
           return(name)
         }
         df_row %>%  pull(nameActual)
@@ -876,10 +876,10 @@ parse_location <-
     .parse_market_data_url_safe <-
       purrr::possibly(.parse_market_data_url, data_frame())
     urls %>%
-      map_df(function(url) {
+      future_map_dfr(function(url) {
         if (return_message) {
           glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-            message()
+            cat(fill = T)
         }
         .parse_market_data_url_safe(url = url)
       })
@@ -918,7 +918,7 @@ median_prices <-
       .generate_market_urls_safe(locations = locations)
     
     if (df_urls %>% nrow() == 0) {
-      "No results" %>% message()
+      "No results" %>% cat(fill = T)
       return(invisible())
     }
     
@@ -929,7 +929,7 @@ median_prices <-
       .parse_market_data_urls_safe(urls = df_urls$urlAPI, return_message = return_message)
     
     if (all_data %>% nrow() == 0) {
-      "No results" %>% message()
+      "No results" %>% cat(fill = T)
       return(invisible())
     }
     
@@ -1066,7 +1066,7 @@ median_prices <-
       purrr::possibly(.generate_market_trend_url, data_frame())
     
     locations %>%
-      map_df(function(location_name) {
+      future_map_dfr(function(location_name) {
         .generate_market_trend_url_safe(location_name = location_name)
       }) %>%
       dplyr::select(one_of(
@@ -1099,7 +1099,7 @@ median_prices <-
         df_row <- df_names %>% filter(nameRealtor == name)
         if (df_row %>% nrow() == 0) {
           glue::glue("Missing {name}") %>%
-            message()
+            cat(fill = T)
           return(name)
         }
         df_row %>% pull(nameActual)
@@ -1121,7 +1121,7 @@ median_prices <-
         df_row <- df_names %>% filter(nameRealtor == name)
         if (df_row %>% nrow() == 0) {
           glue::glue("Missing {name}") %>%
-            message()
+            cat(fill = T)
           return(name)
         }
         df_row %>% pull(nameActual)
@@ -1185,10 +1185,10 @@ median_prices <-
     .parse_market_trend_url_safe <-
       purrr::possibly(.parse_market_trend_url, data_frame())
     urls %>%
-      map_df(function(url) {
+      future_map_dfr(function(url) {
         if (return_message) {
           glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-            message()
+            cat(fill = T)
         }
         .parse_market_trend_url_safe(url = url)
       })
@@ -1232,7 +1232,7 @@ trends <-
       .generate_market_trend_urls(locations = as.character(locations))
     
     if (df_urls %>% nrow() == 0) {
-      "No results" %>% message()
+      "No results" %>% cat(fill = T)
       return(invisible())
     }
     
@@ -1264,7 +1264,7 @@ trends <-
       suppressWarnings()
     
     if (all_data %>% nrow() == 0) {
-      "No results" %>% message()
+      "No results" %>% cat(fill = T)
       return(invisible())
     }
     
@@ -1324,7 +1324,7 @@ trends <-
         df_row <- df_names %>% filter(nameRealtor == name)
         if (df_row %>% nrow() == 0) {
           glue::glue("Missing {name}") %>%
-            message()
+            cat(fill = T)
           return(name)
         }
         df_row %>% pull(nameActual)
@@ -1347,10 +1347,10 @@ trends <-
     .parse_validation_url_safe <-
       purrr::possibly(.parse_validation_url, data_frame())
     urls %>%
-      map_df(function(url) {
+      future_map_dfr(function(url) {
         if (return_message) {
           glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-            message()
+            cat(fill = T)
         }
         .parse_validation_url_safe(url = url)
       })
@@ -1423,7 +1423,7 @@ trends <-
 .generate_market_validation_urls <-
   function(locations = c("Bethesda, MD", 20852)) {
     locations %>%
-      map_df(function(location_name) {
+      future_map_dfr(function(location_name) {
         .generate_market_validation_url(location_name = location_name)
       }) %>%
       select(one_of(
@@ -1455,7 +1455,7 @@ validate_locations <-
       .generate_market_validation_urls_safe(locations = locations)
     
     if (df_urls %>% nrow() == 0) {
-      "No results" %>% message()
+      "No results" %>% cat(fill = T)
       return(invisible())
     }
     
@@ -1466,7 +1466,7 @@ validate_locations <-
       .parse_validation_urls_safe(urls = df_urls$urlAPI, return_message = return_message)
     
     if (all_data %>% nrow() == 0) {
-      "No results" %>% message()
+      "No results" %>% cat(fill = T)
       return(invisible())
     }
     
@@ -1515,7 +1515,7 @@ validate_locations <-
         df_row <- df_names %>% filter(nameRealtor == name)
         if (df_row %>% nrow() == 0) {
           glue::glue("Missing {name}") %>%
-            message()
+            cat(fill = T)
           return(name)
         }
         df_row %>% pull(nameActual)
@@ -1552,7 +1552,7 @@ validate_locations <-
         df_row <- df_names %>% filter(nameRealtor == name)
         if (df_row %>% nrow() == 0) {
           glue::glue("Missing {name}") %>%
-            message()
+            cat(fill = T)
           return(name)
         }
         df_row %>% pull(nameActual)
@@ -1573,10 +1573,10 @@ validate_locations <-
     .parse_market_vitality_url_safe <-
       purrr::possibly(.parse_market_vitality_url, data_frame())
     urls %>%
-      map_df(function(url) {
+      future_map_dfr(function(url) {
         if (return_message) {
           glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-            message()
+            cat(fill = T)
         }
         .parse_market_vitality_url_safe(url = url)
       })
@@ -1639,7 +1639,7 @@ validate_locations <-
       purrr::possibly(.generate_market_vitality_url, data_frame())
     
     locations %>%
-      map_df(function(location_name) {
+      future_map_dfr(function(location_name) {
         .generate_market_vitality_url_safe(location_name = location_name)
       })
   }
@@ -1677,7 +1677,7 @@ vitality <-
       .generate_market_vitality_urls_safef(locations = locations)
     
     if (df_urls %>% nrow() == 0) {
-      "No results" %>% message()
+      "No results" %>% cat(fill = T)
       return(invisible())
     }
     
@@ -1688,7 +1688,7 @@ vitality <-
       .parse_market_vitality_urls_safe(urls = df_urls$urlAPI, return_message = return_message)
     
     if (all_data %>% nrow() == 0) {
-      "No results" %>% message()
+      "No results" %>% cat(fill = T)
       return(invisible())
     }
     all_data <-
@@ -1767,7 +1767,7 @@ generate_coordinate_slug <-
         df_row <- df_names %>% filter(nameRealtor == name)
         if (df_row %>% nrow() == 0) {
           glue::glue("Missing {name}") %>%
-            message()
+            cat(fill = T)
           return(name)
         }
         df_row %>% pull(nameActual)
@@ -1852,7 +1852,7 @@ properties_near <-
     
     all_data <- 
       locations %>% 
-      map_df(function(location){
+      future_map_dfr(function(location){
         property_near_safe(location = location, 
                       return_message = return_message)
       })
@@ -1884,7 +1884,7 @@ properties_near <-
     pages <- page %>% .calculate_pages()
     
     1:pages %>%
-      map_df(function(x) {
+      future_map_dfr(function(x) {
         if (!radius %>% purrr::is_null()) {
           radius_slug <-
             glue::glue('/radius-{radius}') %>% as.character()
@@ -1915,7 +1915,7 @@ properties_near <-
     
     all_data <-
       seq_along(result_nodes) %>%
-      map_df(function(x) {
+      future_map_dfr(function(x) {
         page_node <-
           result_nodes[[x]]
         df <-
@@ -2009,7 +2009,7 @@ properties_near <-
       purrr::possibly(parse_address, data_frame())
     df_address <-
       all_data$addressProperty %>%
-      map_df(function(address) {
+      future_map_dfr(function(address) {
         parse_address_safe(address = address)
       })
     
@@ -2031,10 +2031,10 @@ properties_near <-
       purrr::possibly(.parse_search_page, data_frame())
     
     urls %>%
-      map_df(function(url) {
+      future_map_dfr(function(url) {
         if (return_message) {
           glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-            message()
+            cat(fill = T)
         }
         .parse_search_page_safe(url = url)
       })
@@ -2066,7 +2066,7 @@ location_listings <-
       arrange(idPage)
     
     if (parse_property_details) {
-      "Parsing indvidual property listings" %>% message()
+      "Parsing indvidual property listings" %>% cat(fill = T)
       
       parse_listing_urls_safe <-
         purrr::possibly(parse_listing_urls, data_frame())
@@ -2121,7 +2121,7 @@ table_listings <-
     
     all_data <-
       locations %>%
-      map_df(function(location) {
+      future_map_dfr(function(location) {
         location_listings_safe(
           location_name = location,
           include_features = include_features,
@@ -2151,7 +2151,7 @@ table_listings <-
     
     data <-
       seq_along(fact_nodes) %>%
-      map_df(function(x) {
+      future_map_dfr(function(x) {
         fact_node <-
           fact_nodes[[x]]
         id <-
@@ -2212,7 +2212,7 @@ table_listings <-
     if (address_nodes %>% length() > 0) {
       df_address <-
         1:length(address_nodes) %>%
-        map_df(function(x) {
+        future_map_dfr(function(x) {
           attributes <-
             address_nodes[[x]] %>% html_attrs()
           
@@ -2248,7 +2248,7 @@ table_listings <-
     if (other_agent %>% length() > 0) {
       df_broker_1 <-
         1:length(other_agent) %>%
-        map_df(function(x) {
+        future_map_dfr(function(x) {
           attributes <-
             other_agent[[x]] %>% html_attrs()
           
@@ -2389,7 +2389,7 @@ table_listings <-
       
       df_agent <-
         1:length(broker_name_contact) %>%
-        map_df(function(x) {
+        future_map_dfr(function(x) {
           attributes <- broker_name_contact[[x]] %>% html_attrs()
           df <-
             data_frame(item = attributes %>% names(),
@@ -2430,7 +2430,7 @@ table_listings <-
       
       df_broker <-
         1:length(brokerage_name_contact) %>%
-        map_df(function(x) {
+        future_map_dfr(function(x) {
           attributes <-
             brokerage_name_contact[[x]] %>% html_attrs()
           
@@ -2485,7 +2485,7 @@ table_listings <-
     if (property_meta %>% length() > 0) {
       df_property_df <-
         1:length(property_meta) %>%
-        map_df(function(x) {
+        future_map_dfr(function(x) {
           attributes <-
             property_meta[[x]] %>% html_attrs()
           
@@ -2755,10 +2755,10 @@ table_listings <-
       purrr::possibly(.parse_listing_url, data_frame())
     all_data <-
       urls %>%
-      map_df(function(url) {
+      future_map_dfr(function(url) {
         if (return_message) {
           glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-            message()
+            cat(fill = T)
         }
         .parse_listing_url_safe(url = url,
                                 include_features = include_features,
