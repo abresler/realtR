@@ -44,7 +44,6 @@ introductory tutorial</a>.
   - `listings()` : Area detailed listings
   - `vitality()` : Area market vitality
   - `properties_near()` : Listings near a location
-  - `trends()` : Area historic trends
   - `map_listings()` : Featured listings from a map
   - `median_prices()` : Area median prices
   - `parse_listing_urls()` : Detailed property listing information
