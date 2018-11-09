@@ -112,7 +112,7 @@ dictionary_geo_names <-
     
     data <-
       data %>%
-      mutate_at(data %>% dplyr::select(matches("^id[A-Z]")) %>% names(),
+      mutate_at(data %>% dplyr::select(dplyr::matches("^id[A-Z]")) %>% names(),
                 funs(. %>% as.numeric()))
     
     data

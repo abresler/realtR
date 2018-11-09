@@ -44,11 +44,11 @@
   function(data) {
     num_names <-
       data %>% dplyr::select(
-        matches(
+        dplyr::matches(
           "^area|^count[A-Z]|^price|^latitude|^longitude|^year|^index|^id[A-Z]|^number[A-Z]|^size"
         )
       ) %>%
-      dplyr::select(-matches("countyProperty")) %>%
+      dplyr::select(-dplyr::matches("countyProperty")) %>%
       names()
     
     data <- data %>% 
@@ -56,7 +56,7 @@
                 funs(ifelse(. == "", NA_character_, .))) %>% 
       dplyr::select(which(colMeans(is.na(.)) < 1))
     
-    data <- data %>% select(-matches("remove"))
+    data <- data %>% select(-dplyr::matches("remove"))
     
     
     if (num_names %>% length() > 0) {
@@ -69,7 +69,7 @@
     }
     
     log_names <-
-      data %>% dplyr::select(matches("^is|^has")) %>% names()
+      data %>% dplyr::select(dplyr::matches("^is|^has")) %>% names()
     
     data <-
       data %>%
@@ -128,7 +128,7 @@
     }
     
     datetime_names <- 
-      data %>% dplyr::select(matches("^datetime")) %>% names()
+      data %>% dplyr::select(dplyr::matches("^datetime")) %>% names()
     
     
     if (datetime_names %>% length() > 0 ) {
@@ -865,7 +865,7 @@ parse_location <-
     data <-
       data$data %>%
       flatten_df() %>%
-      dplyr::select(-matches("_display"))
+      dplyr::select(-dplyr::matches("_display"))
     
     df_names <- dictionary_realtor_names()
     actual_names <-
@@ -1488,7 +1488,7 @@ generate_coordinate_slug <-
     df_properties <-
       df_properties %>%
       purrr::set_names(actual_names) %>%
-      dplyr::select(-matches("remove")) %>%
+      dplyr::select(-dplyr::matches("remove")) %>%
       suppressMessages()
     
     df_properties <-

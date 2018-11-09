@@ -169,7 +169,7 @@
     
     data <-
       data %>%
-      mutate_at(data %>% select(matches("pct")) %>% names(),
+      mutate_at(data %>% select(dplyr::matches("pct")) %>% names(),
                 funs(. / 100)) %>%
       .munge_realtor()
     

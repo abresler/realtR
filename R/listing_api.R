@@ -171,7 +171,7 @@
             })
           df <- df %>%
             purrr::set_names(actual_names) %>%
-            dplyr::select(-matches("remove"))
+            dplyr::select(-dplyr::matches("remove"))
           
           df <-
             df %>%

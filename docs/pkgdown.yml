@@ -1,6 +1,6 @@
-pandoc: 2.3.1
+pandoc: '2.4'
 pkgdown: 1.1.0.9000
-pkgdown_sha: 13435a6e2d693bec7cd6a770a73475a981838b88
+pkgdown_sha: a15850f0c2111bf68e4d137e3e52afdf1bf3c9f8
 articles: []
 urls:
   reference: http://asbcllc.com/realtR//reference

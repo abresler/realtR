@@ -256,7 +256,7 @@ dictionary_listing_features <-
     
     all_results <-
       all_results %>%
-      dplyr::select(-matches("display")) %>%
+      dplyr::select(-dplyr::matches("display")) %>%
       dplyr::select(-one_of(c("id", "type", "plot")))
     
     df_names <-
@@ -277,7 +277,7 @@ dictionary_listing_features <-
     all_results <-
       all_results %>%
       set_names(actual_names) %>%
-      dplyr::select(-matches("remove"))
+      dplyr::select(-dplyr::matches("remove"))
     
     all_results <-
       all_results %>%
@@ -349,7 +349,7 @@ dictionary_listing_features <-
     }
     
     df_params %>%
-      select(-matches("remove_")) %>%
+      select(-dplyr::matches("remove_")) %>%
       .munge_realtor()
   }
 
