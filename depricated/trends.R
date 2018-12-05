@@ -1,3 +1,5 @@
+
+
 # market_trends -----------------------------------------------------------
 .generate_market_trend_url <-
   function(location_name = c("Bethesda, MD")) {

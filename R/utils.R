@@ -1,3 +1,20 @@
+.resolve_names <- 
+  function(data) {
+    realtor_names <- names(data)
+    dict_names <- 
+      dictionary_realtor_names()
+    realtor_names %>% 
+      map_chr(function(name){
+        dict_name <- dict_names %>% filter(nameRealtor == name)
+        if (nrow(dict_name) == 0) {
+          glue::glue("Missing {name}") %>% cat(fill = T)
+          return(name)
+        }
+        dict_name %>% slice(1) %>% 
+          pull(nameActual)
+      })
+  }
+
 remove_columns <- 
   function(data, columns = c("urlGeoAPI", "urlAPI")) {
     data %>% 

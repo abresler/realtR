@@ -476,7 +476,12 @@ dictionary_realtor_names <-
         "history_length_text",
         "href",
         "agent_photo",
-        "agent_profile_link"
+        "agent_profile_link",
+        "rental_estimate_moderate",
+        "value_per_bedroom_moderate",
+        "closing_price", "listing_price_sqft", "listing_price", "age_days", 
+        "rental_listing_price",
+        "for_sale", "sold", "rental"
       ),
       nameActual = c(
         "pricePerSF",
@@ -662,7 +667,15 @@ dictionary_realtor_names <-
         "remove_history",
         "urlPhotoPrimary",
         "urlAgentPhoto",
-        "slugAgentProfile" 
+        "slugAgentProfile" ,
+        "rentEstimatedMonthlyModerate",
+        "rentPerBedroomMonthlyModerate",
+        "priceClosing", "priceListingPSF", "priceListing", 
+        "countDaysListing", 
+        "rentListing",
+        "countSaleListings", 
+        "countSoldListings",
+        "countRentalListings"
       )
     )
   }
