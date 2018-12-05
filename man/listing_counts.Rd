@@ -4,8 +4,8 @@
 \alias{listing_counts}
 \title{Listing count}
 \usage{
-listing_counts(locations, search_type = "city", features = NULL,
-  city_isolated = NULL, county_isolated = NULL,
+listing_counts(locations, listing_type = "sale", search_type = "city",
+  features = NULL, city_isolated = NULL, county_isolated = NULL,
   zipcode_isolated = NULL, state_isolated = NULL,
   street_isolated = NULL, neighborhood_isolated = NULL,
   beds_min = NULL, beds_max = NULL, baths_min = NULL,
@@ -18,6 +18,11 @@ listing_counts(locations, search_type = "city", features = NULL,
 }
 \arguments{
 \item{locations}{vector of locations}
+
+\item{listing_type}{type of listing \itemize{
+\item sale
+\item rent
+}}
 
 \item{search_type}{search type options include \itemize{
 \item city - \code{default}
@@ -51,8 +56,7 @@ see \link{dictionary_listing_features} for options}
 
 \item{price_max}{if not \code{NULL} maximum price}
 
-\item{only_open_houses}{if \code{TRUE} isolates open houses
-#'}
+\item{only_open_houses}{if \code{TRUE} isolates open houses}
 
 \item{property_type}{if not \code{NULL} type of property options
 see \link{dictionary_property_types} for options}
@@ -70,6 +74,9 @@ see \link{dictionary_property_types} for options}
 \item{age_max}{if not \code{NULL} maximum age}
 
 \item{days_on_market}{if not \code{NULL} count of days on market}
+
+\item{generate_new_cookies}{if \code{TRUE} generates new cookies
+#'}
 
 \item{pending}{if \code{TRUE} include pending}
 

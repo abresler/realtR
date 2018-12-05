@@ -4,8 +4,8 @@
 \alias{map_listings}
 \title{Mapped listing data}
 \usage{
-map_listings(locations = NULL, search_type = "city",
-  city_isolated = NULL, county_isolated = NULL,
+map_listings(locations = NULL, listing_type = "sale",
+  search_type = "city", city_isolated = NULL, county_isolated = NULL,
   zipcode_isolated = NULL, state_isolated = NULL,
   street_isolated = NULL, features = NULL, only_open_houses = NULL,
   neighborhood_isolated = NULL, beds_min = NULL, beds_max = NULL,
@@ -18,6 +18,11 @@ map_listings(locations = NULL, search_type = "city",
 }
 \arguments{
 \item{locations}{vector of locations}
+
+\item{listing_type}{Listing type \itemize{
+\item rent
+\item sale
+}}
 
 \item{search_type}{search type options include \itemize{
 \item city - \code{default}

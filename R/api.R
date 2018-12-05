@@ -42,8 +42,15 @@
 
 .munge_realtor <-
   function(data) {
+    data <-
+      data %>% 
+      mutate_if(is.character,
+                funs(ifelse(. == "", NA_character_, .))) %>% 
+      dplyr::select(which(colMeans(is.na(.)) < 1))
+    
     num_names <-
-      data %>% dplyr::select(
+      data %>% 
+      dplyr::select(
         dplyr::matches(
           "^area|^count[A-Z]|^price|^latitude|^longitude|^year|^index|^id[A-Z]|^number[A-Z]|^size"
         )
@@ -51,10 +58,6 @@
       dplyr::select(-dplyr::matches("countyProperty")) %>%
       names()
     
-    data <- data %>% 
-      mutate_if(is.character,
-                funs(ifelse(. == "", NA_character_, .))) %>% 
-      dplyr::select(which(colMeans(is.na(.)) < 1))
     
     data <- data %>% select(-dplyr::matches("remove"))
     
@@ -213,7 +216,13 @@ dictionary_css_page <-
         "property-baths-count",
         "data-featured", "data-type", "data-display_tcpa_message", 
         "name", "description", "priceCurrency", "price", "category", 
-        "address", "startDate", "endDate"
+        "address", "startDate", "endDate",
+        "data_source",
+        "is_senior",
+        "is_featured",
+        "is_mls",
+        "is_cozy",
+        "groupBeds"
         
         
       ),
@@ -286,7 +295,13 @@ dictionary_css_page <-
         "countBaths",
         "isFeatured", "typeProperty", "hasMessageTCPA", 
         "nameListing", "descriptionListing", "currencyListing", "priceListing", "categoryListing", 
-        "addressListing", "datetimeListingStart", "datetimeListingEnd"
+        "addressListing", "datetimeListingStart", "datetimeListingEnd",
+        "sourceData",
+        "isSeniorHome",
+        "isFeatured",
+        "isMLSListing",
+        "isCozy",
+        "groupBeds"
       )
     )
   }
@@ -481,7 +496,13 @@ dictionary_realtor_names <-
         "value_per_bedroom_moderate",
         "closing_price", "listing_price_sqft", "listing_price", "age_days", 
         "rental_listing_price",
-        "for_sale", "sold", "rental"
+        "for_sale", "sold", "rental",
+        "data_source",
+        "is_senior",
+        "is_featured",
+        "is_mls",
+        "is_cozy",
+        "groupBeds"
       ),
       nameActual = c(
         "pricePerSF",
@@ -675,7 +696,13 @@ dictionary_realtor_names <-
         "rentListing",
         "countSaleListings", 
         "countSoldListings",
-        "countRentalListings"
+        "countRentalListings",
+        "sourceData",
+        "isSeniorHome",
+        "isFeatured",
+        "isMLSListing",
+        "isCozy",
+        "groupBeds"
       )
     )
   }

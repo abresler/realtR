@@ -4,8 +4,8 @@
 \alias{listings}
 \title{MLS listing data}
 \usage{
-listings(locations = NULL, search_type = "city",
-  city_isolated = NULL, county_isolated = NULL,
+listings(locations = NULL, listing_type = "sale",
+  search_type = "city", city_isolated = NULL, county_isolated = NULL,
   zipcode_isolated = NULL, state_isolated = NULL,
   street_isolated = NULL, features = NULL, only_open_houses = NULL,
   neighborhood_isolated = NULL, beds_min = NULL, beds_max = NULL,
@@ -19,6 +19,11 @@ listings(locations = NULL, search_type = "city",
 }
 \arguments{
 \item{locations}{vector of locations}
+
+\item{listing_type}{listing type \itemize{
+\item rent
+\item sale
+}}
 
 \item{search_type}{search type options include \itemize{
 \item city - \code{default}

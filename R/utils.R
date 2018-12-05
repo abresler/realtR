@@ -1,3 +1,10 @@
+.add_date <- 
+  function(data) {
+    data %>% 
+      mutate(dateData = Sys.Date()) %>% 
+      dplyr::select(dateData, everything())
+  }
+
 .resolve_names <- 
   function(data) {
     realtor_names <- names(data)

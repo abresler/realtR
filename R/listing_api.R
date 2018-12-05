@@ -46,7 +46,8 @@
   function(json_data, property_id) {
     idProperty <- property_id
     
-    json_property <- json_data[["property"]]
+    json_property <- 
+      json_data[["property"]]
     
     df_prop_cols <-
       json_property %>% future_map(class) %>% flatten_df() %>% gather(item, value)
@@ -75,7 +76,8 @@
       data %>%
       purrr::set_names(actual_names)
     
-    sel_col <- data_frame(column = names(data)) %>% mutate(idColumn = 1:n()) %>% 
+    sel_col <- 
+      data_frame(column = names(data)) %>% mutate(idColumn = 1:n()) %>% 
       group_by(column) %>% 
       filter(idColumn == min(idColumn)) %>% 
       ungroup() %>% 
@@ -242,17 +244,23 @@
       pull(item)
     
     
+    remove_tables <- c("lead_attributes")
+    df_list_cols <- df_list_cols[!df_list_cols %in% remove_tables]
+    
     data_list_cols <-
-      df_list_cols %>% 
+      df_list_cols %>%
       map(function(column) {
-        column %>% message()
+        column %>% cat(fill = T)
+        if (json_property[[column]] %>% length() == 0) {
+          return(invisible())
+        }
         if (!column %in% c("branding", "ldp_urls")) {
-          df <- 
+          df <-
             json_property[[column]] %>% flatten_df()
           
           if (nrow(df) == 0) {
             return(invisible())
-          }  
+          }
         }
         
         
@@ -327,8 +335,8 @@
           if (df %>% tibble::has_name("idProperty")) {
             df <- df %>% rename(idBuilding = idProperty)
           }
-          df <- 
-            df %>% 
+          df <-
+            df %>%
             mutate(idProperty) %>%
             nest(-idProperty, .key = "dataBuilding")
           return(df)
@@ -488,17 +496,21 @@
         }
         
         if (column == "branding") {
-          feature_names <- 
+          feature_names <-
             names(df)
-          df
+          
           df <-
             seq_along(feature_names) %>%
             future_map(function(x) {
               feature_name <-
                 feature_names[[x]]
-              feature_name %>% message()
+              feature_name %>% cat(fill = T)
               df_feature <-
                 df[x][[feature_name]] %>% flatten() %>% discard(purrr::is_null) %>% flatten_df() %>% select(-one_of("show_realtor_logo"))
+              
+              if (ncol(df_feature) == 0) {
+                return(invisible())
+              }
               
               append_name <-
                 case_when(feature_name %>% str_to_lower() == "agent" ~ "Agent",
@@ -511,6 +523,7 @@
                 mutate(idProperty)
               return(df_feature)
             }) %>%
+            discard(purrr::is_null) %>%
             purrr::reduce(left_join) %>%
             suppressMessages()
           
@@ -522,7 +535,10 @@
         }
         
       }) %>%
-      discard(purrr::is_null) %>%
+      discard(purrr::is_null)
+    
+    data_list_cols <- 
+      data_list_cols %>% 
       purrr::reduce(left_join) %>%
       suppressMessages() %>%
       suppressWarnings()
@@ -562,7 +578,7 @@
 
 .parse_listing_api_url <-
   function(url = "https://www.realtor.com/property-overview/M3372870765", sleep_time = NULL) {
-    idProperty <-
+    property_id <-
       url %>% str_remove_all("https://www.realtor.com/property-overview/M") %>% as.numeric()
     
     json_data <-
@@ -570,11 +586,11 @@
       jsonlite::fromJSON(simplifyVector = T, simplifyDataFrame = T) 
     
     data <- 
-      .munge_listing_api(json_data = json_data, property_id = idProperty) %>% suppressWarnings() %>% 
+      .munge_listing_api(json_data = json_data, property_id = property_id) %>% suppressWarnings() %>%
       mutate(urlPropertyAPI = url)
     
     if (!sleep_time %>% purrr::is_null()) {
-      
+      Sys.sleep(time = sleep_time)
     }
     
     data
