@@ -22,7 +22,7 @@
       curl_fetch_memory(url = 'https://www.realtor.com/', handle = h)
     
     handle_cookies(h) %>%
-      as_data_frame() %>%
+      as_tibble() %>%
       tidyr::unite(param, name, value, sep = "=") %>%
       pull(param) %>%
       str_c(collapse = "; ")
@@ -36,7 +36,7 @@
 #' Searchable property types
 #' for isolating listings
 #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #' @family dictionary
 #' @family listing search
@@ -45,7 +45,7 @@
 #' dictionary_property_types()
 dictionary_property_types <-
   function() {
-    data_frame(
+    tibble(
       nameType = c(
         "House",
         "Condo",
@@ -74,7 +74,7 @@ dictionary_property_types <-
 #' can be used as search parameters in the \link{count_listings}, \link{listings}, \link{listing_counts}
 #' and \link{map_listings} functions.
 #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #' @family dictionary
 #' @family listing search
@@ -82,7 +82,7 @@ dictionary_property_types <-
 #' dictionary_listing_features()
 dictionary_listing_features <-
   function() {
-    data_frame(
+    tibble(
       nameFeature =
         c(
           "Basement",
@@ -194,7 +194,7 @@ dictionary_listing_features <-
         glue::glue("Parsing {x}") %>% cat(fill = T)
         data_row <- data_properties[[x]]
         df_col_types <-
-          data_row %>% future_map(class) %>% as_data_frame() %>%
+          data_row %>% future_map(class) %>% as_tibble() %>%
           gather(column, type)
         
         remove <-
@@ -221,7 +221,7 @@ dictionary_listing_features <-
         df_list_class <-
           df_list %>%
           future_map(class) %>%
-          as_data_frame() %>%
+          as_tibble() %>%
           gather(column, class)
         
         if (df_list_class %>% filter(class == "NULL") %>% nrow() > 0) {
@@ -367,7 +367,7 @@ dictionary_listing_features <-
 
 dictionary_search <-
   function() {
-    data_frame(
+    tibble(
       column = c(
         "search_criteria",
         "city",
@@ -974,7 +974,7 @@ dictionary_search <-
 #' }
 #' @param generate_new_cookies if \code{TRUE} generates new cookies
 #' #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #' @family summary search
 #' @family listing search
@@ -1024,7 +1024,7 @@ listing_counts <-
            is_new_construction =  NULL,
            include_pending_contingency = TRUE) {
     .get_location_counts_safe <-
-      purrr::possibly(.get_location_counts, data_frame())
+      purrr::possibly(.get_location_counts, tibble())
     locations %>%
       future_map_dfr(function(location) {
         .get_location_counts(
@@ -1269,7 +1269,7 @@ listing_counts <-
 #' \item sale
 #' }
 #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @family listing search
 #' @family detailed search
 #' @export
@@ -1322,7 +1322,7 @@ map_listings <-
            generate_new_cookies = F,
            include_pending_contingency = TRUE) {
     .get_location_listings_json_safe <-
-      purrr::possibly(.get_location_listings_json, data_frame())
+      purrr::possibly(.get_location_listings_json, tibble())
     
     all_data <-
       locations %>%
@@ -1463,7 +1463,7 @@ map_listings <-
     if (location_name %>% str_to_lower() %>% str_detect("county")) {
       search_type <- "county"
     }
-    listing_counts.safe <- purrr::possibly(listing_counts, data_frame())
+    listing_counts.safe <- purrr::possibly(listing_counts, tibble())
     
     df_count <-
       listing_counts.safe(
@@ -1608,13 +1608,13 @@ map_listings <-
                 as.character(wrap_nodes)
               
               df_wrap <-
-                data_frame(name = wrap_names, value = wrap_values) %>% filter(!name == "class")
+                tibble(name = wrap_names, value = wrap_values) %>% filter(!name == "class")
               
               data_atrs <-
                 fact_node %>% html_attrs()
               
               df_attrs <-
-                data_frame(name = names(data_atrs),
+                tibble(name = names(data_atrs),
                            value = data_atrs %>% as.character()) %>%
                 bind_rows(df_wrap) %>%
                 filter(!name %in%  c("class", "data-lead_attributes", "data-search_flags")) %>%
@@ -1638,7 +1638,7 @@ map_listings <-
                 meta_nodes %>% html_attr("itemprop")
               
               df_meta <-
-                data_frame(name = meta_names, value = meta_values)
+                tibble(name = meta_names, value = meta_values)
               
               df_base <-
                 df_base %>%
@@ -1653,7 +1653,7 @@ map_listings <-
                 property_nodes %>% html_text() %>% str_trim() %>% gsub("\\s+", " ", .)
               
               df_property <-
-                data_frame(name = property_names, value = property_values) %>% filter(!value == "")
+                tibble(name = property_names, value = property_values) %>% filter(!value == "")
               
               df_base <-
                 df_base %>% bind_rows(df_property) %>% distinct()
@@ -1667,7 +1667,7 @@ map_listings <-
                 broker_node %>% html_text() %>% str_trim() %>% str_c(collapse = " ") %>% str_remove_all("Brokered by") %>% str_trim()
               
               df_broker <-
-                data_frame(name = broker_name, value = broker_value)
+                tibble(name = broker_name, value = broker_value)
               
               bf_base <-
                 df_base %>% bind_rows(df_broker) %>% distinct()
@@ -1711,7 +1711,7 @@ map_listings <-
                 
                 df_base <-
                   df_base %>%
-                  bind_rows(data_frame(
+                  bind_rows(tibble(
                     name = c('addressPropertyFull', 'urlImage'),
                     value = c(address, image_url)
                   ))
@@ -1741,7 +1741,7 @@ map_listings <-
           data_prop <-
             seq_along(page_nodes) %>%
             future_map_dfr(function(x) {
-              df_base <- data_frame()
+              df_base <- tibble()
               meta_nodes <- 
                 fact_node %>% html_nodes('meta')
               
@@ -1751,8 +1751,8 @@ map_listings <-
                 meta_nodes %>% html_attr("itemprop")
               
               df_meta <-
-                data_frame(name = meta_names, value = meta_values)
-              df_base <- data_frame()
+                tibble(name = meta_names, value = meta_values)
+              df_base <- tibble()
               df_base <-
                 df_base %>%
                 bind_rows(df_meta) %>%
@@ -1766,7 +1766,7 @@ map_listings <-
                 property_nodes %>% html_text() %>% str_trim() %>% gsub("\\s+", " ", .)
               
               df_property <-
-                data_frame(name = property_names, value = property_values) %>% filter(!value == "")
+                tibble(name = property_names, value = property_values) %>% filter(!value == "")
               
               df_base <-
                 df_base %>% bind_rows(df_property) %>% distinct()
@@ -1780,7 +1780,7 @@ map_listings <-
                 broker_node %>% html_text() %>% str_trim() %>% str_c(collapse = " ") %>% str_remove_all("Brokered by") %>% str_trim()
               
               df_broker <-
-                data_frame(name = broker_name, value = broker_value)
+                tibble(name = broker_name, value = broker_value)
               
               bf_base <-
                 df_base %>% bind_rows(df_broker) %>% distinct()
@@ -1809,7 +1809,7 @@ map_listings <-
                 
                 df_base <-
                   df_base %>%
-                  bind_rows(data_frame(
+                  bind_rows(tibble(
                     name = c('addressPropertyFull', 'urlImage'),
                     value = c(address, image_url)
                   ))
@@ -1870,7 +1870,7 @@ map_listings <-
           mutate(numberPage = page_no) %>%
           select(numberPage, everything())
         df_prop
-      }, data_frame()))
+      }, tibble()))
     
     df_count_merge <-
       df_count %>%
@@ -1954,7 +1954,7 @@ map_listings <-
 #' \item sale
 #' }
 #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #' @family listing search
 #' @examples
@@ -2010,7 +2010,7 @@ listings <-
     
     .get_location_listings_safe <-
       purrr::possibly(.get_location_listings,
-                      data_frame())
+                      tibble())
     
     all_data <-
       locations %>% 

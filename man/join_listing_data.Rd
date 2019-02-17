@@ -7,12 +7,12 @@
 join_listing_data(data_listings, data_detailed_listings)
 }
 \arguments{
-\item{data_listings}{\code{data_frame} from \code{listings} function}
+\item{data_listings}{\code{tibble} from \code{listings} function}
 
-\item{data_detailed_listings}{\code{data_frame} from \code{parse_listing_urls}}
+\item{data_detailed_listings}{\code{tibble} from \code{parse_listing_urls}}
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 Join meta level listing data and detailed listing data

@@ -10,7 +10,7 @@ mortgage_rates(return_wide = F)
 \item{return_wide}{if \code{TRUE} widens data and removes duration and benchmark variables}
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 Returns a variety of

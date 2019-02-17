@@ -4,7 +4,7 @@
                       return_message = TRUE) {
   
   df_udpipe <-
-    udpipe_annotate(object = tagger, x = text) %>% as.data.frame() %>% as_data_frame()
+    udpipe_annotate(object = tagger, x = text) %>% as.data.frame() %>% as_tibble()
   
   original_sentences <- df_udpipe$sentence_id %>% max()
     
@@ -71,7 +71,7 @@ summarise_broker_bullshit <-
     descriptions <-
       descriptions[!descriptions %>% is.na()]
     .broker_bs_safe <- 
-      purrr::possibly(.broker_bs, data_frame())
+      purrr::possibly(.broker_bs, tibble())
     descriptions %>%
       future_map_dfr(function(text) {
         resp <- .broker_bs(
@@ -80,6 +80,6 @@ summarise_broker_bullshit <-
           sentences = sentences,
           return_message = return_message
         )
-        data_frame(descriptionText = text, textTextRank = resp)
+        tibble(descriptionText = text, textTextRank = resp)
       })
   }

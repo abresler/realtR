@@ -7,7 +7,7 @@
 dictionary_property_types()
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 Searchable property types

@@ -4,7 +4,7 @@
 .generate_rental_urls <- 
   function(zipcodes = c(20852, 10016, 10010)) {
     urls <- glue::glue("https://www.realtor.com/myhome/rental-estimate/zip/{zipcodes}") %>% as.character()
-    data_frame(zipcodeLocation = as.character(zipcodes), 
+    tibble(zipcodeLocation = as.character(zipcodes), 
                urlRentalEstimate = urls)
   }
 
@@ -12,7 +12,7 @@
   function(url = "https://www.realtor.com/myhome/rental-estimate/zip/94086") {
     data <-
       url %>% jsonlite::fromJSON(simplifyDataFrame = T) %>% 
-      as_data_frame()
+      as_tibble()
     
     actual_names <-
       .resolve_names(data = data)
@@ -55,7 +55,7 @@ rental_estimates <-
       .generate_rental_urls(zipcodes = zipcodes)
     
     .parse_rental_estimate_safe <- 
-      purrr::possibly(.parse_rental_estimate, data_frame())
+      purrr::possibly(.parse_rental_estimate, tibble())
     
     all_data <- 
       1:nrow(df_urls) %>% 

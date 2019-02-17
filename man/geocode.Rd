@@ -28,11 +28,11 @@ geocode(locations = NULL, search_types = c("neighborhood", "city",
 \item{...}{extra parameters}
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 This function geocodes a users vector of locations
-and returns a \code{data_frame} with the corresponding results
+and returns a \code{tibble} with the corresponding results
 }
 \examples{
 geocode(locations = c("Palm Springs", "Bethesda", 10016), limit = 100)

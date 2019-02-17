@@ -1,8 +1,8 @@
-pandoc: '2.4'
-pkgdown: 1.1.0.9000
-pkgdown_sha: a15850f0c2111bf68e4d137e3e52afdf1bf3c9f8
+pandoc: '2.6'
+pkgdown: 1.3.0.9000
+pkgdown_sha: 7e788c41d20ab28d4bf97556e18382391d359c9f
 articles: []
 urls:
-  reference: http://asbcllc.com/realtR//reference
-  article: http://asbcllc.com/realtR//articles
+  reference: https://asbcllc.com/realtR//reference
+  article: https://asbcllc.com/realtR//articles
 

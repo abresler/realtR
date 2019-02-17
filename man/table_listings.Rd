@@ -21,7 +21,7 @@ table_listings(locations, include_features = F, radius = NULL,
 \item{...}{extra parameters}
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 Returns listing table.  Slower and not advised

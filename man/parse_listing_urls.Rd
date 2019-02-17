@@ -5,7 +5,7 @@
 \title{Parse listing urls}
 \usage{
 parse_listing_urls(urls = NULL, sleep_time = 1,
-  return_message = TRUE)
+  assign_to_environment = F, return_message = TRUE)
 }
 \arguments{
 \item{urls}{vector of urls}
@@ -15,7 +15,7 @@ parse_listing_urls(urls = NULL, sleep_time = 1,
 \item{return_message}{if \code{TRUE} returns a message - default \code{FALSE}}
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 Parses a vector of listing API urls

@@ -84,7 +84,7 @@ see \link{dictionary_property_types} for options}
 \item{include_pending_contingency}{if \code{TRUE} also includes pending and contingent sales}
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 This function returns data

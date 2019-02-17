@@ -107,7 +107,7 @@ generate_url_reference <-
       list('http://', domain_slug, tl_domain) %>%
       purrr::reduce(paste0)
     df <-
-      data_frame(urlReferer = url,
+      tibble(urlReferer = url,
                  userAgent = user_agent)
     df
   }
@@ -123,7 +123,7 @@ parse_address <-
     
     zip_parts <- parts[[3]] %>% str_split('\\ ') %>% flatten_chr()
     
-    data <- data_frame(addressProperty = address, 
+    data <- tibble(addressProperty = address, 
                stretProperty = parts[[1]],
                cityProperty = parts[[2]],
                slugStateProperty = zip_parts[[1]],
@@ -186,16 +186,16 @@ parse_css_name <-
     if (is_numeric) {
       value <- readr::parse_number(as.character(value))
     }
-    data_frame(nameActual = actual_name, value)
+    tibble(nameActual = actual_name, value)
   }
 
 
 #' Join meta level listing data and detailed listing data
 #'
-#' @param data_listings \code{data_frame} from \code{listings} function
-#' @param data_detailed_listings \code{data_frame} from \code{parse_listing_urls}
+#' @param data_listings \code{tibble} from \code{listings} function
+#' @param data_detailed_listings \code{tibble} from \code{parse_listing_urls}
 #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #'
 #' @examples

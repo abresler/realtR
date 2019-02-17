@@ -1,4 +1,4 @@
-url: http://asbcllc.com/realtR/
+url: https://asbcllc.com/realtR/
 
 template:
   params:
@@ -12,11 +12,11 @@ home:
 navbar:
   left:
   - text: ASBC LLC
-    href: http://asbcllc.com/
+    href: https://asbcllc.com/
   - text: "Examples and Tutorials"
     menu:
       - text: "Introduction to realtR"
-        href: http://asbcllc.com/r_packages/realtR/2018/introduction/index.html
+        href: https://asbcllc.com/r_packages/realtR/2018/introduction/index.html
   - text: Reference
     href: reference/index.html
   right:

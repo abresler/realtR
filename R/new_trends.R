@@ -4,7 +4,7 @@
   function(zipcodes = c(20852, 10016, 10010)) {
     urls <-
       glue::glue("https://www.realtor.com/myhome/trends-zip/{zipcodes}") %>% as.character()
-    data_frame(zipcodeLocation = as.character(zipcodes), 
+    tibble(zipcodeLocation = as.character(zipcodes), 
                urlTrendAPI = urls)
   }
 
@@ -18,13 +18,13 @@
     
     df_trends <- json_data$trends
     df_classes <-
-      df_trends %>% map(class) %>% as_data_frame() %>% gather(column, class)
+      df_trends %>% map(class) %>% as_tibble() %>% gather(column, class)
     regular_cols <-
       df_classes %>% filter(!class %>% str_detect("data.frame|list")) %>% pull(column)
     data <-
       df_trends %>%
       select(regular_cols) %>%
-      as_data_frame()
+      as_tibble()
     
     data <-
       data %>%
@@ -37,7 +37,7 @@
     
     if (has_median) {
       df_median <-
-        df_trends$median %>% as_data_frame()
+        df_trends$median %>% as_tibble()
       data <-
         data %>%
         left_join(
@@ -55,7 +55,7 @@
     
     if (has_listings) {
       df_listings <-
-        df_trends$listing_count %>% as_data_frame()
+        df_trends$listing_count %>% as_tibble()
       
       data <-
         data %>%
@@ -100,7 +100,7 @@
 #' @param zipcodes vector of zipcodes
 #' @param return_message if \code{TRUE} returns a message
 #'
-#' @return \code{data_frame}
+#' @return \code{tibble}
 #' @export
 #'
 #' @examples
@@ -117,7 +117,7 @@ trends_zipcodes <-
       .generate_zipcode_trend_urls(zipcodes = zipcodes)
     
     .parse_zip_trend_url_safe <- 
-      purrr::possibly(.parse_zip_trend_url, data_frame())
+      purrr::possibly(.parse_zip_trend_url, tibble())
     
     all_data <- 
       1:nrow(df_urls) %>% 

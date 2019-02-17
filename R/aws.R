@@ -1,6 +1,6 @@
 dictionary_geo_names <-
   function() {
-    data_frame(
+    tibble(
       nameGeo = c(
         "area_type",
         "_id",
@@ -68,7 +68,7 @@ dictionary_geo_names <-
     
     data <-
       data$autocomplete %>%
-      as_data_frame()
+      as_tibble()
     df_names <- dictionary_geo_names()
     actual_names <-
       names(data) %>%
@@ -148,7 +148,7 @@ dictionary_geo_names <-
       ) %>%
       as.character() %>%
       URLencode()
-    data_frame(nameLocationSearch = area_name,
+    tibble(nameLocationSearch = area_name,
                urlGeoAPI = url)
   }
 
@@ -166,7 +166,7 @@ generate_geo_urls <-
            ),
            limit = 100) {
     generate_geo_url_safe <-
-      purrr::possibly(.generate_geo_url, data_frame())
+      purrr::possibly(.generate_geo_url, tibble())
     
     locations %>%
       future_map_dfr(function(area) {
@@ -180,7 +180,7 @@ parse_geo_urls <-
   function(urls = "https://parser-external.geo.moveaws.com/suggest?input=bethesda&limit=100&client_id=rdcV8&area_types=neighborhood,city,county,postal_code,address",
            return_message = T) {
     .parse_geo_query_safe <-
-      purrr::possibly(.parse_geo_query, data_frame())
+      purrr::possibly(.parse_geo_query, tibble())
     
     urls %>%
       future_map_dfr(function(url) {
@@ -195,7 +195,7 @@ parse_geo_urls <-
 #' Location geocoder
 #'
 #' This function geocodes a users vector of locations
-#' and returns a \code{data_frame} with the corresponding results
+#' and returns a \code{tibble} with the corresponding results
 #'
 #' @param locations vector of locations
 #' @param search_types  vector of search parameters options include \itemize{
@@ -211,7 +211,7 @@ parse_geo_urls <-
 #' @param return_message if \code{TRUE} returns a message
 #' @param ... extra parameters
 #' @family geocoder
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #'
 #' @examples

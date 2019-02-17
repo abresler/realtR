@@ -91,7 +91,7 @@
 .generate_market_trend_urls <-
   function(locations = c("Bethesda, MD")) {
     .generate_market_trend_url_safe <-
-      purrr::possibly(.generate_market_trend_url, data_frame())
+      purrr::possibly(.generate_market_trend_url, tibble())
     
     locations %>%
       future_map_dfr(function(location_name) {
@@ -141,7 +141,7 @@
     
     data <-
       json_data$trends %>%
-      as_data_frame()
+      as_tibble()
     
     actual_names <-
       names(data) %>%
@@ -211,7 +211,7 @@
   function(urls = "https://www.realtor.com/local/markettrends/city/Marietta_GA",
            return_message = TRUE) {
     .parse_market_trend_url_safe <-
-      purrr::possibly(.parse_market_trend_url, data_frame())
+      purrr::possibly(.parse_market_trend_url, tibble())
     urls %>%
       future_map_dfr(function(url) {
         if (return_message) {
@@ -235,7 +235,7 @@
 #' @param return_message if \code{TRUE} returns a message
 #' @param ... extra parameters
 #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #'
 #' @examples
@@ -254,7 +254,7 @@ trends <-
     }
     
     .generate_market_trend_urls_safe <-
-      purrr::possibly(.generate_market_trend_urls, data_frame())
+      purrr::possibly(.generate_market_trend_urls, tibble())
     
     df_urls <-
       .generate_market_trend_urls(locations = as.character(locations))
@@ -265,7 +265,7 @@ trends <-
     }
     
     .parse_market_trend_urls_safe <-
-      purrr::possibly(.parse_market_trend_urls, data_frame())
+      purrr::possibly(.parse_market_trend_urls, tibble())
     
     all_data <-
       .parse_market_trend_urls(urls = df_urls$urlAPI, return_message = return_message)

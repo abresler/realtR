@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Median market statistics — median_prices • realtR</title>
+<title>Market trends for zipcodes — trends_zipcodes • realtR</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,10 +30,9 @@
 
 
 
-<meta property="og:title" content="Median market statistics — median_prices" />
+<meta property="og:title" content="Market trends for zipcodes — trends_zipcodes" />
 
-<meta property="og:description" content="Returns summary median market information for the specified
-locations." />
+<meta property="og:description" content="Market trends for zipcodes" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -127,51 +126,40 @@ locations." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Median market statistics</h1>
+    <h1>Market trends for zipcodes</h1>
     
-    <div class="hidden name"><code>median_prices.Rd</code></div>
+    <div class="hidden name"><code>trends_zipcodes.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Returns summary median market information for the specified
-locations.</p>
+    <p>Market trends for zipcodes</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>median_prices</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>return_message</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>trends_zipcodes</span>(<span class='kw'>zipcodes</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>return_message</span> <span class='kw'>=</span> <span class='no'>T</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>locations</th>
-      <td><p>vector of location , location name must contain
-a city name and a comma ie "Brooklyn, NY"</p></td>
+      <th>zipcodes</th>
+      <td><p>vector of zipcodes</p></td>
     </tr>
     <tr>
       <th>return_message</th>
       <td><p>if <code>TRUE</code> returns a message</p></td>
     </tr>
-    <tr>
-      <th>...</th>
-      <td><p>extra parameters</p></td>
-    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a <code>tibble</code></p>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>The location names must be a city and/or neighborhood bounded
-by commas.</p>
+    <p><code>tibble</code></p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'>median_prices</span>(<span class='kw'>locations</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"Greenwich, CT"</span>, <span class='st'>"New London, CT"</span>, <span class='st'>"Woodside, CA"</span>, <span class='st'>"Park Slope, Brooklyn, NY"</span>))
+<span class='fu'>trends_zipcodes</span>(<span class='kw'>zipcodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"90210"</span>, <span class='st'>"10016"</span>))
 <span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -180,8 +168,6 @@ by commas.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

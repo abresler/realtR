@@ -7,7 +7,7 @@
 dictionary_listing_features()
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 This function returns a dictionary

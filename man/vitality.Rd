@@ -15,7 +15,7 @@ a city name and a comma ie "Brooklyn, NY" or a zipcode}
 \item{...}{extra parameters}
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 Acquires meta level information

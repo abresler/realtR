@@ -12,7 +12,7 @@ trends_zipcodes(zipcodes = NULL, return_message = T)
 \item{return_message}{if \code{TRUE} returns a message}
 }
 \value{
-\code{data_frame}
+\code{tibble}
 }
 \description{
 Market trends for zipcodes

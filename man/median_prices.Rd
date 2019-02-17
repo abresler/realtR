@@ -15,7 +15,7 @@ a city name and a comma ie "Brooklyn, NY"}
 \item{...}{extra parameters}
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 Returns summary median market information for the specified

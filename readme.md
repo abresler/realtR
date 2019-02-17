@@ -34,7 +34,7 @@ With a few lines of R code you will have access to at-least as much, and
 in most cases, <strong>MORE</strong> information than brokers.
 
 You can take a look at a bit of what the package does in
-<a href="http://asbcllc.com/r_packages/realtR/2018/introduction/index.html" title="intro" target="_blank">this
+<a href="https://asbcllc.com/r_packages/realtR/2018/introduction/index.html" title="intro" target="_blank">this
 introductory tutorial</a>.
 
 ## Functions

@@ -87,7 +87,7 @@ see \link{dictionary_property_types} for options}
 \item{sleep_time}{sleep time}
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 Returns MLS data for

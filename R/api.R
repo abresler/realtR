@@ -91,14 +91,23 @@
         data %>%  tibble::has_name("priceDisplay")) {
       data <-
         data %>%
-        mutate(pricePerSFListing = (priceDisplay / areaPropertySF) %>% round(digits = 2))
+        mutate(pricePerSFListing = 
+                 case_when( areaPropertySF > 0 ~ 
+                              (priceDisplay / areaPropertySF) %>% round(digits = 2),
+                            TRUE ~ NA_real_
+               ))
     }
     
     if (data %>% tibble::has_name("areaPropertySF") &&
         data %>%  tibble::has_name("priceListing")) {
       data <-
         data %>%
-        mutate(pricePerSFListing = (priceListing / areaPropertySF) %>% round(digits = 2))
+        mutate(pricePerSFListing =
+                 case_when(
+                   areaPropertySF > 0 ~  (priceListing / areaPropertySF) %>% round(digits = 2)
+                   ,
+                   TRUE ~ NA_real_
+                 ))
     }
     
     if (data %>% tibble::has_name("nameBrokerage")) {
@@ -146,7 +155,7 @@
 # dict --------------------------------------------------------------------
 dictionary_css_page <-
   function() {
-    data_frame(
+    tibble(
       id = c(
         "ra ra-status-sale",
         "ra ra-price-per-sq-ft",
@@ -308,7 +317,7 @@ dictionary_css_page <-
 
 dictionary_realtor_names <-
   function() {
-    data_frame(
+    tibble(
       nameRealtor = c(
         "price_per_sqft",
         "median_listing_price",
@@ -502,7 +511,40 @@ dictionary_realtor_names <-
         "is_featured",
         "is_mls",
         "is_cozy",
-        "groupBeds"
+        "groupBeds",
+        "source",
+        "name",
+        "listing_status",
+        "toll_free_number",
+        "price_min",
+        "price_max",
+        "beds_min",
+        "beds_max",
+        "baths_min",
+        "baths_max",
+        "baths_display",
+        "sqft_min",
+        "sqft_max",
+        "community_id",
+        "save_aware",
+        "comment",
+        "deposit",
+        "deposit_display",
+        "availability_text",
+        "available_date",
+        "section",
+        "area",
+        "area_type",
+        "local_url",
+        "median_listing_price_display",
+        "median_sales_price_display",
+        "median_rent_price_display",
+        "median_sales_price",
+        "median_days_on_market",
+        "management_name",
+        "community_name",
+        "prop_status",
+        "lower", "txt", "yearData", "rental_estimate_display"
       ),
       nameActual = c(
         "pricePerSF",
@@ -702,7 +744,40 @@ dictionary_realtor_names <-
         "isFeatured",
         "isMLSListing",
         "isCozy",
-        "groupBeds"
+        "groupBeds",
+        "sourceListng",
+        "nameListing",
+        "statusListing",
+        "telephoneListing",
+        "priceListingMin",
+        "priceListingMax",
+        "countBedsMin",
+        "countBedsMax",
+        "countBathsMin",
+        "countBathsMax",
+        "bathsDisplay",
+        "areaPropertySFMin",
+        "areaPropertySFMax",
+        "idCommunity",
+        "isSaveAware",
+        "commentListing",
+        "depositDescription",
+        "depositDescriptionDisplay",
+        "descriptionAvailability",
+        "dateAvailable",
+        "sectionSite",
+        "nameArea",
+        "typeArea",
+        "slugRealtorURL",
+        "remove_median_listing_price_display",
+        "remove_median_sales_price_display",
+        "priceRentMedian",
+        "priceSalesMedian",
+        "countDaysOnMarketMedian",
+        "nameManagementCompany",
+        "nameCommunity",
+        "statusProperty",
+        "isLowerEstimate", "displayValueEstimate", "yearData", "displayRentalEstimate"
       )
     )
   }
@@ -720,7 +795,7 @@ dictionary_realtor_names <-
 #'
 #' @param return_wide if \code{TRUE} widens data and removes duration and benchmark variables
 #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #' @family interest rates
 #' @examples
@@ -731,10 +806,10 @@ mortgage_rates <-
       "https://www.realtor.com/mrtg_handler/get_trends_data" %>%
       jsonlite::fromJSON(flatten = T, simplifyDataFrame = T) %>%
       .$rate_trends %>%
-      dplyr::as_data_frame()
+      dplyr::as_tibble()
     
     df_types <-
-      data_frame(
+      tibble(
         typeRate = c(
           'pct30YearFixed',
           'pct15YearFixed',
@@ -821,7 +896,7 @@ parse_location <-
           location_name %>% str_split("\\,") %>% flatten_chr() %>% str_trim()
         
         data <-
-          data_frame(
+          tibble(
             locationSearch = location_name,
             citySearch = location_slugs[[1]],
             stateSearch = location_slugs[[2]]
@@ -833,7 +908,7 @@ parse_location <-
           location_name %>% str_split("\\,") %>% flatten_chr() %>% str_trim()
         
         data <-
-          data_frame(
+          tibble(
             locationSearch = location_name,
             streetOrNeighborhoodSearch = location_slugs[[1]],
             citySearch = location_slugs[[2]],
@@ -844,7 +919,7 @@ parse_location <-
       }
     }
     
-    data_frame(locationSearch = location_name, zipcodeSearch = location_name)
+    tibble(locationSearch = location_name, zipcodeSearch = location_name)
     
     
   }
@@ -884,7 +959,7 @@ parse_location <-
 .generate_market_urls <-
   function(locations = c("Bethesda, MD")) {
     .generate_market_url_safe <-
-      purrr::possibly(.generate_market_url, data_frame())
+      purrr::possibly(.generate_market_url, tibble())
     locations %>%
       future_map_dfr(function(location_name) {
         .generate_market_url_safe(location_name = location_name)
@@ -940,7 +1015,7 @@ parse_location <-
   function(urls = "https://www.realtor.com/median_prices?city=Bethesda&state_code=MD",
            return_message = TRUE) {
     .parse_market_data_url_safe <-
-      purrr::possibly(.parse_market_data_url, data_frame())
+      purrr::possibly(.parse_market_data_url, tibble())
     urls %>%
       future_map_dfr(function(url) {
         if (return_message) {
@@ -964,7 +1039,7 @@ parse_location <-
 #' @param return_message if \code{TRUE} returns a message
 #' @param ... extra parameters
 #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #' @family market information
 #' @examples
@@ -978,7 +1053,7 @@ median_prices <-
     }
     
     .generate_market_urls_safe <-
-      purrr::possibly(.generate_market_urls, data_frame())
+      purrr::possibly(.generate_market_urls, tibble())
     
     df_urls <-
       .generate_market_urls_safe(locations = locations)
@@ -989,7 +1064,7 @@ median_prices <-
     }
     
     .parse_market_data_urls_safe <-
-      purrr::possibly(.parse_market_data_urls, data_frame())
+      purrr::possibly(.parse_market_data_urls, tibble())
     
     all_data <-
       .parse_market_data_urls_safe(urls = df_urls$urlAPI, return_message = return_message)
@@ -1048,7 +1123,7 @@ median_prices <-
       .curl_json() %>%
       jsonlite::fromJSON(flatten = T, simplifyDataFrame = T) %>%
       flatten_df() %>%
-      as_data_frame()
+      as_tibble()
     
     
     data <-
@@ -1083,7 +1158,7 @@ median_prices <-
   function(urls = "https://www.realtor.com/validate_geo?location=Easton%2C+MD&retain_secondary_facets=true&include_zip=false&search_controller=Search%3A%3APropertiesController",
            return_message = TRUE) {
     .parse_validation_url_safe <-
-      purrr::possibly(.parse_validation_url, data_frame())
+      purrr::possibly(.parse_validation_url, tibble())
     urls %>%
       future_map_dfr(function(url) {
         if (return_message) {
@@ -1187,7 +1262,7 @@ validate_locations <-
     }
     
     .generate_market_validation_urls_safe <-
-      purrr::possibly(.generate_market_validation_urls, data_frame())
+      purrr::possibly(.generate_market_validation_urls, tibble())
     
     df_urls <-
       .generate_market_validation_urls_safe(locations = locations)
@@ -1198,7 +1273,7 @@ validate_locations <-
     }
     
     .parse_validation_urls_safe <-
-      purrr::possibly(.parse_validation_urls, data_frame())
+      purrr::possibly(.parse_validation_urls, tibble())
     
     all_data <-
       .parse_validation_urls_safe(urls = df_urls$urlAPI, return_message = return_message)
@@ -1247,7 +1322,7 @@ validate_locations <-
     data_listings <-
       data$new_listings %>% 
       data.frame(stringsAsFactors = F) %>% 
-      as_data_frame()
+      as_tibble()
     
     actual_names <-
       names(data_listings) %>%
@@ -1296,7 +1371,7 @@ validate_locations <-
         "foreclosure_count",
         "price_reduced_count"
       )] %>%
-      as_data_frame()
+      as_tibble()
     
     actual_names <-
       names(data) %>%
@@ -1323,7 +1398,7 @@ validate_locations <-
   function(urls =  "https://www.realtor.com/home_page/vitality?location=Bethesda%2C+MD",
            return_message = T) {
     .parse_market_vitality_url_safe <-
-      purrr::possibly(.parse_market_vitality_url, data_frame())
+      purrr::possibly(.parse_market_vitality_url, tibble())
     urls %>%
       future_map_dfr(function(url) {
         if (return_message) {
@@ -1388,7 +1463,7 @@ validate_locations <-
 .generate_market_vitality_urls <-
   function(locations = c("Bethesda, MD")) {
     .generate_market_vitality_url_safe <-
-      purrr::possibly(.generate_market_vitality_url, data_frame())
+      purrr::possibly(.generate_market_vitality_url, tibble())
     
     locations %>%
       future_map_dfr(function(location_name) {
@@ -1409,7 +1484,7 @@ validate_locations <-
 #' @param return_message if \code{TRUE} returns a message
 #' @param ... extra parameters
 #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #'
 #' @examples
@@ -1423,7 +1498,7 @@ vitality <-
     }
     
     .generate_market_vitality_urls_safef <-
-      purrr::possibly(.generate_market_vitality_urls, data_frame())
+      purrr::possibly(.generate_market_vitality_urls, tibble())
     
     df_urls <-
       .generate_market_vitality_urls_safef(locations = locations)
@@ -1434,7 +1509,7 @@ vitality <-
     }
     
     .parse_market_vitality_urls_safe <-
-      purrr::possibly(.parse_market_vitality_urls, data_frame())
+      purrr::possibly(.parse_market_vitality_urls, tibble())
     
     all_data <-
       .parse_market_vitality_urls_safe(urls = df_urls$urlAPI, return_message = return_message)
@@ -1509,7 +1584,7 @@ generate_coordinate_slug <-
     
     df_properties <-
       data$properties %>%
-      as_data_frame()
+      as_tibble()
     
     df_names <-
       dictionary_realtor_names()
@@ -1600,7 +1675,7 @@ properties_near <-
       stop("Enter locations")
     }
     property_near_safe <- 
-      purrr::possibly(property_near, data_frame())
+      purrr::possibly(property_near, tibble())
     
     all_data <- 
       locations %>% 
@@ -1646,7 +1721,7 @@ properties_near <-
           hasRadius <- F
         }
         
-        data_frame(
+        tibble(
           idPage = x,
           hasRadius,
           urlListingPage = glue::glue("{url}/pg-{x}{radius_slug}") %>% as.character()
@@ -1663,7 +1738,7 @@ properties_near <-
       html_nodes('.js-save-alert-wrapper')
     
     parse_css_name_safe <-
-      purrr::possibly(parse_css_name, data_frame())
+      purrr::possibly(parse_css_name, tibble())
     
     all_data <-
       seq_along(result_nodes) %>%
@@ -1758,7 +1833,7 @@ properties_near <-
       }) %>%
       mutate(urlListingPage = url)
     parse_address_safe <-
-      purrr::possibly(parse_address, data_frame())
+      purrr::possibly(parse_address, tibble())
     df_address <-
       all_data$addressProperty %>%
       future_map_dfr(function(address) {
@@ -1780,7 +1855,7 @@ properties_near <-
   function(urls = "https://www.realtor.com/realestateandhomes-search/Bethesda_MD/pg-10",
            return_message = TRUE) {
     .parse_search_page_safe <-
-      purrr::possibly(.parse_search_page, data_frame())
+      purrr::possibly(.parse_search_page, tibble())
     
     urls %>%
       future_map_dfr(function(url) {
@@ -1821,7 +1896,7 @@ location_listings <-
       "Parsing indvidual property listings" %>% cat(fill = T)
       
       parse_listing_urls_safe <-
-        purrr::possibly(parse_listing_urls, data_frame())
+        purrr::possibly(parse_listing_urls, tibble())
       
       urls <-
         all_data$urlListing
@@ -1855,7 +1930,7 @@ location_listings <-
 #' @param return_message if \code{TRUE} returns messages
 #' @param ... extra parameters
 #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #'
 #' @examples
@@ -1869,7 +1944,7 @@ table_listings <-
            return_message = T,
            ...) {
     location_listings_safe <-
-      purrr::possibly(location_listings, data_frame())
+      purrr::possibly(location_listings, tibble())
     
     all_data <-
       locations %>%
@@ -1924,7 +1999,7 @@ table_listings <-
           }
         }
         
-        data_frame(numberItem = x,
+        tibble(numberItem = x,
                    id,
                    value = value %>% as.character())
         
@@ -1951,7 +2026,7 @@ table_listings <-
           data %>%
           mutate(
             urlImage = photo_urls %>% sample(1),
-            dataPhotos = list(data_frame(urlPhotoProperty = photo_urls)),
+            dataPhotos = list(tibble(urlPhotoProperty = photo_urls)),
             countPhotos = dataPhotos %>% map_dbl(nrow)
           )
       }
@@ -1972,7 +2047,7 @@ table_listings <-
             address_nodes[x] %>% html_text() %>% as.character() %>% str_trim()
           
           df <-
-            data_frame(item = attributes %>% names(),
+            tibble(item = attributes %>% names(),
                        id = attributes %>% as.character(),
                        value) %>%
             mutate(idRow = x)
@@ -2008,7 +2083,7 @@ table_listings <-
             other_agent[x] %>% html_text() %>% as.character()
           
           df <-
-            data_frame(item = attributes %>% names(),
+            tibble(item = attributes %>% names(),
                        id = attributes %>% as.character(),
                        value) %>%
             mutate(idRow = x) %>%
@@ -2065,7 +2140,7 @@ table_listings <-
       
       if (length(hood_details) >= 2 && length(hood_stats) == 4) {
         df_hood <-
-          data_frame(
+          tibble(
             item = c(
               "priceListingMedianNeighborhood",
               "priceSaleMedianNeighborHood",
@@ -2090,7 +2165,7 @@ table_listings <-
       
       if (length(hood_details) >= 2 && length(hood_stats) == 2) {
         df_hood <-
-          data_frame(
+          tibble(
             item = c(
               "priceListingMedianNeighborhood",
               "pricePerSFSaleMedianNeighborhood"
@@ -2144,7 +2219,7 @@ table_listings <-
         future_map_dfr(function(x) {
           attributes <- broker_name_contact[[x]] %>% html_attrs()
           df <-
-            data_frame(item = attributes %>% names(),
+            tibble(item = attributes %>% names(),
                        id = attributes %>% as.character()) %>%
             mutate(idRow = x)
           
@@ -2187,7 +2262,7 @@ table_listings <-
             brokerage_name_contact[[x]] %>% html_attrs()
           
           df <-
-            data_frame(item = attributes %>% names(),
+            tibble(item = attributes %>% names(),
                        id = attributes %>% as.character()) %>%
             mutate(idRow = x)
           
@@ -2214,7 +2289,7 @@ table_listings <-
     if (feature_nodes %>% length() > 0 &&
         include_features) {
       features <- feature_nodes %>% html_text()
-      df_features <- data_frame(descriptionFeature = features)
+      df_features <- tibble(descriptionFeature = features)
       data <-
         data %>%
         mutate(dataFeatures = list(df_features))
@@ -2247,7 +2322,7 @@ table_listings <-
             as.character()
           
           df <-
-            data_frame(item = attributes %>% names(),
+            tibble(item = attributes %>% names(),
                        id = attributes %>% as.character(),
                        value) %>%
             mutate(idRow = x)
@@ -2288,7 +2363,7 @@ table_listings <-
         rep(c("dateListing", "descriptionEvent", "priceListing"), times)
       
       df_listings <-
-        data_frame(item = items, value = listing_history) %>%
+        tibble(item = items, value = listing_history) %>%
         group_by(item) %>%
         mutate(idEvent = 1:n()) %>%
         ungroup() %>%
@@ -2341,7 +2416,7 @@ table_listings <-
         
         
         df_comps <-
-          data_frame(addresseComp = addresses,
+          tibble(addresseComp = addresses,
                      priceEstimate = price_estimate)
         
         if (area_sf %>% length() - 1 == nrow(df_comps)) {
@@ -2365,7 +2440,7 @@ table_listings <-
             rep(c("countBeds", "countBathrooms", "areaPropertySF"),
                 times = nrow(df_comps))
           df_bed_bath <-
-            data_frame(
+            tibble(
               idItem = rep(1:3, times = nrow(df_comps)),
               item = items[seq_along(area_sf)],
               value = area_sf
@@ -2437,7 +2512,7 @@ table_listings <-
       items <-
         rep(c("yearTaxes", "amountTaxes", "amountTaxableValue"), times)
       
-      df_taxes <- data_frame(item = items, value = tax_data) %>%
+      df_taxes <- tibble(item = items, value = tax_data) %>%
         group_by(item) %>%
         mutate(idEvent = 1:n()) %>%
         ungroup() %>%
@@ -2460,7 +2535,7 @@ table_listings <-
       item <-
         rep(c("ratingSchool", "nameSchool"), repeats)
       df_school <-
-        data_frame(item, value) %>%
+        tibble(item, value) %>%
         group_by(item) %>%
         mutate(numberSchool = 1:n()) %>%
         ungroup() %>%
@@ -2504,7 +2579,7 @@ table_listings <-
            sleep_time = 1,
            return_message = TRUE) {
     .parse_listing_url_safe <-
-      purrr::possibly(.parse_listing_url, data_frame())
+      purrr::possibly(.parse_listing_url, tibble())
     all_data <-
       urls %>%
       future_map_dfr(function(url) {
