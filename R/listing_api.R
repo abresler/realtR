@@ -107,7 +107,7 @@
     
     data_cols <-
       df_cols %>%
-      future_map(function(column) {
+      map(function(column) {
         column %>% cat(fill = T)
         df <-
           json_property[[column]] %>% as_tibble()
@@ -125,14 +125,20 @@
         }
         
         if (column == "features") {
-          community_features <- 
-            df$`Community Features` %>% purrr::discard(is_null) %>% flatten_chr() %>% str_c(collapse = ", ")
-          unit_features <- 
-            df$`Unit Features` %>% purrr::discard(is_null) %>% flatten_chr() %>% str_c(collapse = ", ")
+          list_cols <- names(df)
           
-          df <-
-            tibble(featuresBuilding = community_features, 
-                       featuresUnit = unit_features) %>% 
+          df <- 
+            list_cols %>% 
+            map_dfr(function(list_column){
+              list_column %>% message()
+              value <- 
+                df[[list_column]] %>% 
+                discard(function(x){x %>% is_null()}) %>% 
+                flatten_chr()
+              tibble(item = list_column, value)
+            })
+          
+          df <- df %>% 
             mutate(idProperty) %>% 
             nest(-idProperty, .key = dataFeatures)
           

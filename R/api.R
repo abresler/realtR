@@ -544,7 +544,8 @@ dictionary_realtor_names <-
         "management_name",
         "community_name",
         "prop_status",
-        "lower", "txt", "yearData", "rental_estimate_display"
+        "lower", "txt", "yearData", "rental_estimate_display",
+        "fips_code", "property_insights", "real_tip"
       ),
       nameActual = c(
         "pricePerSF",
@@ -777,7 +778,8 @@ dictionary_realtor_names <-
         "nameManagementCompany",
         "nameCommunity",
         "statusProperty",
-        "isLowerEstimate", "displayValueEstimate", "yearData", "displayRentalEstimate"
+        "isLowerEstimate", "displayValueEstimate", "yearData", "displayRentalEstimate",
+        "idFIPS", "descriptionPropertyInsights", "descriptionRealTip"
       )
     )
   }
