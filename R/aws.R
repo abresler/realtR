@@ -169,7 +169,7 @@ generate_geo_urls <-
       purrr::possibly(.generate_geo_url, tibble())
     
     locations %>%
-      future_map_dfr(function(area) {
+      map_dfr(function(area) {
         .generate_geo_url(area_name = area,
                           limit = limit,
                           search_types = search_types)
@@ -183,10 +183,10 @@ parse_geo_urls <-
       purrr::possibly(.parse_geo_query, tibble())
     
     urls %>%
-      future_map_dfr(function(url) {
+      map_dfr(function(url) {
         if (return_message) {
           glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-            cat(fill = T)
+            message()
         }
         .parse_geo_query_safe(url = url)
       })

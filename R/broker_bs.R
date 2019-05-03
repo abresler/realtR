@@ -73,7 +73,7 @@ summarise_broker_bullshit <-
     .broker_bs_safe <- 
       purrr::possibly(.broker_bs, tibble())
     descriptions %>%
-      future_map_dfr(function(text) {
+      map_dfr(function(text) {
         resp <- .broker_bs(
           text = text,
           tagger = tagger,

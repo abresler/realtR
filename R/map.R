@@ -194,7 +194,7 @@ dictionary_listing_features <-
         glue::glue("Parsing {x}") %>% cat(fill = T)
         data_row <- data_properties[[x]]
         df_col_types <-
-          data_row %>% future_map(class) %>% as_tibble() %>%
+          data_row %>% map(class) %>% as_tibble() %>%
           gather(column, type)
         
         remove <-
@@ -220,7 +220,7 @@ dictionary_listing_features <-
         
         df_list_class <-
           df_list %>%
-          future_map(class) %>%
+          map(class) %>%
           as_tibble() %>%
           gather(column, class)
         
@@ -310,7 +310,7 @@ dictionary_listing_features <-
 .parse_data_parameters <-
   function(data_param) {
     df_class <-
-      data_param %>% future_map(class) %>% flatten_df() %>%
+      data_param %>% map(class) %>% flatten_df() %>%
       gather(column, class)
     
     df_base_names <-
@@ -1026,7 +1026,7 @@ listing_counts <-
     .get_location_counts_safe <-
       purrr::possibly(.get_location_counts, tibble())
     locations %>%
-      future_map_dfr(function(location) {
+      map_dfr(function(location) {
         .get_location_counts(
           location_name = location,
           listing_type = listing_type,
@@ -1132,7 +1132,7 @@ listing_counts <-
     all_properties <-
       1:pages %>%
       map_dfr(function(page) {
-        glue::glue("Parsing page {page} of {pages} for location {location_name}") %>% cat(fill = T)
+        glue::glue("Parsing page {page} of {pages} for location {location_name}") %>% message()
         
         data <-
           .generate_data(
@@ -1326,7 +1326,7 @@ map_listings <-
     
     all_data <-
       locations %>%
-      future_map_dfr(function(location) {
+      map_dfr(function(location) {
         .get_location_listings_json_safe(
           location_name = location,
           listing_type = listing_type,
@@ -1584,7 +1584,7 @@ map_listings <-
         if (search_type %>% str_to_lower() != "rent") {
           data_prop <-
             seq_along(page_nodes) %>%
-            future_map_dfr(function(x) {
+            map_dfr(function(x) {
               fact_node <-
                 page_nodes[[x]]
               
@@ -1676,7 +1676,7 @@ map_listings <-
               if (df_json_rows %>% nrow() > 0) {
                 df_json_data <-
                   1:nrow(df_json_rows) %>%
-                  future_map_dfr(function(x) {
+                  map_dfr(function(x) {
                     df_json_rows %>% dplyr::slice(x) %>% pull(value) %>% jsonlite::fromJSON() %>%
                       flatten_df() %>%
                       mutate_all(as.character) %>%
@@ -1740,7 +1740,7 @@ map_listings <-
         } else {
           data_prop <-
             seq_along(page_nodes) %>%
-            future_map_dfr(function(x) {
+            map_dfr(function(x) {
               df_base <- tibble()
               meta_nodes <- 
                 fact_node %>% html_nodes('meta')
@@ -2014,7 +2014,7 @@ listings <-
     
     all_data <-
       locations %>% 
-      future_map_dfr(function(location) {
+      map_dfr(function(location) {
         data <- 
           .get_location_listings_safe(
           location_name = as.character(location),

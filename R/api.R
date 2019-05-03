@@ -967,7 +967,7 @@ parse_location <-
     .generate_market_url_safe <-
       purrr::possibly(.generate_market_url, tibble())
     locations %>%
-      future_map_dfr(function(location_name) {
+      map_dfr(function(location_name) {
         .generate_market_url_safe(location_name = location_name)
       })
   }
@@ -1023,7 +1023,7 @@ parse_location <-
     .parse_market_data_url_safe <-
       purrr::possibly(.parse_market_data_url, tibble())
     urls %>%
-      future_map_dfr(function(url) {
+      map_dfr(function(url) {
         if (return_message) {
           glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
             cat(fill = T)
@@ -1166,7 +1166,7 @@ median_prices <-
     .parse_validation_url_safe <-
       purrr::possibly(.parse_validation_url, tibble())
     urls %>%
-      future_map_dfr(function(url) {
+      map_dfr(function(url) {
         if (return_message) {
           glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
             cat(fill = T)
@@ -1242,7 +1242,7 @@ median_prices <-
 .generate_market_validation_urls <-
   function(locations = c("Bethesda, MD", 20852)) {
     locations %>%
-      future_map_dfr(function(location_name) {
+      map_dfr(function(location_name) {
         .generate_market_validation_url(location_name = location_name)
       }) %>%
       select(one_of(
@@ -1406,10 +1406,10 @@ validate_locations <-
     .parse_market_vitality_url_safe <-
       purrr::possibly(.parse_market_vitality_url, tibble())
     urls %>%
-      future_map_dfr(function(url) {
+      map_dfr(function(url) {
         if (return_message) {
           glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-            cat(fill = T)
+            message()
         }
         .parse_market_vitality_url_safe(url = url)
       })
@@ -1472,7 +1472,7 @@ validate_locations <-
       purrr::possibly(.generate_market_vitality_url, tibble())
     
     locations %>%
-      future_map_dfr(function(location_name) {
+      map_dfr(function(location_name) {
         .generate_market_vitality_url_safe(location_name = location_name)
       })
   }
@@ -1685,7 +1685,7 @@ properties_near <-
     
     all_data <- 
       locations %>% 
-      future_map_dfr(function(location){
+      map_dfr(function(location){
         property_near_safe(location = location, 
                       return_message = return_message)
       })
@@ -1717,7 +1717,7 @@ properties_near <-
     pages <- page %>% .calculate_pages()
     
     1:pages %>%
-      future_map_dfr(function(x) {
+      map_dfr(function(x) {
         if (!radius %>% purrr::is_null()) {
           radius_slug <-
             glue::glue('/radius-{radius}') %>% as.character()
@@ -1748,7 +1748,7 @@ properties_near <-
     
     all_data <-
       seq_along(result_nodes) %>%
-      future_map_dfr(function(x) {
+      map_dfr(function(x) {
         page_node <-
           result_nodes[[x]]
         df <-
@@ -1842,7 +1842,7 @@ properties_near <-
       purrr::possibly(parse_address, tibble())
     df_address <-
       all_data$addressProperty %>%
-      future_map_dfr(function(address) {
+      map_dfr(function(address) {
         parse_address_safe(address = address)
       })
     
@@ -1864,10 +1864,10 @@ properties_near <-
       purrr::possibly(.parse_search_page, tibble())
     
     urls %>%
-      future_map_dfr(function(url) {
+      map_dfr(function(url) {
         if (return_message) {
           glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-            cat(fill = T)
+            message()
         }
         .parse_search_page_safe(url = url)
       })
@@ -1954,7 +1954,7 @@ table_listings <-
     
     all_data <-
       locations %>%
-      future_map_dfr(function(location) {
+      map_dfr(function(location) {
         location_listings_safe(
           location_name = location,
           include_features = include_features,
@@ -1984,7 +1984,7 @@ table_listings <-
     
     data <-
       seq_along(fact_nodes) %>%
-      future_map_dfr(function(x) {
+      map_dfr(function(x) {
         fact_node <-
           fact_nodes[[x]]
         id <-
@@ -2045,7 +2045,7 @@ table_listings <-
     if (address_nodes %>% length() > 0) {
       df_address <-
         seq_along(address_nodes) %>%
-        future_map_dfr(function(x) {
+        map_dfr(function(x) {
           attributes <-
             address_nodes[[x]] %>% html_attrs()
           
@@ -2081,7 +2081,7 @@ table_listings <-
     if (other_agent %>% length() > 0) {
       df_broker_1 <-
         seq_along(other_agent) %>%
-        future_map_dfr(function(x) {
+        map_dfr(function(x) {
           attributes <-
             other_agent[[x]] %>% html_attrs()
           
@@ -2222,7 +2222,7 @@ table_listings <-
       
       df_agent <-
         seq_along(broker_name_contact) %>%
-        future_map_dfr(function(x) {
+        map_dfr(function(x) {
           attributes <- broker_name_contact[[x]] %>% html_attrs()
           df <-
             tibble(item = attributes %>% names(),
@@ -2263,7 +2263,7 @@ table_listings <-
       
       df_broker <-
         seq_along(brokerage_name_contact) %>%
-        future_map_dfr(function(x) {
+        map_dfr(function(x) {
           attributes <-
             brokerage_name_contact[[x]] %>% html_attrs()
           
@@ -2318,7 +2318,7 @@ table_listings <-
     if (property_meta %>% length() > 0) {
       df_property_df <-
         seq_along(property_meta) %>%
-        future_map_dfr(function(x) {
+        map_dfr(function(x) {
           attributes <-
             property_meta[[x]] %>% html_attrs()
           
@@ -2588,10 +2588,10 @@ table_listings <-
       purrr::possibly(.parse_listing_url, tibble())
     all_data <-
       urls %>%
-      future_map_dfr(function(url) {
+      map_dfr(function(url) {
         if (return_message) {
           glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-            cat(fill = T)
+            message()
         }
         .parse_listing_url_safe(url = url,
                                 include_features = include_features,

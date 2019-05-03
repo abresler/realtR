@@ -54,7 +54,7 @@
       json_data[["property"]]
     
     df_prop_cols <-
-      json_property %>% future_map(class) %>% flatten_df() %>% gather(item, value)
+      json_property %>% map(class) %>% flatten_df() %>% gather(item, value)
     
     df_base_cols <-
       df_prop_cols %>%
@@ -292,7 +292,7 @@
           
           df <-
             seq_along(feature_names) %>%
-            future_map_dfr(function(x) {
+            map_dfr(function(x) {
               feature_name <-
                 feature_names[[x]]
               flattened_feature <-
@@ -814,7 +814,7 @@
           
           df <-
             seq_along(feature_names) %>%
-            future_map(function(x) {
+            map(function(x) {
               feature_name <-
                 feature_names[[x]]
               feature_name %>% cat(fill = T)
@@ -932,18 +932,24 @@ parse_listing_urls <-
     
     all_data <-
       urls %>%
-      future_map_dfr(function(url) {
+      map_dfr(function(url) {
         if (return_message) {
           glue::glue(
             "Parsing {url %>% str_replace_all('https://www.realtor.com/property-overview/', '')}"
           ) %>%
-            cat(fill = T)
+            message()
         }
         .parse_listing_api_url_safe(url = url,
                                     sleep_time = sleep_time) %>%
           suppressWarnings()
       }) %>% 
       suppressWarnings()
+    
+    if (all_data %>% hasName("statusActive")) {
+      all_data <- 
+        all_data %>% 
+        mutate(isInContract = statusActive == "In Contract")
+    }
     
     
     if (assign_to_environment) {
