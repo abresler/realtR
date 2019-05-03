@@ -19,7 +19,9 @@
 
 .dictionary_listing_names <- 
   function() {
-    tibble(nameRealtor = c("date", "price", "sqft", "source", "event_name", "price_changed", 
+    tibble(nameRealtor = c(
+      "buyer_data", "seller_data",
+      "date", "price", "sqft", "source", "event_name", "price_changed", 
                                "price_changed_display", "datasource_name", "date_display", "price_display", 
                                "event_name_display", "price_sqft_display", "datasource_name_display", 
                                "photos", "timeline_date", "event_year", "price_difference", 
@@ -28,7 +30,9 @@
                                "markup_price_display", "markup_percent", "markup_time", "description", 
                                "year_marker", "permit_type", "street_direction",
                                "id", "rental_estimate"),
-               nameActual = c("dateListing", "priceListing", "areaPropertySF", "sourceListing", "nameListingEvent", "amountPriceListingChange", 
+               nameActual = c(
+                 "dataBuyer", "dataSeller",
+                 "dateListing", "priceListing", "areaPropertySF", "sourceListing", "nameListingEvent", "amountPriceListingChange", 
                               "removeChange", "nameSourceData", "removeDate", "removePriceDisplay", 
                               "remove_event_name_display", "pricePerSF", "remove_datasource_name_display", 
                               "remove_photos", "dateTimeline", "yearListing", "remove_price_difference", 
@@ -234,14 +238,36 @@
         }
         if (column == "price_history") {
           dict_names <- .dictionary_listing_names()
-          actual_names <- names(df) %>%
-            map_chr(function(name) {
-              dict_names %>%
-                filter(nameRealtor == name) %>%
-                pull(nameActual)
+          
+          actual_names <-
+            names(df) %>%
+            map_chr(function(x) {
+              df_row <-
+                dict_names %>%
+                filter(nameRealtor == x)
+              
+              if (df_row %>% nrow() == 0) {
+                glue::glue("Missing {x}") %>% cat(fill = T)
+                return(x)
+              }
+              df_row$nameActual %>% unique() %>% .[[1]]
             })
+          
+          df <- df %>% set_names(actual_names)
+          
+          if (df %>% hasName("dataSeller")) {
+            if (length(df$dataSeller) == 0) {
+              df$dataSeller  <- NULL
+            }
+          }
+          
+          if (df %>% hasName("dataBuyer")) {
+            if (length(df$dataBuyer) == 0) {
+              df$dataBuyer  <- NULL
+            }
+          }
+          
           df <- df %>%
-            purrr::set_names(actual_names) %>%
             dplyr::select(-dplyr::matches("remove"))
           
           df <-
@@ -864,7 +890,7 @@
   }
 
 .parse_listing_api_url <-
-  function(url = "https://www.realtor.com/property-overview/M3372870765", sleep_time = NULL) {
+  function(url = "https://www.realtor.com/property-overview/M3548124789", sleep_time = NULL) {
     property_id <-
       url %>% str_remove_all("https://www.realtor.com/property-overview/M") %>% as.numeric()
     

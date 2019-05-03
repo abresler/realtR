@@ -319,6 +319,8 @@ dictionary_realtor_names <-
   function() {
     tibble(
       nameRealtor = c(
+        "is_swapped",
+        "tax_amount",
         "price_per_sqft",
         "median_listing_price",
         "median_rent_price",
@@ -548,6 +550,8 @@ dictionary_realtor_names <-
         "fips_code", "property_insights", "real_tip"
       ),
       nameActual = c(
+        "isSwapped",
+        "amountTax",
         "pricePerSF",
         "priceListingMedian",
         "priceRentMedian",
