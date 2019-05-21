@@ -871,9 +871,8 @@ mortgage_rates <-
     
     data <-
       data %>%
-      left_join(df_types) %>%
-      select(dateData, typeRate, durationLoanMonths, typeBenchmark, value) %>%
-      suppressMessages()
+      left_join(df_types, by = "typeRate") %>%
+      select(dateData, typeRate, durationLoanMonths, typeBenchmark, value)
     
     if (return_wide) {
       data <-
@@ -1097,7 +1096,7 @@ median_prices <-
     
     all_data <-
       all_data %>%
-      left_join(df_urls) %>%
+      left_join(df_urls,  by = "urlAPI") %>%
       select(one_of(
         c(
           'locationSearch',
@@ -1111,7 +1110,6 @@ median_prices <-
         )
       ),
       everything()) %>%
-      suppressMessages() %>%
       suppressWarnings() %>%
       remove_na() %>%
       remove_columns()
@@ -1291,9 +1289,10 @@ validate_locations <-
     
     all_data <-
       all_data %>%
-      left_join(df_urls %>% select(one_of(c(
+      left_join(
+        df_urls %>% select(one_of(c(
         "locationSearch", "urlAPI"
-      )))) %>%
+      ))), by = "urlAPI") %>%
       select(one_of(
         c(
           "locationSearch",
@@ -1528,7 +1527,9 @@ vitality <-
       all_data %>%
       left_join(df_urls %>% select(one_of(c(
         "locationSearch", "urlAPI"
-      )))) %>%
+      ))), 
+      by = "urlAPI"
+      ) %>%
       mutate(dateData = Sys.Date()) %>%
       select(one_of(
         c(
@@ -1643,7 +1644,7 @@ property_near <-
     
     data <-
       data %>%
-      left_join(df_loc) %>%
+      left_join(df_loc, by = "urlAPI") %>%
       select(one_of(names(df_loc)), everything()) %>%
       select(-urlAPI) %>%
       suppressMessages() %>%

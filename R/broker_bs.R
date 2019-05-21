@@ -48,7 +48,7 @@
 #' @param tagger a udpipe object - this is the english dictionary on your computer from the udpipe package
 #' @param sentences number of sentences to whittle down to
 #' @param return_message if \code{TRUE} returns messages
-#' @import emo udpipe textrank
+#' @import udpipe textrank
 #' @return
 #' @export
 #'

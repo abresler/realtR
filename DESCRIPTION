@@ -1,9 +1,10 @@
 Package: realtR
 Type: Package
 Title: Real Estate's maxim gun
-Version: 0.101103
+Version: 0.102
 Date: 2019-04-08
 Authors@R: c(person("Alex", "Bresler", email = "abresler@asbcllc.com", role = c("aut", "cre")))
+Encoding: UTF-8
 Maintainer: Alex Bresler <abresler@asbcllc.com>
 Depends:
     R (>= 3.4.0)
@@ -15,11 +16,10 @@ Imports:
     dplyr,
     jsonlite,
     lubridate,
-    furrr,
-    future,
     purrr,
     readr,
     rvest,
+    rlang,
     stringi,
     stringr,
     textrank,

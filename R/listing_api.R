@@ -916,6 +916,7 @@
 #' @param urls vector of urls
 #' @param return_message if \code{TRUE} returns a message - default \code{FALSE}
 #' @param sleep_time sleep time in between url
+#' @param assign_to_environment if \code{TRUE} assign to environment
 #'
 #' @return a \code{tibble}
 #' @export

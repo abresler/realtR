@@ -12,6 +12,8 @@ parse_listing_urls(urls = NULL, sleep_time = 1,
 
 \item{sleep_time}{sleep time in between url}
 
+\item{assign_to_environment}{if \code{TRUE} assign to environment}
+
 \item{return_message}{if \code{TRUE} returns a message - default \code{FALSE}}
 }
 \value{

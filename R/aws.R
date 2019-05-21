@@ -244,9 +244,8 @@ geocode <-
     
     all_data <-
       all_data %>%
-      left_join(df_urls) %>%
-      select(nameLocationSearch, everything()) %>%
-      suppressMessages()
+      left_join(df_urls, by = "urlGeoAPI") %>%
+      select(nameLocationSearch, everything())
     
     all_data %>%
       mutate_all(funs(ifelse(. == "", NA, .))) %>% 
