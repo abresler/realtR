@@ -1,7 +1,7 @@
 Package: realtR
 Type: Package
 Title: Real Estate's maxim gun
-Version: 0.102
+Version: 0.10201
 Date: 2019-04-08
 Authors@R: c(person("Alex", "Bresler", email = "abresler@asbcllc.com", role = c("aut", "cre")))
 Encoding: UTF-8

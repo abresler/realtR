@@ -10,17 +10,20 @@
 
 .parse_zip_trend_url <- 
   function(url = "https://www.realtor.com/myhome/trends-zip/21842") {
-    json_data <- 
-      url %>% 
-      .curl_json() %>% 
+    json_data <-
+      url %>%
+      .curl_json() %>%
       fromJSON(simplifyDataFrame = T)
     
     
     df_trends <- json_data$trends
+    
     df_classes <-
       df_trends %>% map(class) %>% as_tibble() %>% gather(column, class)
+    
     regular_cols <-
       df_classes %>% filter(!class %>% str_detect("data.frame|list")) %>% pull(column)
+    
     data <-
       df_trends %>%
       select(regular_cols) %>%
@@ -38,6 +41,33 @@
     if (has_median) {
       df_median <-
         df_trends$median %>% as_tibble()
+      d <- data.frame(df_median$by_prop_type) %>% as_tibble()
+      
+      d <- d$condo_townhome_rowhome_coop %>%
+        setNames(c(
+          "amountClosingPriceTownHouseCondo",
+          "amountListingPriceTownHouseCondo"
+        )) %>%
+        bind_cols(d$single_family %>%
+                    setNames(
+                      c(
+                        "amountClosingPriceSingleFamily",
+                        "amountListingPriceSingleFamily"
+                      )
+                    )) %>%
+        bind_cols(d$multi_family %>%
+                    setNames(
+                      c(
+                        "amountClosingPriceMultifamily",
+                        "amountListingPriceMultifamily"
+                      )
+                    )) %>% 
+        as_tibble()
+      
+      df_median <- df_median %>% 
+        select(-one_of("by_prop_type")) %>% as_tibble() %>% 
+        bind_cols(d)
+      
       data <-
         data %>%
         left_join(
@@ -88,9 +118,6 @@
         mutate_at(pct_cols,
                   funs(. / 100))
     }
-    
-    data
-    
     
     data
   }

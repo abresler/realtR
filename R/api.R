@@ -547,7 +547,13 @@ dictionary_realtor_names <-
         "community_name",
         "prop_status",
         "lower", "txt", "yearData", "rental_estimate_display",
-        "fips_code", "property_insights", "real_tip"
+        "fips_code", "property_insights", "real_tip",
+        "amountClosingPriceTownHouseCondo",
+        "amountListingPriceTownHouseCondo",
+        "amountClosingPriceSingleFamily",
+        "amountListingPriceSingleFamily",
+        "amountClosingPriceMultifamily",
+        "amountListingPriceMultifamily"
       ),
       nameActual = c(
         "isSwapped",
@@ -783,7 +789,13 @@ dictionary_realtor_names <-
         "nameCommunity",
         "statusProperty",
         "isLowerEstimate", "displayValueEstimate", "yearData", "displayRentalEstimate",
-        "idFIPS", "descriptionPropertyInsights", "descriptionRealTip"
+        "idFIPS", "descriptionPropertyInsights", "descriptionRealTip",
+        "amountClosingPriceTownHouseCondo",
+        "amountListingPriceTownHouseCondo",
+        "amountClosingPriceSingleFamily",
+        "amountListingPriceSingleFamily",
+        "amountClosingPriceMultifamily",
+        "amountListingPriceMultifamily"
       )
     )
   }
