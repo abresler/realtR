@@ -9,7 +9,7 @@
   }
 
 .parse_zip_trend_url <- 
-  function(url = "https://www.realtor.com/myhome/trends-zip/21842") {
+  function(url = "https://www.realtor.com/myhome/trends-zip/10016") {
     json_data <-
       url %>%
       .curl_json() %>%
@@ -41,9 +41,11 @@
     if (has_median) {
       df_median <-
         df_trends$median %>% as_tibble()
+      
       d <- data.frame(df_median$by_prop_type) %>% as_tibble()
       
-      d <- d$condo_townhome_rowhome_coop %>%
+      d <- 
+        d$condo_townhome_rowhome_coop %>%
         setNames(c(
           "amountClosingPriceTownHouseCondo",
           "amountListingPriceTownHouseCondo"
@@ -64,7 +66,8 @@
                     )) %>% 
         as_tibble()
       
-      df_median <- df_median %>% 
+      df_median <- 
+        df_median %>% 
         select(-one_of("by_prop_type")) %>% as_tibble() %>% 
         bind_cols(d)
       
@@ -118,6 +121,9 @@
         mutate_at(pct_cols,
                   funs(. / 100))
     }
+    
+    data <- data %>% 
+      remove_na()
     
     data
   }
