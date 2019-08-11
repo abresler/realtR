@@ -896,7 +896,7 @@
     
     json_data <-
       .curl_json(url = url) %>%
-      jsonlite::fromJSON(simplifyVector = T, simplifyDataFrame = T) 
+      fromJSON(simplifyVector = T, simplifyDataFrame = T) 
     
     data <- 
       .munge_listing_api(json_data = json_data, property_id = property_id) %>% suppressWarnings() %>%

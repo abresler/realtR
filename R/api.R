@@ -4,7 +4,6 @@
   function(url) {
     df_call <- generate_url_reference()
     h <-
-      
       curl::new_handle(
         accept_encoding = NULL,
         verbose = F,
@@ -1989,7 +1988,8 @@ table_listings <-
            sleep_time = NULL) {
     options(warn = 0)
     page <-
-      .curl_page(url = url)
+      read_html(x = url)
+    # .curl_page(url = url)
     
     fact_nodes <-
       page %>%
@@ -2019,18 +2019,17 @@ table_listings <-
         }
         
         tibble(numberItem = x,
-                   id,
-                   value = value %>% as.character())
+               id,
+               value = value %>% as.character())
         
       })
     
     data <-
       data %>%
-      left_join(dictionary_css_page()) %>%
+      left_join(dictionary_css_page(), by = "id") %>%
       select(-c(numberItem, id)) %>%
       spread(nameActual, value) %>%
-      .munge_realtor() %>%
-      suppressMessages()
+      .munge_realtor()
     
     photo_urls <-
       page %>% html_nodes('#ldpPhotoshero img') %>% html_attr('data-src')
@@ -2067,25 +2066,23 @@ table_listings <-
           
           df <-
             tibble(item = attributes %>% names(),
-                       id = attributes %>% as.character(),
-                       value) %>%
+                   id = attributes %>% as.character(),
+                   value) %>%
             mutate(idRow = x)
           df
         }) %>%
         filter(!item == 'class') %>%
         filter(!value == '') %>%
-        left_join(dictionary_css_page()) %>%
+        left_join(dictionary_css_page(), by = "id") %>%
         mutate(value = value %>% str_replace_all("\\,", "")) %>%
         select(nameActual, value) %>%
-        spread(nameActual, value) %>%
-        suppressMessages()
+        spread(nameActual, value)
       
       data <-
         data %>%
         mutate(id = 1) %>%
-        left_join(df_address %>% mutate(id = 1)) %>%
-        select(-id) %>%
-        suppressMessages()
+        left_join(df_address %>% mutate(id = 1), by = "id") %>%
+        select(-id)
       
     }
     
@@ -2103,8 +2100,8 @@ table_listings <-
           
           df <-
             tibble(item = attributes %>% names(),
-                       id = attributes %>% as.character(),
-                       value) %>%
+                   id = attributes %>% as.character(),
+                   value) %>%
             mutate(idRow = x) %>%
             filter(item == 'data-label')
           df
@@ -2126,6 +2123,7 @@ table_listings <-
     }
     listing <-
       page %>% html_nodes('#ldp-pricewrap span') %>% html_text()
+    
     if (listing %>% length() > 0) {
       listing <- listing %>% as.character() %>% readr::parse_number() %>%
         suppressWarnings() %>% suppressMessages()
@@ -2224,6 +2222,7 @@ table_listings <-
         data %>%
         mutate(descriptionText = descriptionText %>% str_to_title())
     }
+    
     broker_name_contact <-
       page %>% html_nodes('.ellipsis.link-secondary span')
     
@@ -2239,7 +2238,7 @@ table_listings <-
           attributes <- broker_name_contact[[x]] %>% html_attrs()
           df <-
             tibble(item = attributes %>% names(),
-                       id = attributes %>% as.character()) %>%
+                   id = attributes %>% as.character()) %>%
             mutate(idRow = x)
           
           if (nrow(df) >= 2) {
@@ -2282,7 +2281,7 @@ table_listings <-
           
           df <-
             tibble(item = attributes %>% names(),
-                       id = attributes %>% as.character()) %>%
+                   id = attributes %>% as.character()) %>%
             mutate(idRow = x)
           
           df <-
@@ -2342,8 +2341,8 @@ table_listings <-
           
           df <-
             tibble(item = attributes %>% names(),
-                       id = attributes %>% as.character(),
-                       value) %>%
+                   id = attributes %>% as.character(),
+                   value) %>%
             mutate(idRow = x)
           df
         }) %>%
@@ -2377,9 +2376,18 @@ table_listings <-
       page %>% html_nodes("#ldp-history-price td") %>% html_text()
     
     if (listing_history %>% length() > 0) {
-      times <- length(listing_history) %/% 3
+      times <- length(listing_history) %/% 5
       items <-
-        rep(c("dateListing", "descriptionEvent", "priceListing"), times)
+        rep(
+          c(
+            "dateEvent",
+            "descriptionEvent",
+            "priceEvent",
+            "amountPSFEvent",
+            "sourceEvent"
+          ),
+          times
+        )
       
       df_listings <-
         tibble(item = items, value = listing_history) %>%
@@ -2388,14 +2396,24 @@ table_listings <-
         ungroup() %>%
         spread(item, value) %>%
         mutate(
-          dateListing = dateListing %>% lubridate::mdy(),
-          priceListing = priceListing %>% as.character() %>% readr::parse_number()
+          dateEvent = dateEvent %>% lubridate::mdy(),
+          dateEvent = case_when(descriptionEvent == "Estimated" ~ Sys.Date(),
+                                TRUE ~ dateEvent),
+          priceEvent = priceEvent %>% as.character() %>% readr::parse_number(),
+          sourceEvent = case_when(sourceEvent == "" ~ NA_character_, TRUE ~ sourceEvent),
+          amountPSFEvent = amountPSFEvent %>% readr::parse_number()
         ) %>%
-        arrange(dateListing) %>%
+        arrange((dateEvent)) %>%
         mutate(numberListing = 1:n()) %>%
         select(-idEvent) %>%
-        select(numberListing, everything()) %>%
-        suppressWarnings() %>% suppressMessages()
+        select(numberListing, one_of(c(
+          "dateEvent",
+          "descriptionEvent",
+          "priceEvent"
+        )),
+        everything()) %>%
+        arrange(desc(dateEvent)) %>%
+        suppressWarnings()
       
       data <-
         data %>%
@@ -2407,15 +2425,16 @@ table_listings <-
     comps <-
       page %>% html_nodes('.col-xxs-3') %>% html_text() %>% str_trim()
     
-    if (comps %>% length > 0) {
-      if (nchar(comps) > 20) {
+    if (length(comps) > 0) {
+      if (length(comps) > 20) {
         homes <-
           page %>% html_nodes("#ldp-home-values .ellipsis") %>% html_text() %>% str_trim() %>% str_split("\\:|\\,")
         
-        addresses <- seq_along(homes) %>%
+        addresses <-
+          seq_along(homes) %>%
           map_chr(function(x) {
-            homes[[x]] %>% str_trim() %>% str_split("\\ ") %>%  flatten_chr() %>% discard( ~
-                                                                                             .x == "") %>%
+            homes[[x]] %>% str_trim() %>% str_split("\\ ") %>%  flatten_chr() %>% discard(~
+                                                                                            .x == "") %>%
               str_c(collapse = " ") %>% str_replace_all("\\This Home ", "")
           })
         
@@ -2423,11 +2442,15 @@ table_listings <-
           page %>% html_nodes('.col-xxs-3') %>% html_text()
         
         
-        start <- length(price_estimate) -  length(addresses) + 1
         
         price_estimate <-
-          price_estimate[start:length(price_estimate)]  %>% as.character() %>% readr::parse_number() %>% suppressWarnings() %>%
-          suppressMessages()
+          price_estimate %>% as.character() %>%
+          str_remove_all("Est. ") %>%
+          readr::parse_number() %>%
+          suppressWarnings() %>%
+          discard(function(x) {
+            is.na(x)
+          })
         
         area_sf <-
           page %>% html_nodes('.col-sm-1') %>% html_text() %>% as.character() %>% readr::parse_number() %>%
@@ -2436,7 +2459,7 @@ table_listings <-
         
         df_comps <-
           tibble(addresseComp = addresses,
-                     priceEstimate = price_estimate)
+                 priceEstimate = price_estimate)
         
         if (area_sf %>% length() - 1 == nrow(df_comps)) {
           area_sf <-
@@ -2516,27 +2539,39 @@ table_listings <-
     
     taxes <-
       page %>%
-      html_nodes("#ldp-history-taxes td") %>% html_text() %>% as.character() %>% readr::parse_number() %>%
+      html_nodes("#ldp-history-taxes td") %>% html_text() %>% as.character() %>% 
       suppressWarnings() %>% suppressMessages()
     
     
-    if (taxes %>% length > 0) {
+    if (length(taxes) > 0) {
       tax_data <-
         page %>%
-        html_nodes("#ldp-history-taxes td") %>% html_text() %>% as.character() %>% readr::parse_number() %>%
-        suppressWarnings() %>% suppressMessages()
+        html_nodes("#ldp-history-taxes td") %>% html_text() %>% as.character()
       
       times <-
-        length(tax_data) %/% 3
-      items <-
-        rep(c("yearTaxes", "amountTaxes", "amountTaxableValue"), times)
+        length(tax_data) %/% 6
       
-      df_taxes <- tibble(item = items, value = tax_data) %>%
+      items <-
+        rep(c("yearTaxes", "amountTaxes", "amountValueLand", "symbol1", "amountValueAdditions", "symbol2", "amountTaxableValue"), times)
+      
+      if (length(items) > length(tax_data)) {
+        items <- items[1:length(tax_data)]
+      }
+      
+      df_taxes <-
+        tibble(item = items, value = tax_data) %>%
         group_by(item) %>%
         mutate(idEvent = 1:n()) %>%
         ungroup() %>%
         spread(item, value) %>%
-        select(yearTaxes, amountTaxes, amountTaxableValue)
+        select(-matches("symbol")) %>%
+        select(yearTaxes, everything()) %>%
+        mutate_all(function(x) {
+          x %>% as.character() %>% parse_number()
+        }) %>% 
+        suppressMessages()
+      
+      
       
       data <-
         data %>%
@@ -2550,18 +2585,19 @@ table_listings <-
     if (schools %>% length() > 0) {
       value <-
         page %>% html_nodes('#load-more-schools td') %>% html_text() %>% str_trim()
-      repeats <- length(value) %/% 2
+      repeats <- length(value) %/% 4
       item <-
-        rep(c("ratingSchool", "nameSchool"), repeats)
+        rep(c("ratingSchool", "nameSchool", "gradesSchool","distanceSchoolMiles"), repeats)
       df_school <-
         tibble(item, value) %>%
         group_by(item) %>%
         mutate(numberSchool = 1:n()) %>%
         ungroup() %>%
-        spread(item, value) %>%
-        mutate_at('ratingSchool',
-                  funs(. %>%  as.character() %>% readr::parse_number())) %>%
-        suppressMessages() %>%
+        spread(item, value) %>% 
+        mutate_at(c("distanceSchoolMiles", "ratingSchool"),
+                  list(function(x){
+                    x %>% parse_number()
+                  })) %>% 
         suppressWarnings()
       
       urlSchool <-
@@ -2592,7 +2628,25 @@ table_listings <-
     
   }
 
-.parse_listing_urls_html <-
+#' Parse html listings
+#' 
+#' Parse vector of listing html listing
+#' urls.
+#' 
+#' This function will likely result in DDOS so use carefully.
+#' When possible find the JSON api data for the listings.
+#'
+#' @param urls vector of html listings
+#' @param include_features if \code{TRUE} includes features
+#' @param sleep_time if not \code{NULL} sleep time between scrapes
+#' @param return_message if \code{TRUE} returns message
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' html_listing_urls(urls = "https://www.realtor.com/realestateandhomes-detail/5301-Westbard-Cir-Apt-323_Bethesda_MD_20816_M63437-59115")
+html_listing_urls <-
   function(urls = NULL,
            include_features = F,
            sleep_time = 1,
@@ -2614,10 +2668,9 @@ table_listings <-
     
     all_data <- 
       all_data %>%
+      .munge_realtor() %>% 
       mutate(dateData = Sys.Date()) %>%
-      select(dateData, everything()) %>%
-      .munge_realtor()
-    
+      select(dateData, everything())
     if (all_data %>% tibble::has_name("dataComps")) {
       all_data <- 
         all_data %>% 

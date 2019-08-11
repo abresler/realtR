@@ -3,6 +3,7 @@
 export(dictionary_listing_features)
 export(dictionary_property_types)
 export(geocode)
+export(html_listing_urls)
 export(join_listing_data)
 export(listing_counts)
 export(listings)
