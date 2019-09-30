@@ -231,7 +231,7 @@ join_listing_data <-
           mutate(idRow = 1:n()) %>%
           filter(hasPhotos) %>%
           dplyr::select(idRow, dataPhotos) %>%
-          unnest() %>%
+          unnest_legacy() %>%
           group_by(idRow) %>%
           sample_n(1) %>%
           ungroup()

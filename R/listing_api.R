@@ -867,7 +867,7 @@
     if (data %>% tibble::has_name("dataBrokerListing")) {
       data <-
         data %>%
-        select(idProperty, dataBrokerListing) %>% unnest() %>%
+        select(idProperty, dataBrokerListing) %>% unnest_legacy() %>%
         left_join(data %>% select(-dataBrokerListing)) %>%
         suppressMessages()
     }
@@ -875,7 +875,7 @@
     if (data %>% tibble::has_name("dataPropertyFlags")) {
       data <-
         data %>%
-        select(idProperty, dataPropertyFlags) %>% unnest() %>%
+        select(idProperty, dataPropertyFlags) %>% unnest_legacy() %>%
         left_join(data %>% select(-dataPropertyFlags)) %>%
         suppressMessages()
     }
@@ -976,7 +976,7 @@ parse_listing_urls <-
             mutate(hasData = data %>% map_dbl(length) > 0) %>% 
             filter(hasData) %>% 
             select(-hasData) %>% 
-            unnest()
+            unnest_legacy()
           
           assign(x = table_name, df, envir = .GlobalEnv)
           
