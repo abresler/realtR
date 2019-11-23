@@ -19,11 +19,14 @@ and \link{map_listings} functions.
 dictionary_listing_features()
 }
 \seealso{
-Other dictionary: \code{\link{dictionary_property_types}}
+Other dictionary: 
+\code{\link{dictionary_property_types}()}
 
-Other listing search: \code{\link{dictionary_property_types}},
-  \code{\link{listing_counts}}, \code{\link{listings}},
-  \code{\link{map_listings}}
+Other listing search: 
+\code{\link{dictionary_property_types}()},
+\code{\link{listing_counts}()},
+\code{\link{listings}()},
+\code{\link{map_listings}()}
 }
 \concept{dictionary}
 \concept{listing search}

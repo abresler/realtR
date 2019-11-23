@@ -4,9 +4,14 @@
 \alias{geocode}
 \title{Location geocoder}
 \usage{
-geocode(locations = NULL, search_types = c("neighborhood", "city",
-  "county", "postal_code", "address", "building", "street", "school"),
-  limit = 100, return_message = TRUE, ...)
+geocode(
+  locations = NULL,
+  search_types = c("neighborhood", "city", "county", "postal_code", "address",
+    "building", "street", "school"),
+  limit = 100,
+  return_message = TRUE,
+  ...
+)
 }
 \arguments{
 \item{locations}{vector of locations}

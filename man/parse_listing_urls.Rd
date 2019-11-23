@@ -4,8 +4,12 @@
 \alias{parse_listing_urls}
 \title{Parse listing urls}
 \usage{
-parse_listing_urls(urls = NULL, sleep_time = 1,
-  assign_to_environment = F, return_message = TRUE)
+parse_listing_urls(
+  urls = NULL,
+  sleep_time = 1,
+  assign_to_environment = F,
+  return_message = TRUE
+)
 }
 \arguments{
 \item{urls}{vector of urls}

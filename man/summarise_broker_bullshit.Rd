@@ -4,8 +4,12 @@
 \alias{summarise_broker_bullshit}
 \title{Clean Broker Bull Shit}
 \usage{
-summarise_broker_bullshit(descriptions, tagger, sentences = 1,
-  return_message = TRUE)
+summarise_broker_bullshit(
+  descriptions,
+  tagger,
+  sentences = 1,
+  return_message = TRUE
+)
 }
 \arguments{
 \item{descriptions}{vector of descriptions}
@@ -15,6 +19,9 @@ summarise_broker_bullshit(descriptions, tagger, sentences = 1,
 \item{sentences}{number of sentences to whittle down to}
 
 \item{return_message}{if \code{TRUE} returns messages}
+}
+\value{
+
 }
 \description{
 This function takes a 

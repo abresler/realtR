@@ -4,8 +4,14 @@
 \alias{table_listings}
 \title{Property listing table}
 \usage{
-table_listings(locations, include_features = F, radius = NULL,
-  parse_property_details = F, return_message = T, ...)
+table_listings(
+  locations,
+  include_features = F,
+  radius = NULL,
+  parse_property_details = F,
+  return_message = T,
+  ...
+)
 }
 \arguments{
 \item{locations}{vector of table listings}

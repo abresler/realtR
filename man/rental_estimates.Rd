@@ -11,6 +11,9 @@ rental_estimates(zipcodes = NULL, return_message = T)
 
 \item{return_message}{if \code{TRUE} returns a message}
 }
+\value{
+
+}
 \description{
 Returns moderate rental estimates for 
 specified zipcodes

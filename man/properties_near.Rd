@@ -11,6 +11,9 @@ properties_near(locations = NULL, return_message = TRUE)
 
 \item{return_message}{if \code{TRUE} returns a message}
 }
+\value{
+
+}
 \description{
 This function returns 50
 properties near a specified location.

@@ -4,17 +4,37 @@
 \alias{listing_counts}
 \title{Listing count}
 \usage{
-listing_counts(locations, listing_type = "sale", search_type = "city",
-  features = NULL, city_isolated = NULL, county_isolated = NULL,
-  zipcode_isolated = NULL, state_isolated = NULL,
-  street_isolated = NULL, neighborhood_isolated = NULL,
-  beds_min = NULL, beds_max = NULL, baths_min = NULL,
-  baths_max = NULL, price_min = NULL, price_max = NULL,
-  only_open_houses = NULL, property_type = NULL, sqft_min = NULL,
-  sqft_max = NULL, acre_min = NULL, acre_max = NULL,
-  age_min = NULL, age_max = NULL, days_on_market = NULL,
-  generate_new_cookies = F, pending = NULL,
-  is_new_construction = NULL, include_pending_contingency = TRUE)
+listing_counts(
+  locations,
+  listing_type = "sale",
+  search_type = "city",
+  features = NULL,
+  city_isolated = NULL,
+  county_isolated = NULL,
+  zipcode_isolated = NULL,
+  state_isolated = NULL,
+  street_isolated = NULL,
+  neighborhood_isolated = NULL,
+  beds_min = NULL,
+  beds_max = NULL,
+  baths_min = NULL,
+  baths_max = NULL,
+  price_min = NULL,
+  price_max = NULL,
+  only_open_houses = NULL,
+  property_type = NULL,
+  sqft_min = NULL,
+  sqft_max = NULL,
+  acre_min = NULL,
+  acre_max = NULL,
+  age_min = NULL,
+  age_max = NULL,
+  days_on_market = NULL,
+  generate_new_cookies = F,
+  pending = NULL,
+  is_new_construction = NULL,
+  include_pending_contingency = TRUE
+)
 }
 \arguments{
 \item{locations}{vector of locations}
@@ -107,9 +127,11 @@ locations = c("Miami Beach, FL", "SOMA, San Francisco, CA", 10013,
  select(locationSearch, countListings)
 }
 \seealso{
-Other listing search: \code{\link{dictionary_listing_features}},
-  \code{\link{dictionary_property_types}},
-  \code{\link{listings}}, \code{\link{map_listings}}
+Other listing search: 
+\code{\link{dictionary_listing_features}()},
+\code{\link{dictionary_property_types}()},
+\code{\link{listings}()},
+\code{\link{map_listings}()}
 }
 \concept{listing search}
 \concept{summary search}

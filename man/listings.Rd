@@ -4,18 +4,38 @@
 \alias{listings}
 \title{MLS listing data}
 \usage{
-listings(locations = NULL, listing_type = "sale",
-  search_type = "city", city_isolated = NULL, county_isolated = NULL,
-  zipcode_isolated = NULL, state_isolated = NULL,
-  street_isolated = NULL, features = NULL, only_open_houses = NULL,
-  neighborhood_isolated = NULL, beds_min = NULL, beds_max = NULL,
-  baths_min = NULL, baths_max = NULL, price_min = NULL,
-  price_max = NULL, property_type = NULL, sqft_min = NULL,
-  sqft_max = NULL, acre_min = NULL, acre_max = NULL,
-  age_min = NULL, age_max = NULL, days_on_market = NULL,
-  pending = NULL, is_new_construction = NULL,
-  generate_new_cookies = F, include_pending_contingency = TRUE,
-  sleep_time = 5)
+listings(
+  locations = NULL,
+  listing_type = "sale",
+  search_type = "city",
+  city_isolated = NULL,
+  county_isolated = NULL,
+  zipcode_isolated = NULL,
+  state_isolated = NULL,
+  street_isolated = NULL,
+  features = NULL,
+  only_open_houses = NULL,
+  neighborhood_isolated = NULL,
+  beds_min = NULL,
+  beds_max = NULL,
+  baths_min = NULL,
+  baths_max = NULL,
+  price_min = NULL,
+  price_max = NULL,
+  property_type = NULL,
+  sqft_min = NULL,
+  sqft_max = NULL,
+  acre_min = NULL,
+  acre_max = NULL,
+  age_min = NULL,
+  age_max = NULL,
+  days_on_market = NULL,
+  pending = NULL,
+  is_new_construction = NULL,
+  generate_new_cookies = F,
+  include_pending_contingency = TRUE,
+  sleep_time = 5
+)
 }
 \arguments{
 \item{locations}{vector of locations}
@@ -111,8 +131,10 @@ library(realtR)
  )
 }
 \seealso{
-Other listing search: \code{\link{dictionary_listing_features}},
-  \code{\link{dictionary_property_types}},
-  \code{\link{listing_counts}}, \code{\link{map_listings}}
+Other listing search: 
+\code{\link{dictionary_listing_features}()},
+\code{\link{dictionary_property_types}()},
+\code{\link{listing_counts}()},
+\code{\link{map_listings}()}
 }
 \concept{listing search}

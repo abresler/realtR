@@ -3,7 +3,6 @@
 \docType{package}
 \name{realtoR}
 \alias{realtoR}
-\alias{realtoR-package}
 \title{realtR}
 \description{
 Tools to make finding property

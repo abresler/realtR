@@ -4,8 +4,12 @@
 \alias{html_listing_urls}
 \title{Parse html listings}
 \usage{
-html_listing_urls(urls = NULL, include_features = F, sleep_time = 1,
-  return_message = TRUE)
+html_listing_urls(
+  urls = NULL,
+  include_features = F,
+  sleep_time = 1,
+  return_message = TRUE
+)
 }
 \arguments{
 \item{urls}{vector of html listings}
@@ -15,6 +19,9 @@ html_listing_urls(urls = NULL, include_features = F, sleep_time = 1,
 \item{sleep_time}{if not \code{NULL} sleep time between scrapes}
 
 \item{return_message}{if \code{TRUE} returns message}
+}
+\value{
+
 }
 \description{
 Parse vector of listing html listing
