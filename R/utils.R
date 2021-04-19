@@ -14,7 +14,7 @@
       map_chr(function(name){
         dict_name <- dict_names %>% filter(nameRealtor == name)
         if (nrow(dict_name) == 0) {
-          glue::glue("Missing {name}") %>% cat(fill = T)
+          glue("Missing {name}") %>% cat(fill = T)
           return(name)
         }
         dict_name %>% slice(1) %>% 
@@ -105,7 +105,7 @@ generate_url_reference <-
     
     url <-
       list('http://', domain_slug, tl_domain) %>%
-      purrr::reduce(paste0)
+      reduce(paste0)
     df <-
       tibble(urlReferer = url,
                  userAgent = user_agent)
@@ -184,7 +184,7 @@ parse_css_name <-
       parse_for_text(css = css)
     
     if (is_numeric) {
-      value <- readr::parse_number(as.character(value))
+      value <- parse_number(as.character(value))
     }
     tibble(nameActual = actual_name, value)
   }

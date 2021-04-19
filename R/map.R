@@ -2,8 +2,8 @@
   function(content) {
     page <-
       content %>%
-      stringi::stri_trans_general("Latin-ASCII") %>%
-      xml2::read_html()
+      stri_trans_general("Latin-ASCII") %>%
+      read_html()
     page
   }
 
@@ -11,7 +11,7 @@
   function() {
     df_call <- generate_url_reference()
     h <-
-      curl::new_handle(
+      new_handle(
         accept_encoding = NULL,
         verbose = F,
         useragent =  df_call$urlReferer
@@ -23,7 +23,7 @@
     
     handle_cookies(h) %>%
       as_tibble() %>%
-      tidyr::unite(param, name, value, sep = "=") %>%
+      unite(param, name, value, sep = "=") %>%
       pull(param) %>%
       str_c(collapse = "; ")
     
@@ -191,7 +191,7 @@ dictionary_listing_features <-
     all_results <-
       seq_along(data_properties) %>%
       map_df(function(x) {
-        glue::glue("Parsing {x}") %>% cat(fill = T)
+        glue("Parsing {x}") %>% cat(fill = T)
         data_row <- data_properties[[x]]
         df_col_types <-
           data_row %>% map(class) %>% as_tibble() %>%
@@ -216,7 +216,7 @@ dictionary_listing_features <-
         
         df_list <-
           data_row[names(data_row) %in% df_list_cols$column] %>%
-          purrr::flatten()
+          flatten()
         
         df_list_class <-
           df_list %>%
@@ -249,7 +249,7 @@ dictionary_listing_features <-
           mutate(numberProperty = x) %>%
           select(numberProperty, everything())
         
-        if (df %>% tibble::has_name("bed")) {
+        if (df %>% has_name("bed")) {
           df <- 
             df %>% 
             mutate(groupBeds = as.character(bed),
@@ -274,7 +274,7 @@ dictionary_listing_features <-
       map_chr(function(name) {
         df_row <- df_names %>% filter(nameRealtor == name)
         if (df_row %>% nrow() == 0) {
-          glue::glue("Missing {name}") %>%
+          glue("Missing {name}") %>%
             cat(fill = T)
           return(name)
         }
@@ -286,7 +286,7 @@ dictionary_listing_features <-
       set_names(actual_names) %>%
       dplyr::select(-dplyr::matches("remove"))
     
-    if (all_results %>% tibble::has_name("slugLDP")) {
+    if (all_results %>% has_name("slugLDP")) {
       all_results <- 
         all_results %>% 
         mutate(urlListing = 'https://www.realtor.com' %>% str_c(slugLDP)) %>%
@@ -297,7 +297,7 @@ dictionary_listing_features <-
       all_results %>%
       .munge_realtor()
     
-    if (all_results %>% tibble::has_name('areaPropertySF')) {
+    if (all_results %>% has_name('areaPropertySF')) {
       all_results <-
         all_results %>%
         mutate(priceListingPerSF = priceListing / areaPropertySF)
@@ -672,55 +672,55 @@ dictionary_search <-
     data$search_criteria <-
       df_loc_val$slugLocation
     
-    if (!city_isolated %>% purrr::is_null()) {
+    if (!city_isolated %>% is_null()) {
       data$city  <- city_isolated
     }
     
-    if (!county_isolated %>% purrr::is_null()) {
+    if (!county_isolated %>% is_null()) {
       data$county <- county_isolated
     }
     
-    if (!zipcode_isolated %>% purrr::is_null()) {
+    if (!zipcode_isolated %>% is_null()) {
       data$postal <- zipcode_isolated
     }
     
-    if (!state_isolated %>% purrr::is_null()) {
+    if (!state_isolated %>% is_null()) {
       data$state <- state_isolated
     }
     
-    if (!neighborhood_isolated %>% purrr::is_null()) {
+    if (!neighborhood_isolated %>% is_null()) {
       data$neighborhood <- neighborhood_isolated
     }
-    if (!street_isolated %>% purrr::is_null()) {
+    if (!street_isolated %>% is_null()) {
       data$street <- street_isolated
     }
     
-    if (!only_open_houses %>% purrr::is_null()) {
+    if (!only_open_houses %>% is_null()) {
       data$show_listings <-
         'oh'
     }
     
     
-    if (!beds_min %>% purrr::is_null()) {
+    if (!beds_min %>% is_null()) {
       data$facets$beds_min <-
         as.character(beds_min)
     }
     
-    if (!beds_max %>% purrr::is_null()) {
+    if (!beds_max %>% is_null()) {
       data$facets$beds_max <-
         as.character(beds_max)
     }
-    if (!baths_min %>% purrr::is_null()) {
+    if (!baths_min %>% is_null()) {
       data$facets$baths_min <-
         as.character(baths_min)
     }
     
-    if (!baths_max %>% purrr::is_null()) {
+    if (!baths_max %>% is_null()) {
       data$facets$baths_max <-
         as.character(baths_max)
     }
     
-    if (!features %>% purrr::is_null()) {
+    if (!features %>% is_null()) {
       f_t <-
         features %>% str_to_lower()
       
@@ -739,18 +739,18 @@ dictionary_search <-
         c(feature_slugs)
     }
     
-    if (!price_min %>% purrr::is_null()) {
+    if (!price_min %>% is_null()) {
       data$facets$price_min <-
         as.character(price_min)
     }
     
-    if (!price_max %>% purrr::is_null()) {
+    if (!price_max %>% is_null()) {
       data$facets$price_max <-
         as.character(price_max)
     }
     
     
-    if (!property_type %>% purrr::is_null()) {
+    if (!property_type %>% is_null()) {
       p_t <-
         property_type %>% str_to_lower()
       df_types <-
@@ -768,46 +768,46 @@ dictionary_search <-
       data$facets$prop_type <- property_slugs
     }
     
-    if (!sqft_min %>% purrr::is_null()) {
+    if (!sqft_min %>% is_null()) {
       data$facets$sqft_min <-
         sqft_min
     }
     
-    if (!sqft_max %>% purrr::is_null()) {
+    if (!sqft_max %>% is_null()) {
       data$facets$sqft_max <- sqft_max
     }
     
     
-    if (!acre_min %>% purrr::is_null()) {
+    if (!acre_min %>% is_null()) {
       data$facets$acre_min <- acre_min
     }
     
-    if (!acre_max %>% purrr::is_null()) {
+    if (!acre_max %>% is_null()) {
       data$facets$acre_max <- acre_max
     }
     
-    if (!days_on_market %>% purrr::is_null()) {
+    if (!days_on_market %>% is_null()) {
       data$facets$days_on_market <- days_on_market
     }
     
-    if (!pending %>% purrr::is_null()) {
+    if (!pending %>% is_null()) {
       data$facets$pending <- pending
     }
     
-    if (!is_new_construction %>% purrr::is_null()) {
+    if (!is_new_construction %>% is_null()) {
       data$facets$new_construction <- is_new_construction
     }
     
     
-    if (!age_max %>% purrr::is_null()) {
+    if (!age_max %>% is_null()) {
       data$facets$age_max <- age_max
     }
     
-    if (!age_min %>% purrr::is_null()) {
+    if (!age_min %>% is_null()) {
       data$facets$age_min <- age_min
     }
     
-    if (!include_pending_contingency %>% purrr::is_null()) {
+    if (!include_pending_contingency %>% is_null()) {
       data$facets$include_pending_contingency <-
         include_pending_contingency
     }
@@ -1024,7 +1024,7 @@ listing_counts <-
            is_new_construction =  NULL,
            include_pending_contingency = TRUE) {
     .get_location_counts_safe <-
-      purrr::possibly(.get_location_counts, tibble())
+      possibly(.get_location_counts, tibble())
     locations %>%
       map_dfr(function(location) {
         .get_location_counts(
@@ -1132,7 +1132,7 @@ listing_counts <-
     all_properties <-
       1:pages %>%
       map_dfr(function(page) {
-        glue::glue("Parsing page {page} of {pages} for location {location_name}") %>% message()
+        glue("Parsing page {page} of {pages} for location {location_name}") %>% message()
         
         data <-
           .generate_data(
@@ -1208,7 +1208,7 @@ listing_counts <-
         all_data
       })
     
-    if (all_properties %>% tibble::has_name("typeListing")) {
+    if (all_properties %>% has_name("typeListing")) {
       all_properties <-
         all_properties %>%
         rename(typeListingAgency = typeListing)
@@ -1322,7 +1322,7 @@ map_listings <-
            generate_new_cookies = F,
            include_pending_contingency = TRUE) {
     .get_location_listings_json_safe <-
-      purrr::possibly(.get_location_listings_json, tibble())
+      possibly(.get_location_listings_json, tibble())
     
     all_data <-
       locations %>%
@@ -1463,7 +1463,7 @@ map_listings <-
     if (location_name %>% str_to_lower() %>% str_detect("county")) {
       search_type <- "county"
     }
-    listing_counts.safe <- purrr::possibly(listing_counts, tibble())
+    listing_counts.safe <- possibly(listing_counts, tibble())
     
     df_count <-
       listing_counts.safe(
@@ -1511,8 +1511,8 @@ map_listings <-
     
     all_properties <-
       1:pages %>%
-      map_dfr(purrr::possibly(function(page_no) {
-        glue::glue("Parsing page {page_no} of {pages} for location {location_name}") %>% cat(fill = T)
+      map_dfr(possibly(function(page_no) {
+        glue("Parsing page {page_no} of {pages} for location {location_name}") %>% cat(fill = T)
         
         if (page_no == 1) {
           url <-  "https://www.realtor.com/search_result"
@@ -1677,7 +1677,7 @@ map_listings <-
                 df_json_data <-
                   1:nrow(df_json_rows) %>%
                   map_dfr(function(x) {
-                    df_json_rows %>% dplyr::slice(x) %>% pull(value) %>% jsonlite::fromJSON() %>%
+                    df_json_rows %>% dplyr::slice(x) %>% pull(value) %>% fromJSON() %>%
                       flatten_df() %>%
                       mutate_all(as.character) %>%
                       gather(name, value)
@@ -1846,7 +1846,7 @@ map_listings <-
             pull(name) %>%
             unique() %>%
             str_c(collapse = "\n")
-          glue::glue("Missing {missing_names}") %>% cat(fill = T)
+          glue("Missing {missing_names}") %>% cat(fill = T)
         }
         
         df_prop <-
@@ -1902,7 +1902,7 @@ map_listings <-
     all_data <-
       all_data %>%
       mutate(
-        urlPropertyAPI =  glue::glue("https://www.realtor.com/property-overview/M{idProperty}") %>% as.character()
+        urlPropertyAPI =  glue("https://www.realtor.com/property-overview/M{idProperty}") %>% as.character()
       )
     
     all_data
@@ -2004,12 +2004,12 @@ listings <-
            generate_new_cookies = F,
            include_pending_contingency = TRUE,
            sleep_time = 5) {
-    if (locations %>% purrr::is_null()) {
+    if (locations %>% is_null()) {
       stop("Enter locations")
     }
     
     .get_location_listings_safe <-
-      purrr::possibly(.get_location_listings,
+      possibly(.get_location_listings,
                       tibble())
     
     all_data <-
@@ -2048,7 +2048,7 @@ listings <-
           only_open_houses = only_open_houses
         )
         
-        if (!sleep_time %>% purrr::is_null()) {
+        if (!sleep_time %>% is_null()) {
           Sys.sleep(time = sleep_time)
         }
         

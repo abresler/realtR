@@ -9,7 +9,7 @@
           filter(nameRealtor == x)
         
         if (df_row %>% nrow() == 0) {
-          glue::glue("Missing {x}") %>% cat(fill = T)
+          glue("Missing {x}") %>% cat(fill = T)
           return(x)
         }
         df_row$nameActual %>% unique() %>% .[[1]]
@@ -67,7 +67,7 @@
       data <- data[, !names(data) == ""]
     }
     
-    if (data %>% tibble::has_name("state")) {
+    if (data %>% has_name("state")) {
       data <-
         data %>%
         rename(nameStateProperty = state)
@@ -78,7 +78,7 @@
     
     data <-
       data %>%
-      purrr::set_names(actual_names)
+      set_names(actual_names)
     
     sel_col <- 
       tibble(column = names(data)) %>% mutate(idColumn = 1:n()) %>% 
@@ -90,12 +90,12 @@
     
     data <- data[,sel_col]
     
-    if(data %>% tibble::has_name("countDaysListed")) {
+    if(data %>% has_name("countDaysListed")) {
       data <- data %>%
-        mutate(countDaysListed = countDaysListed %>% readr::parse_number())
+        mutate(countDaysListed = countDaysListed %>% parse_number())
     }
     
-    if (data %>% tibble::has_name("hasGarage")) {
+    if (data %>% has_name("hasGarage")) {
       data <- data %>% 
         mutate(hasGarage = hasGarage == "yes")
     }
@@ -119,7 +119,7 @@
         if (column == "lease_details") {
           df <- 
             df %>% 
-            purrr::set_names(df %>% .resolve_names()) %>% 
+            set_names(df %>% .resolve_names()) %>% 
             .munge_realtor()
           
           df <- df %>% 
@@ -152,11 +152,11 @@
         if (column == "floorplans") {
           df <- 
             df %>% 
-            purrr::set_names(df %>% .realtor_names()) %>% 
+            set_names(df %>% .realtor_names()) %>% 
             remove_na() %>% 
             dplyr::select(-dplyr::matches("remove"))
 
-          if (df %>% tibble::has_name("dateAvailable")){
+          if (df %>% has_name("dateAvailable")){
             df <- 
               df %>% 
               rename(available = dateAvailable)
@@ -165,7 +165,7 @@
             df %>%
             .munge_realtor()
           
-          if (df %>% tibble::has_name("idProperty")) {
+          if (df %>% has_name("idProperty")) {
             df <- df %>% rename(idPropertyListing = idProperty)
           }
           
@@ -173,7 +173,7 @@
             df %>% 
             mutate(idProperty)
           
-          if (df %>% tibble::has_name("dateAvailable")){
+          if (df %>% has_name("dateAvailable")){
             df <- 
               df %>% 
               rename(dateAvailable = available) %>% 
@@ -201,7 +201,7 @@
           
           df <-
             df %>% 
-            purrr::set_names(actual_names) %>% 
+            set_names(actual_names) %>% 
             dplyr::select(-dplyr::matches("remove")) %>% 
             mutate(idProperty) %>%
             .munge_realtor() %>% 
@@ -210,7 +210,7 @@
         }
         if (column == "neighborhoods") {
           df <- df %>%
-            purrr::set_names(
+            set_names(
               c(
                 "nameNeighborhood",
                 "cityNeighborhood",
@@ -247,7 +247,7 @@
                 filter(nameRealtor == x)
               
               if (df_row %>% nrow() == 0) {
-                glue::glue("Missing {x}") %>% cat(fill = T)
+                glue("Missing {x}") %>% cat(fill = T)
                 return(x)
               }
               df_row$nameActual %>% unique() %>% .[[1]]
@@ -297,7 +297,7 @@
                 feature_names[[x]]
               flattened_feature <-
                 df[x][[feature_name]]
-              if (flattened_feature %>% purrr::is_null()) {
+              if (flattened_feature %>% is_null()) {
                 return(tibble())
               }
               
@@ -306,7 +306,7 @@
               }
               
               items <-
-                flattened_feature  %>% discard(purrr::is_null) %>% flatten_chr()
+                flattened_feature  %>% discard(is_null) %>% flatten_chr()
               if (items %>% length() == 0) {
                 return(tibble())
               }
@@ -323,8 +323,8 @@
         }
         
       }) %>%
-      purrr::discard(purrr::is_null) %>% 
-      purrr::reduce(left_join) %>%
+      discard(is_null) %>% 
+      reduce(left_join) %>%
       suppressMessages() %>% 
       suppressWarnings()
     
@@ -375,7 +375,7 @@
           df_areas <- df$other_areas
           df_areas <- 
             df_areas %>% 
-            purrr::set_names(df_areas %>% .resolve_names()) %>% 
+            set_names(df_areas %>% .resolve_names()) %>% 
             .munge_realtor()
           
           if (length(df_hoods) > 0) {
@@ -384,7 +384,7 @@
             
             df_hoods <- 
               df_hoods %>% 
-              purrr::set_names(df_hoods %>% .resolve_names()) %>% 
+              set_names(df_hoods %>% .resolve_names()) %>% 
               .munge_realtor()
             
             df_areas <- 
@@ -404,7 +404,7 @@
           df <- 
             df$properties
           
-          if (df %>% tibble::has_name("search_flags")) {
+          if (df %>% has_name("search_flags")) {
             df$search_flags <- NULL
           }
           
@@ -416,13 +416,13 @@
             as_tibble()
           
           df <- df %>% 
-            purrr::set_names(df %>% .resolve_names())
+            set_names(df %>% .resolve_names())
           
           df <- 
             df %>% 
             .munge_realtor()
           
-          if (df %>% tibble::has_name("idProperty")) {
+          if (df %>% has_name("idProperty")) {
             df <- df %>% 
               rename(idPropertyListing = idProperty)
           }
@@ -440,7 +440,7 @@
           df <- 
             df$properties
           
-          if (df %>% tibble::has_name("search_flags")) {
+          if (df %>% has_name("search_flags")) {
             df$search_flags <- NULL
           }
           
@@ -452,13 +452,13 @@
             as_tibble()
           
           df <- df %>% 
-            purrr::set_names(df %>% .resolve_names())
+            set_names(df %>% .resolve_names())
           
           df <- 
             df %>% 
             .munge_realtor()
           
-          if (df %>% tibble::has_name("idProperty")) {
+          if (df %>% has_name("idProperty")) {
             df <- df %>% 
               rename(idPropertyListing = idProperty)
           }
@@ -476,7 +476,7 @@
           df <- 
             df$properties
           
-          if (df %>% tibble::has_name("search_flags")) {
+          if (df %>% has_name("search_flags")) {
             df$search_flags <- NULL
           }
           
@@ -488,13 +488,13 @@
             as_tibble()
           
           df <- df %>% 
-            purrr::set_names(df %>% .resolve_names())
+            set_names(df %>% .resolve_names())
           
           df <- 
             df %>% 
             .munge_realtor()
           
-          if (df %>% tibble::has_name("idProperty")) {
+          if (df %>% has_name("idProperty")) {
             df <- df %>% 
               rename(idPropertyListing = idProperty)
           }
@@ -524,7 +524,7 @@
           
           
           df_listing <-
-            df_listing %>% purrr::set_names(actual_names) %>%
+            df_listing %>% set_names(actual_names) %>%
             mutate(idProperty) %>%
             remove_na() %>% 
             nest(-idProperty, .key = dataBrokerListing)
@@ -567,7 +567,7 @@
           
           df <-
             df %>%
-            purrr::set_names(actual_names) %>%
+            set_names(actual_names) %>%
             mutate(idProperty) %>%
             .munge_realtor() %>% 
             remove_na() %>% 
@@ -580,7 +580,7 @@
           
           df <-
             df %>%
-            purrr::set_names(actual_names) %>%
+            set_names(actual_names) %>%
             .munge_realtor() %>% 
             remove_na() %>% 
             mutate(idProperty) %>%
@@ -594,7 +594,7 @@
           
           df <-
             df %>%
-            purrr::set_names(actual_names) %>%
+            set_names(actual_names) %>%
             mutate(idProperty) %>%
             .munge_realtor() %>% 
             remove_na() %>% 
@@ -609,7 +609,7 @@
           
           df <-
             df %>%
-            purrr::set_names(actual_names) %>%
+            set_names(actual_names) %>%
             mutate(idProperty) %>%
             .munge_realtor() %>% 
             remove_na() %>% 
@@ -623,7 +623,7 @@
           
           df <-
             df %>%
-            purrr::set_names(actual_names) %>%
+            set_names(actual_names) %>%
             mutate(idProperty) %>%
             nest(-idProperty, .key = "dataPhotoPrimary")
           return(df)
@@ -635,9 +635,9 @@
           
           df <-
             df %>%
-            purrr::set_names(actual_names)
+            set_names(actual_names)
           
-          if (df %>% tibble::has_name("idProperty")) {
+          if (df %>% has_name("idProperty")) {
             df <- df %>% rename(idBuilding = idProperty)
           }
           df <-
@@ -653,7 +653,7 @@
           
           df <-
             df %>%
-            purrr::set_names(actual_names) %>%
+            set_names(actual_names) %>%
             .munge_realtor() %>% 
             remove_na() %>% 
             mutate(idProperty) %>%
@@ -667,7 +667,7 @@
           
           df <-
             df %>%
-            purrr::set_names(actual_names) %>%
+            set_names(actual_names) %>%
             .munge_realtor() %>% 
             remove_na() %>% 
             mutate(idProperty) %>%
@@ -681,7 +681,7 @@
           
           df <-
             df %>%
-            purrr::set_names(actual_names) %>%
+            set_names(actual_names) %>%
             .munge_realtor() %>% 
             remove_na() %>% 
             mutate(idProperty) %>%
@@ -695,7 +695,7 @@
           
           df <-
             df %>%
-            purrr::set_names(actual_names) %>%
+            set_names(actual_names) %>%
             .munge_realtor() %>% 
             remove_na() %>% 
             mutate(idProperty) %>%
@@ -709,7 +709,7 @@
           
           df <-
             df %>%
-            purrr::set_names(actual_names) %>%
+            set_names(actual_names) %>%
             .munge_realtor() %>% 
             remove_na() %>% 
             mutate(idProperty) %>%
@@ -723,7 +723,7 @@
           
           df <-
             df %>%
-            purrr::set_names(actual_names) %>%
+            set_names(actual_names) %>%
             .munge_realtor() %>% 
             remove_na() %>% 
             mutate(idProperty) %>%
@@ -737,7 +737,7 @@
           
           df <-
             df %>%
-            purrr::set_names(actual_names) %>%
+            set_names(actual_names) %>%
             .munge_realtor() %>% 
             remove_na() %>% 
             mutate(idProperty) %>%
@@ -751,7 +751,7 @@
             .realtor_names(data = df)
           
           df <- df %>%
-            purrr::set_names(actual_names) %>%
+            set_names(actual_names) %>%
             .munge_realtor() %>% 
             mutate(idProperty) %>%
             nest(-idProperty, .key = "dataPublicRecord")
@@ -764,7 +764,7 @@
             .realtor_names(data = df)
           
           df <- df %>%
-            purrr::set_names(actual_names) %>%
+            set_names(actual_names) %>%
             mutate(idProperty) %>%
             .munge_realtor() %>% 
             remove_na() %>% 
@@ -779,7 +779,7 @@
           actual_names <-
             .realtor_names(data = df)
           df <-
-            df %>% purrr::set_names(actual_names) %>%
+            df %>% set_names(actual_names) %>%
             mutate(idProperty) %>%
             nest(-idProperty, .key = "dataPropertyInfo")
           return(df)
@@ -802,7 +802,7 @@
                 pull(nameActual) %>%
                 .[[1]]
             })
-          df <- df %>% purrr::set_names(actual_names) %>%
+          df <- df %>% set_names(actual_names) %>%
             mutate(idProperty) %>%
             nest(-idProperty, .key = "dataLeadAttributes")
           return(df)
@@ -819,7 +819,7 @@
                 feature_names[[x]]
               feature_name %>% cat(fill = T)
               df_feature <-
-                df[x][[feature_name]] %>% flatten() %>% discard(purrr::is_null) %>% flatten_df() %>% select(-one_of("show_realtor_logo"))
+                df[x][[feature_name]] %>% flatten() %>% discard(is_null) %>% flatten_df() %>% select(-one_of("show_realtor_logo"))
               
               if (ncol(df_feature) == 0) {
                 return(invisible())
@@ -836,8 +836,8 @@
                 mutate(idProperty)
               return(df_feature)
             }) %>%
-            discard(purrr::is_null) %>%
-            purrr::reduce(left_join) %>%
+            discard(is_null) %>%
+            reduce(left_join) %>%
             suppressMessages()
           
           names(df) <- names(df) %>% str_replace_all("link", "url")
@@ -848,11 +848,11 @@
         }
         
       }) %>%
-      discard(purrr::is_null)
+      discard(is_null)
     
     data_list_cols <- 
       data_list_cols %>% 
-      purrr::reduce(left_join) %>%
+      reduce(left_join) %>%
       suppressMessages() %>%
       suppressWarnings()
     
@@ -864,7 +864,7 @@
     col_order <-
       names(data)[!names(data) %>% str_detect("data")]
     
-    if (data %>% tibble::has_name("dataBrokerListing")) {
+    if (data %>% has_name("dataBrokerListing")) {
       data <-
         data %>%
         select(idProperty, dataBrokerListing) %>% unnest() %>%
@@ -872,7 +872,7 @@
         suppressMessages()
     }
     
-    if (data %>% tibble::has_name("dataPropertyFlags")) {
+    if (data %>% has_name("dataPropertyFlags")) {
       data <-
         data %>%
         select(idProperty, dataPropertyFlags) %>% unnest() %>%
@@ -902,7 +902,7 @@
       .munge_listing_api(json_data = json_data, property_id = property_id) %>% suppressWarnings() %>%
       mutate(urlPropertyAPI = url)
     
-    if (!sleep_time %>% purrr::is_null()) {
+    if (!sleep_time %>% is_null()) {
       Sys.sleep(time = sleep_time)
     }
     
@@ -929,13 +929,13 @@ parse_listing_urls <-
            return_message = TRUE) {
     
     .parse_listing_api_url_safe <-
-      purrr::possibly(.parse_listing_api_url, tibble())
+      possibly(.parse_listing_api_url, tibble())
     
     all_data <-
       urls %>%
       map_dfr(function(url) {
         if (return_message) {
-          glue::glue(
+          glue(
             "Parsing {url %>% str_replace_all('https://www.realtor.com/property-overview/', '')}"
           ) %>%
             message()
@@ -964,9 +964,9 @@ parse_listing_urls <-
       data_columns %>% 
         walk(function(data_column){
           slug <- data_column %>% str_remove_all("data") %>% str_to_lower()
-          glue::glue("Assigning listing {slug}") %>% message()
+          glue("Assigning listing {slug}") %>% message()
           table_name <- 
-            glue::glue("df_{slug}_listings") %>% 
+            glue("df_{slug}_listings") %>% 
             as.character()
           
           df <- 

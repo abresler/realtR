@@ -4,17 +4,17 @@
   function(url) {
     df_call <- generate_url_reference()
     h <-
-      curl::new_handle(
+      new_handle(
         accept_encoding = NULL,
         verbose = F,
         useragent =  df_call$urlReferer
       )
     
     page <-
-      curl::curl(url, handle = h) %>%
-      readr::read_lines() %>%
+      curl(url, handle = h) %>%
+      read_lines() %>%
       str_c(collapse = "") %>%
-      xml2::read_html()
+      read_html()
     
     page
   }
@@ -23,15 +23,15 @@
   function(url) {
     df_call <- generate_url_reference()
     h <-
-      curl::new_handle(
+      new_handle(
         accept_encoding = NULL,
         verbose = F,
         useragent =  df_call$urlReferer
       )
     
     json_data <-
-      curl::curl(url, handle = h) %>%
-      readr::read_lines()
+      curl(url, handle = h) %>%
+      read_lines()
     
     json_data
     
@@ -65,7 +65,7 @@
       data <-
         data %>%
         mutate_at(num_names,
-                  funs(. %>% as.character() %>% readr::parse_number())) %>%
+                  funs(. %>% as.character() %>% parse_number())) %>%
         suppressWarnings() %>% suppressMessages()
       
     }
@@ -78,16 +78,16 @@
       mutate_at(log_names,
                 funs(as.logical))
     
-    if (data %>% tibble::has_name("slugLDP")) {
+    if (data %>% has_name("slugLDP")) {
       data <-
         data %>%
-        mutate(urlListing = glue::glue("https://www.realtor.com/{slugLDP}") %>% as.character()) %>%
+        mutate(urlListing = glue("https://www.realtor.com/{slugLDP}") %>% as.character()) %>%
         dplyr::select(-slugLDP)
       
     }
     
-    if (data %>% tibble::has_name("areaPropertySF") &&
-        data %>%  tibble::has_name("priceDisplay")) {
+    if (data %>% has_name("areaPropertySF") &&
+        data %>%  has_name("priceDisplay")) {
       data <-
         data %>%
         mutate(pricePerSFListing = 
@@ -97,8 +97,8 @@
                ))
     }
     
-    if (data %>% tibble::has_name("areaPropertySF") &&
-        data %>%  tibble::has_name("priceListing")) {
+    if (data %>% has_name("areaPropertySF") &&
+        data %>%  has_name("priceListing")) {
       data <-
         data %>%
         mutate(pricePerSFListing =
@@ -109,7 +109,7 @@
                  ))
     }
     
-    if (data %>% tibble::has_name("nameBrokerage")) {
+    if (data %>% has_name("nameBrokerage")) {
       data <-
         data %>%
         mutate(nameBrokerage = nameBrokerage %>% str_to_upper())
@@ -821,7 +821,7 @@ mortgage_rates <-
   function(return_wide = F) {
     data <-
       "https://www.realtor.com/mrtg_handler/get_trends_data" %>%
-      jsonlite::fromJSON(flatten = T, simplifyDataFrame = T) %>%
+      fromJSON(flatten = T, simplifyDataFrame = T) %>%
       .$rate_trends %>%
       dplyr::as_tibble()
     
@@ -859,7 +859,7 @@ mortgage_rates <-
     
     data <-
       data %>%
-      purrr::set_names(
+      set_names(
         c(
           "year",
           "month",
@@ -874,7 +874,7 @@ mortgage_rates <-
           'pct7OneARM'
         )
       ) %>%
-      tidyr::unite(dateData, year, month, date, sep = "-") %>%
+      unite(dateData, year, month, date, sep = "-") %>%
       mutate(dateData = dateData %>% lubridate::ymd()) %>%
       gather(typeRate, value, -dateData) %>%
       mutate(value = value / 100) %>%
@@ -960,7 +960,7 @@ parse_location <-
     }
     
     url <-
-      glue::glue('https://www.realtor.com/median_prices?city={city_slug}&state_code={state}') %>%
+      glue('https://www.realtor.com/median_prices?city={city_slug}&state_code={state}') %>%
       as.character()
     
     data <-
@@ -975,7 +975,7 @@ parse_location <-
 .generate_market_urls <-
   function(locations = c("Bethesda, MD")) {
     .generate_market_url_safe <-
-      purrr::possibly(.generate_market_url, tibble())
+      possibly(.generate_market_url, tibble())
     locations %>%
       map_dfr(function(location_name) {
         .generate_market_url_safe(location_name = location_name)
@@ -987,7 +987,7 @@ parse_location <-
     data <-
       url %>%
       .curl_json() %>%
-      jsonlite::fromJSON(
+      fromJSON(
         simplifyVector = T,
         simplifyDataFrame = T,
         flatten = T
@@ -1004,7 +1004,7 @@ parse_location <-
       map_chr(function(name) {
         df_row <- df_names %>% filter(nameRealtor == name)
         if (df_row %>% nrow() == 0) {
-          glue::glue("Missing {name}") %>%
+          glue("Missing {name}") %>%
             cat(fill = T)
           return(name)
         }
@@ -1013,11 +1013,11 @@ parse_location <-
     
     data <-
       data %>%
-      purrr::set_names(actual_names) %>%
+      set_names(actual_names) %>%
       mutate(urlAPI = url)
     
     
-    if (data %>% tibble::has_name("pricePerSF")) {
+    if (data %>% has_name("pricePerSF")) {
       data <-
         data %>%
         dplyr::rename(pricePerSFMedian = pricePerSF)
@@ -1031,11 +1031,11 @@ parse_location <-
   function(urls = "https://www.realtor.com/median_prices?city=Bethesda&state_code=MD",
            return_message = TRUE) {
     .parse_market_data_url_safe <-
-      purrr::possibly(.parse_market_data_url, tibble())
+      possibly(.parse_market_data_url, tibble())
     urls %>%
       map_dfr(function(url) {
         if (return_message) {
-          glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+          glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
             cat(fill = T)
         }
         .parse_market_data_url_safe(url = url)
@@ -1064,12 +1064,12 @@ median_prices <-
   function(locations = NULL,
            return_message = TRUE,
            ...) {
-    if (locations %>% purrr::is_null()) {
+    if (locations %>% is_null()) {
       stop("Please enter location names!!")
     }
     
     .generate_market_urls_safe <-
-      purrr::possibly(.generate_market_urls, tibble())
+      possibly(.generate_market_urls, tibble())
     
     df_urls <-
       .generate_market_urls_safe(locations = locations)
@@ -1080,7 +1080,7 @@ median_prices <-
     }
     
     .parse_market_data_urls_safe <-
-      purrr::possibly(.parse_market_data_urls, tibble())
+      possibly(.parse_market_data_urls, tibble())
     
     all_data <-
       .parse_market_data_urls_safe(urls = df_urls$urlAPI, return_message = return_message)
@@ -1091,13 +1091,13 @@ median_prices <-
     }
     
     
-    if (all_data %>% tibble::has_name("priceRentMedian")) {
+    if (all_data %>% has_name("priceRentMedian")) {
       all_data <-
         all_data %>%
         mutate(pctRentYield = (priceRentMedian * 12) / priceListingMedian)
     }
     
-    if (all_data %>% tibble::has_name("priceListingMedian")) {
+    if (all_data %>% has_name("priceListingMedian")) {
       all_data <-
         all_data %>%
         mutate(
@@ -1136,7 +1136,7 @@ median_prices <-
     data <-
       url %>%
       .curl_json() %>%
-      jsonlite::fromJSON(flatten = T, simplifyDataFrame = T) %>%
+      fromJSON(flatten = T, simplifyDataFrame = T) %>%
       flatten_df() %>%
       as_tibble()
     
@@ -1151,7 +1151,7 @@ median_prices <-
       map_chr(function(name) {
         df_row <- df_names %>% filter(nameRealtor == name)
         if (df_row %>% nrow() == 0) {
-          glue::glue("Missing {name}") %>%
+          glue("Missing {name}") %>%
             cat(fill = T)
           return(name)
         }
@@ -1160,7 +1160,7 @@ median_prices <-
     
     data <-
       data %>%
-      purrr::set_names(actual_names) %>%
+      set_names(actual_names) %>%
       mutate(slugLDP = slugLDP %>% substr(2, nchar(slugLDP))) %>%
       mutate(urlAPI = url)
     
@@ -1173,11 +1173,11 @@ median_prices <-
   function(urls = "https://www.realtor.com/validate_geo?location=Easton%2C+MD&retain_secondary_facets=true&include_zip=false&search_controller=Search%3A%3APropertiesController",
            return_message = TRUE) {
     .parse_validation_url_safe <-
-      purrr::possibly(.parse_validation_url, tibble())
+      possibly(.parse_validation_url, tibble())
     urls %>%
       map_dfr(function(url) {
         if (return_message) {
-          glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+          glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
             cat(fill = T)
         }
         .parse_validation_url_safe(url = url)
@@ -1196,7 +1196,7 @@ median_prices <-
         parse_location()
       
       
-      if (df_loc_slug %>% tibble::has_name("streetOrNeighborhoodSearch")) {
+      if (df_loc_slug %>% has_name("streetOrNeighborhoodSearch")) {
         street_slug <- 
           df_loc_slug$streetOrNeighborhoodSearch %>% 
           str_replace_all("\\ ", "%20")
@@ -1219,10 +1219,10 @@ median_prices <-
       }
       
       location_slug <-
-        glue::glue("{street_slug}{city_slug}_{state}")
+        glue("{street_slug}{city_slug}_{state}")
       
       url <-
-        glue::glue(
+        glue(
           "https://www.realtor.com/validate_geo?location={location_slug}&retain_secondary_facets=true&include_zip=false&search_controller=Search%3A%3APropertiesController"
         ) %>%
         as.character()
@@ -1235,7 +1235,7 @@ median_prices <-
     } else {
       data <- parse_location(location_name = location_name)
       url <-
-        glue::glue(
+        glue(
           "https://www.realtor.com/validate_geo?location={location_name}&retain_secondary_facets=true&include_zip=false&search_controller=Search%3A%3APropertiesController"
         ) %>%
         as.character()
@@ -1272,12 +1272,12 @@ validate_locations <-
   function(locations = NULL,
            return_message = TRUE,
            ...) {
-    if (locations %>% purrr::is_null()) {
+    if (locations %>% is_null()) {
       stop("Please enter location names!!")
     }
     
     .generate_market_validation_urls_safe <-
-      purrr::possibly(.generate_market_validation_urls, tibble())
+      possibly(.generate_market_validation_urls, tibble())
     
     df_urls <-
       .generate_market_validation_urls_safe(locations = locations)
@@ -1288,7 +1288,7 @@ validate_locations <-
     }
     
     .parse_validation_urls_safe <-
-      purrr::possibly(.parse_validation_urls, tibble())
+      possibly(.parse_validation_urls, tibble())
     
     all_data <-
       .parse_validation_urls_safe(urls = df_urls$urlAPI, return_message = return_message)
@@ -1330,7 +1330,7 @@ validate_locations <-
     json_data <-
       url %>%
       .curl_json() %>%
-      jsonlite::fromJSON(flatten = T, simplifyDataFrame = T)
+      fromJSON(flatten = T, simplifyDataFrame = T)
     
     df_names <- dictionary_realtor_names()
     
@@ -1345,7 +1345,7 @@ validate_locations <-
       map_chr(function(name) {
         df_row <- df_names %>% filter(nameRealtor == name)
         if (df_row %>% nrow() == 0) {
-          glue::glue("Missing {name}") %>%
+          glue("Missing {name}") %>%
             cat(fill = T)
           return(name)
         }
@@ -1354,23 +1354,23 @@ validate_locations <-
     
     data_listings <-
       data_listings %>%
-      purrr::set_names(actual_names) 
+      set_names(actual_names) 
     
-    if (!data_listings %>% tibble::has_name("areaPropertySF") &&
-        data_listings %>% tibble::has_name("areaPropertySFDisplay")) {
+    if (!data_listings %>% has_name("areaPropertySF") &&
+        data_listings %>% has_name("areaPropertySFDisplay")) {
       data_listings <- 
         data_listings %>% 
         rename(areaPropertySF = areaPropertySFDisplay) %>% 
-        mutate(areaPropertySF = readr::parse_number(areaPropertySF))
+        mutate(areaPropertySF = parse_number(areaPropertySF))
     }
     
     
     data_listings <- 
       data_listings %>%
       mutate(
-        priceListing = priceListing %>% as.character() %>% readr::parse_number(),
-        areaPropertySF = areaPropertySF %>% as.character() %>% readr::parse_number(),
-        urlListing = glue::glue("https://www.realtor.com/{slugLDP}") %>% as.character()
+        priceListing = priceListing %>% as.character() %>% parse_number(),
+        areaPropertySF = areaPropertySF %>% as.character() %>% parse_number(),
+        urlListing = glue("https://www.realtor.com/{slugLDP}") %>% as.character()
       ) %>%
       select(idListing, addressDisplay, statusListing,
              everything()) %>%
@@ -1394,7 +1394,7 @@ validate_locations <-
       map_chr(function(name) {
         df_row <- df_names %>% filter(nameRealtor == name)
         if (df_row %>% nrow() == 0) {
-          glue::glue("Missing {name}") %>%
+          glue("Missing {name}") %>%
             cat(fill = T)
           return(name)
         }
@@ -1403,7 +1403,7 @@ validate_locations <-
     
     data <-
       data %>%
-      purrr::set_names(actual_names) %>%
+      set_names(actual_names) %>%
       mutate(urlAPI = url,
              dataListingsRecent = list(data_listings))
     
@@ -1414,11 +1414,11 @@ validate_locations <-
   function(urls =  "https://www.realtor.com/home_page/vitality?location=Bethesda%2C+MD",
            return_message = T) {
     .parse_market_vitality_url_safe <-
-      purrr::possibly(.parse_market_vitality_url, tibble())
+      possibly(.parse_market_vitality_url, tibble())
     urls %>%
       map_dfr(function(url) {
         if (return_message) {
-          glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+          glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
             message()
         }
         .parse_market_vitality_url_safe(url = url)
@@ -1447,7 +1447,7 @@ validate_locations <-
       }
       
       url <-
-        glue::glue('https://www.realtor.com/home_page/vitality?location={location_slug}') %>%
+        glue('https://www.realtor.com/home_page/vitality?location={location_slug}') %>%
         as.character()
       
       data <-
@@ -1466,7 +1466,7 @@ validate_locations <-
     } else {
       data <- parse_location(location_name = location_name)
       url <-
-        glue::glue('https://www.realtor.com/home_page/vitality?location={location_name}') %>%
+        glue('https://www.realtor.com/home_page/vitality?location={location_name}') %>%
         as.character()
       
       data <-
@@ -1479,7 +1479,7 @@ validate_locations <-
 .generate_market_vitality_urls <-
   function(locations = c("Bethesda, MD")) {
     .generate_market_vitality_url_safe <-
-      purrr::possibly(.generate_market_vitality_url, tibble())
+      possibly(.generate_market_vitality_url, tibble())
     
     locations %>%
       map_dfr(function(location_name) {
@@ -1509,12 +1509,12 @@ vitality <-
   function(locations = NULL,
            return_message = TRUE,
            ...) {
-    if (locations %>% purrr::is_null()) {
+    if (locations %>% is_null()) {
       stop("Please enter location names!!")
     }
     
     .generate_market_vitality_urls_safef <-
-      purrr::possibly(.generate_market_vitality_urls, tibble())
+      possibly(.generate_market_vitality_urls, tibble())
     
     df_urls <-
       .generate_market_vitality_urls_safef(locations = locations)
@@ -1525,7 +1525,7 @@ vitality <-
     }
     
     .parse_market_vitality_urls_safe <-
-      purrr::possibly(.parse_market_vitality_urls, tibble())
+      possibly(.parse_market_vitality_urls, tibble())
     
     all_data <-
       .parse_market_vitality_urls_safe(urls = df_urls$urlAPI, return_message = return_message)
@@ -1575,7 +1575,7 @@ vitality <-
     
     
     url <- 
-      glue::glue("{base_url}&coordinates={geo_slug}") %>% URLencode()
+      glue("{base_url}&coordinates={geo_slug}") %>% URLencode()
     
     url
     
@@ -1584,7 +1584,7 @@ vitality <-
 generate_coordinate_slug <-
   function(latitude = 38.964419 ,
            longitude = -77.113659) {
-    glue::glue("{latitude},{longitude}") %>%
+    glue("{latitude},{longitude}") %>%
       as.character()
   }
 
@@ -1594,7 +1594,7 @@ generate_coordinate_slug <-
     data <-
       url %>%
       .curl_json() %>%
-      jsonlite::fromJSON(
+      fromJSON(
         simplifyVector = T,
         simplifyDataFrame = T,
         flatten = T
@@ -1611,7 +1611,7 @@ generate_coordinate_slug <-
       map_chr(function(name) {
         df_row <- df_names %>% filter(nameRealtor == name)
         if (df_row %>% nrow() == 0) {
-          glue::glue("Missing {name}") %>%
+          glue("Missing {name}") %>%
             cat(fill = T)
           return(name)
         }
@@ -1620,7 +1620,7 @@ generate_coordinate_slug <-
     
     df_properties <-
       df_properties %>%
-      purrr::set_names(actual_names) %>%
+      set_names(actual_names) %>%
       dplyr::select(-dplyr::matches("remove")) %>%
       suppressMessages()
     
@@ -1689,11 +1689,11 @@ properties_near <-
   function(locations = NULL,
            return_message = TRUE) {
     
-    if (locations %>% purrr::is_null()) {
+    if (locations %>% is_null()) {
       stop("Enter locations")
     }
     property_near_safe <- 
-      purrr::possibly(property_near, tibble())
+      possibly(property_near, tibble())
     
     all_data <- 
       locations %>% 
@@ -1716,7 +1716,7 @@ properties_near <-
     flatten_chr() %>%
     str_trim() %>%
     as.character() %>% 
-    readr::parse_number() %>%
+    parse_number() %>%
     max(na.rm = T) %>%
     suppressWarnings() %>% suppressMessages()
 }
@@ -1730,9 +1730,9 @@ properties_near <-
     
     1:pages %>%
       map_dfr(function(x) {
-        if (!radius %>% purrr::is_null()) {
+        if (!radius %>% is_null()) {
           radius_slug <-
-            glue::glue('/radius-{radius}') %>% as.character()
+            glue('/radius-{radius}') %>% as.character()
           hasRadius <- T
         } else {
           radius_slug <- ''
@@ -1742,7 +1742,7 @@ properties_near <-
         tibble(
           idPage = x,
           hasRadius,
-          urlListingPage = glue::glue("{url}/pg-{x}{radius_slug}") %>% as.character()
+          urlListingPage = glue("{url}/pg-{x}{radius_slug}") %>% as.character()
         )
       })
   }
@@ -1756,7 +1756,7 @@ properties_near <-
       html_nodes('.js-save-alert-wrapper')
     
     parse_css_name_safe <-
-      purrr::possibly(parse_css_name, tibble())
+      possibly(parse_css_name, tibble())
     
     all_data <-
       seq_along(result_nodes) %>%
@@ -1814,7 +1814,7 @@ properties_near <-
               is_numeric = F
             )
           ) %>%
-          purrr::reduce(bind_rows) %>%
+          reduce(bind_rows) %>%
           mutate(value = value %>% str_to_title()) %>%
           spread(nameActual, value)
         
@@ -1851,7 +1851,7 @@ properties_near <-
       }) %>%
       mutate(urlListingPage = url)
     parse_address_safe <-
-      purrr::possibly(parse_address, tibble())
+      possibly(parse_address, tibble())
     df_address <-
       all_data$addressProperty %>%
       map_dfr(function(address) {
@@ -1873,12 +1873,12 @@ properties_near <-
   function(urls = "https://www.realtor.com/realestateandhomes-search/Bethesda_MD/pg-10",
            return_message = TRUE) {
     .parse_search_page_safe <-
-      purrr::possibly(.parse_search_page, tibble())
+      possibly(.parse_search_page, tibble())
     
     urls %>%
       map_dfr(function(url) {
         if (return_message) {
-          glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+          glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
             message()
         }
         .parse_search_page_safe(url = url)
@@ -1914,7 +1914,7 @@ location_listings <-
       "Parsing indvidual property listings" %>% cat(fill = T)
       
       parse_listing_urls_safe <-
-        purrr::possibly(parse_listing_urls, tibble())
+        possibly(parse_listing_urls, tibble())
       
       urls <-
         all_data$urlListing
@@ -1962,7 +1962,7 @@ table_listings <-
            return_message = T,
            ...) {
     location_listings_safe <-
-      purrr::possibly(location_listings, tibble())
+      possibly(location_listings, tibble())
     
     all_data <-
       locations %>%
@@ -2013,7 +2013,7 @@ table_listings <-
             fact_node %>% html_nodes("div") %>% html_text()
           if (x %in%  c(3, 5)) {
             value <-
-              readr::parse_number(as.character(div_text[[2]])) %>%
+              parse_number(as.character(div_text[[2]])) %>%
               suppressWarnings()
           }
         }
@@ -2125,7 +2125,7 @@ table_listings <-
       page %>% html_nodes('#ldp-pricewrap span') %>% html_text()
     
     if (listing %>% length() > 0) {
-      listing <- listing %>% as.character() %>% readr::parse_number() %>%
+      listing <- listing %>% as.character() %>% parse_number() %>%
         suppressWarnings() %>% suppressMessages()
       listing <- listing[!listing %>% is.na()]
       data <-
@@ -2151,7 +2151,7 @@ table_listings <-
         html_nodes('.neighborhood-local-item p') %>%
         html_text() %>%
         as.character() %>%
-        readr::parse_number() %>%
+        parse_number() %>%
         suppressMessages() %>%
         suppressWarnings()
       
@@ -2335,7 +2335,7 @@ table_listings <-
             property_meta[[x]] %>% html_attrs()
           
           value <-
-            property_meta[x] %>% html_text() %>% as.character() %>% readr::parse_number() %>%
+            property_meta[x] %>% html_text() %>% as.character() %>% parse_number() %>%
             suppressWarnings() %>% suppressMessages() %>%
             as.character()
           
@@ -2399,9 +2399,9 @@ table_listings <-
           dateEvent = dateEvent %>% lubridate::mdy(),
           dateEvent = case_when(descriptionEvent == "Estimated" ~ Sys.Date(),
                                 TRUE ~ dateEvent),
-          priceEvent = priceEvent %>% as.character() %>% readr::parse_number(),
+          priceEvent = priceEvent %>% as.character() %>% parse_number(),
           sourceEvent = case_when(sourceEvent == "" ~ NA_character_, TRUE ~ sourceEvent),
-          amountPSFEvent = amountPSFEvent %>% readr::parse_number()
+          amountPSFEvent = amountPSFEvent %>% parse_number()
         ) %>%
         arrange((dateEvent)) %>%
         mutate(numberListing = 1:n()) %>%
@@ -2446,14 +2446,14 @@ table_listings <-
         price_estimate <-
           price_estimate %>% as.character() %>%
           str_remove_all("Est. ") %>%
-          readr::parse_number() %>%
+          parse_number() %>%
           suppressWarnings() %>%
           discard(function(x) {
             is.na(x)
           })
         
         area_sf <-
-          page %>% html_nodes('.col-sm-1') %>% html_text() %>% as.character() %>% readr::parse_number() %>%
+          page %>% html_nodes('.col-sm-1') %>% html_text() %>% as.character() %>% parse_number() %>%
           suppressWarnings() %>% suppressMessages()
         
         
@@ -2463,7 +2463,7 @@ table_listings <-
         
         if (area_sf %>% length() - 1 == nrow(df_comps)) {
           area_sf <-
-            area_sf[2:length(area_sf)] %>% as.character() %>% readr::parse_number() %>%
+            area_sf[2:length(area_sf)] %>% as.character() %>% parse_number() %>%
             suppressWarnings() %>% suppressMessages()
           
           df_comps <-
@@ -2491,7 +2491,7 @@ table_listings <-
             mutate(numberProperty = 1:n()) %>%
             select(numberProperty, item, value) %>%
             ungroup() %>%
-            mutate(value = value %>% as.character() %>% readr::parse_number()) %>%
+            mutate(value = value %>% as.character() %>% parse_number()) %>%
             suppressWarnings() %>% suppressMessages() %>%
             spread(item, value)
           
@@ -2522,7 +2522,7 @@ table_listings <-
         
         if (length(lot_nodes) - 1 == nrow(df_comps)) {
           lots <-
-            lot_nodes[2:length(lot_nodes)] %>% as.character() %>%  readr::parse_number() %>%
+            lot_nodes[2:length(lot_nodes)] %>% as.character() %>%  parse_number() %>%
             suppressWarnings() %>% suppressMessages()
           df_comps <-
             df_comps %>%
@@ -2620,7 +2620,7 @@ table_listings <-
       data %>%
       mutate(urlListing = url)
     
-    if (!sleep_time %>% purrr::is_null()) {
+    if (!sleep_time %>% is_null()) {
       Sys.sleep(time = sleep_time)
     }
     
@@ -2652,12 +2652,12 @@ html_listing_urls <-
            sleep_time = 1,
            return_message = TRUE) {
     .parse_listing_url_safe <-
-      purrr::possibly(.parse_listing_url, tibble())
+      possibly(.parse_listing_url, tibble())
     all_data <-
       urls %>%
       map_dfr(function(url) {
         if (return_message) {
-          glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+          glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
             message()
         }
         .parse_listing_url_safe(url = url,
@@ -2671,50 +2671,50 @@ html_listing_urls <-
       .munge_realtor() %>% 
       mutate(dateData = Sys.Date()) %>%
       select(dateData, everything())
-    if (all_data %>% tibble::has_name("dataComps")) {
+    if (all_data %>% has_name("dataComps")) {
       all_data <- 
         all_data %>% 
         mutate(hasComps = dataComps %>% map_dbl(length) > 0)
     }
     
-    if (all_data %>% tibble::has_name("dataTaxes")) {
+    if (all_data %>% has_name("dataTaxes")) {
       all_data <- 
         all_data %>% 
         mutate(hasTaxes = dataTaxes %>% map_dbl(length) > 0)
     }
     
-    if (all_data %>% tibble::has_name("dataPhotos")) {
+    if (all_data %>% has_name("dataPhotos")) {
       all_data <- 
         all_data %>% 
         mutate(hasPhotos = dataPhotos %>% map_dbl(length) > 0)
     }
     
-    if (all_data %>% tibble::has_name("dataSchool")) {
+    if (all_data %>% has_name("dataSchool")) {
       all_data <- 
         all_data %>% 
         mutate(hasSchools = dataSchool %>% map_dbl(length) > 0)
     }
     
-    if (all_data %>% tibble::has_name("dataNeighborhood")) {
+    if (all_data %>% has_name("dataNeighborhood")) {
       all_data <- 
         all_data %>% 
         mutate(hasNeighborhood = dataNeighborhood %>% map_dbl(length) > 0)
     }
     
-    if (all_data %>% tibble::has_name("dataListingHistory")) {
+    if (all_data %>% has_name("dataListingHistory")) {
       all_data <- 
         all_data %>% 
         mutate(hasListingHistory = dataListingHistory %>% map_dbl(length) > 0)
     }
     
-    if (all_data %>% tibble::has_name("nameAgent")) {
+    if (all_data %>% has_name("nameAgent")) {
       all_data <- 
         all_data %>% 
         mutate(nameAgent = nameAgent %>% str_replace_all("\\, Agent|\\, Broker", "") %>% str_trim() %>% 
                  str_to_upper())
     }
     
-    if (all_data %>% tibble::has_name("statusListing")) {
+    if (all_data %>% has_name("statusListing")) {
       all_data <- 
         all_data %>% 
         mutate(statusListingDetail =  statusListing)

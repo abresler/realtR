@@ -3,7 +3,7 @@
 .generate_zipcode_trend_urls <- 
   function(zipcodes = c(20852, 10016, 10010)) {
     urls <-
-      glue::glue("https://www.realtor.com/myhome/trends-zip/{zipcodes}") %>% as.character()
+      glue("https://www.realtor.com/myhome/trends-zip/{zipcodes}") %>% as.character()
     tibble(zipcodeLocation = as.character(zipcodes), 
                urlTrendAPI = urls)
   }
@@ -31,7 +31,7 @@
     
     data <-
       data %>%
-      purrr::set_names(.resolve_names(data)) %>%
+      set_names(.resolve_names(data)) %>%
       mutate(idRow = 1:n())
     
     has_median <-
@@ -75,7 +75,7 @@
         data %>%
         left_join(
           df_median %>%
-            purrr::set_names(.resolve_names(df_median) %>% str_c("Median")) %>%
+            set_names(.resolve_names(df_median) %>% str_c("Median")) %>%
             mutate(idRow = 1:n()),
           by = "idRow"
           
@@ -93,7 +93,7 @@
       data <-
         data %>%
         left_join(df_listings %>%
-                    purrr::set_names(.resolve_names(df_listings)) %>% mutate(idRow = 1:n()),
+                    set_names(.resolve_names(df_listings)) %>% mutate(idRow = 1:n()),
                   by = "idRow")
     }
     
@@ -104,9 +104,9 @@
     data <- 
       data %>%
       mutate(
-        yearMonth = glue::glue("{yearData}-{monthData}-01") %>% lubridate::ymd(),
+        yearMonth = glue("{yearData}-{monthData}-01") %>% lubridate::ymd(),
         daysInMonth = days_in_month(yearMonth) %>% as.integer(),
-        dateData = glue::glue("{yearData}-{monthData}-{daysInMonth}") %>% lubridate::ymd(),
+        dateData = glue("{yearData}-{monthData}-{daysInMonth}") %>% lubridate::ymd(),
         urlTrendAPI = url
       ) %>%
       select(-one_of(c("yearMonth", "daysInMonth"))) %>%
@@ -142,7 +142,7 @@ trends_zipcodes <-
   function(zipcodes = NULL,
            return_message = T) {
     
-    if (zipcodes %>% purrr::is_null()) {
+    if (zipcodes %>% is_null()) {
       stop("Enter a vector of zipcodes")
     }
     
@@ -150,7 +150,7 @@ trends_zipcodes <-
       .generate_zipcode_trend_urls(zipcodes = zipcodes)
     
     .parse_zip_trend_url_safe <- 
-      purrr::possibly(.parse_zip_trend_url, tibble())
+      possibly(.parse_zip_trend_url, tibble())
     
     all_data <- 
       1:nrow(df_urls) %>% 
@@ -159,7 +159,7 @@ trends_zipcodes <-
         url <- df_row$urlTrendAPI
         zip <- df_row$zipcodeLocation
         if (return_message) {
-          glue::glue("Acquiring market trends for zipcode: {zip}") %>% cat(fill = T)
+          glue("Acquiring market trends for zipcode: {zip}") %>% cat(fill = T)
         }
         
         data <- 

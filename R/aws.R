@@ -60,7 +60,7 @@ dictionary_geo_names <-
     data <-
       url %>%
       .curl_json() %>%
-      jsonlite::fromJSON(
+      fromJSON(
         simplifyVector = T,
         simplifyDataFrame = T,
         flatten = T
@@ -75,7 +75,7 @@ dictionary_geo_names <-
       map_chr(function(name) {
         df_row <- df_names %>% filter(nameGeo == name)
         if (df_row %>% nrow() == 0) {
-          glue::glue("Missing {name}") %>%
+          glue("Missing {name}") %>%
             cat(fill = T)
           return(name)
         }
@@ -84,25 +84,25 @@ dictionary_geo_names <-
     
     data <-
       data %>%
-      purrr::set_names(actual_names) %>%
+      set_names(actual_names) %>%
       mutate(urlGeoAPI = url)
     
-    if (data %>% tibble::has_name("nameAddress")) {
+    if (data %>% has_name("nameAddress")) {
       data <-
         data %>%
         mutate(nameAddress = nameAddress %>% map_chr(function(x) {
-          if (x %>% purrr::is_null()) {
+          if (x %>% is_null()) {
             return(NA)
           }
           x[[1]] %>% str_c(collapse = ", ")
         }))
     }
     
-    if (data %>% tibble::has_name("statusProperty")) {
+    if (data %>% has_name("statusProperty")) {
       data <-
         data %>%
         mutate(statusProperty = statusProperty %>% map_chr(function(x) {
-          if (x %>% purrr::is_null()) {
+          if (x %>% is_null()) {
             return(NA)
           }
           x[[1]] %>% str_c(collapse = ", ")
@@ -143,7 +143,7 @@ dictionary_geo_names <-
       URLencode(area_name)
     
     url <-
-      glue::glue(
+      glue(
         "{base}{search_area}&limit={limit}&client_id={client_id}&area_types={area_types}"
       ) %>%
       as.character() %>%
@@ -166,7 +166,7 @@ generate_geo_urls <-
            ),
            limit = 100) {
     generate_geo_url_safe <-
-      purrr::possibly(.generate_geo_url, tibble())
+      possibly(.generate_geo_url, tibble())
     
     locations %>%
       map_dfr(function(area) {
@@ -180,12 +180,12 @@ parse_geo_urls <-
   function(urls = "https://parser-external.geo.moveaws.com/suggest?input=bethesda&limit=100&client_id=rdcV8&area_types=neighborhood,city,county,postal_code,address",
            return_message = T) {
     .parse_geo_query_safe <-
-      purrr::possibly(.parse_geo_query, tibble())
+      possibly(.parse_geo_query, tibble())
     
     urls %>%
       map_dfr(function(url) {
         if (return_message) {
-          glue::glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+          glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
             message()
         }
         .parse_geo_query_safe(url = url)
@@ -231,7 +231,7 @@ geocode <-
            limit = 100,
            return_message = TRUE,
            ...) {
-    if (locations %>% purrr::is_null()) {
+    if (locations %>% is_null()) {
       stop("Please enter search areas")
     }
     df_urls <-
