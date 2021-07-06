@@ -24,7 +24,12 @@ dictionary_geo_names <-
         "street_name",
         "street_suffix",
         "street_dir",
-        "street_post_dir"
+        "street_post_dir",
+        "counties",
+        "slug_id",
+        "geo_id",
+        "county_needed_for_uniq",
+        "city_slug_id"
       ),
       nameActual =  c(
         "typeArea",
@@ -49,7 +54,13 @@ dictionary_geo_names <-
         "nameStreetAbbr",
         "suffixStreet",
         "directionStreet",
-        "directionStreetPost"
+        "directionStreetPost",
+        
+        "counties",
+        "hasSlug",
+        "hashGeo",
+        "hasCountyNeededForUniq",
+        "slugCity"
       )
     )
   }
@@ -176,13 +187,26 @@ generate_geo_urls <-
       })
   }
 
+#' Parse GEO URLS
+#'
+#' @param urls 
+#' @param use_future 
+#' @param return_message 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 parse_geo_urls <-
   function(urls = "https://parser-external.geo.moveaws.com/suggest?input=bethesda&limit=100&client_id=rdcV8&area_types=neighborhood,city,county,postal_code,address",
+           use_future = F,
            return_message = T) {
     .parse_geo_query_safe <-
       possibly(.parse_geo_query, tibble())
     
-    urls %>%
+    if (!use_future) {
+    all_data <- 
+      urls %>%
       map_dfr(function(url) {
         if (return_message) {
           glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
@@ -190,6 +214,22 @@ parse_geo_urls <-
         }
         .parse_geo_query_safe(url = url)
       })
+    }
+    
+    if (use_future) {
+      options(future.globals.maxSize = 999999 * 1024 ^ 12)
+      future::plan(cluster)
+      all_data <- 
+        urls %>%
+        furrr::future_map_dfr(function(url) {
+          .parse_geo_query_safe(url = url)
+        })
+      closeAllConnections()
+    }
+    
+    
+    
+    all_data
   }
 
 #' Location geocoder
@@ -209,7 +249,11 @@ parse_geo_urls <-
 #' }
 #' @param limit numeric vector of results cannot exceed 100
 #' @param return_message if \code{TRUE} returns a message
+#' @param use_future 
 #' @param ... extra parameters
+#' @param snake_names 
+#' @param remove_list_columns 
+#'
 #' @family geocoder
 #' @return a \code{tibble}
 #' @export
@@ -228,10 +272,13 @@ geocode <-
              "street",
              "school"
            ),
+           use_future = F,
+           snake_names = F,
            limit = 100,
+           remove_list_columns = F,
            return_message = TRUE,
            ...) {
-    if (locations %>% is_null()) {
+    if (length(locations) == 0) {
       stop("Please enter search areas")
     }
     df_urls <-
@@ -240,14 +287,34 @@ geocode <-
                         limit = 100)
     
     all_data <-
-      parse_geo_urls(urls = df_urls$urlGeoAPI, return_message = return_message)
+      parse_geo_urls(urls = df_urls$urlGeoAPI, return_message = return_message,
+                     use_future = use_future)
     
     all_data <-
       all_data %>%
       left_join(df_urls, by = "urlGeoAPI") %>%
       select(nameLocationSearch, everything())
     
-    all_data %>%
-      mutate_all(funs(ifelse(. == "", NA, .))) %>% 
-      remove_columns()
+    all_data <-
+      all_data %>%
+      mutate_if(is.character, function(x) {
+        case_when(x == "" ~ NA_character_,
+                  TRUE ~ x)
+      }) %>%
+      janitor::remove_empty(which = "cols")
+    
+    if (remove_list_columns) {
+      list_cols <- data %>% select_if(is.list) %>% names()
+      if (length(list_cols) > 0) {
+        data <- data %>% 
+          select(-one_of(list_cols))
+      }
+    }
+    
+    if (snake_names) {
+      all_data <- 
+        janitor::clean_names(all_data)
+    }
+    
+    all_data
   }

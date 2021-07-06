@@ -6,7 +6,7 @@
 #' @name realtoR
 #' @docType package
 #' @author Alex Bresler (abresler@@asbcllc.com)
-#' @import dplyr purrr stringr stringr curl jsonlite rvest tidyr lubridate xml2 tibble readr stringi udpipe rlang
+#' @import dplyr purrr stringr stringr curl jsonlite rvest tidyr lubridate xml2 tibble readr stringi udpipe rlang furrr future janitor
 #' @importFrom glue glue
 
 NULL

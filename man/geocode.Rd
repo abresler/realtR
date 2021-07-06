@@ -8,7 +8,10 @@ geocode(
   locations = NULL,
   search_types = c("neighborhood", "city", "county", "postal_code", "address",
     "building", "street", "school"),
+  use_future = F,
+  snake_names = F,
   limit = 100,
+  remove_list_columns = F,
   return_message = TRUE,
   ...
 )
@@ -26,7 +29,13 @@ geocode(
 \item school - include school info
 }}
 
+\item{use_future}{}
+
+\item{snake_names}{}
+
 \item{limit}{numeric vector of results cannot exceed 100}
+
+\item{remove_list_columns}{}
 
 \item{return_message}{if \code{TRUE} returns a message}
 
