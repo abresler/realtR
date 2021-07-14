@@ -29,7 +29,9 @@ dictionary_geo_names <-
         "slug_id",
         "geo_id",
         "county_needed_for_uniq",
-        "city_slug_id"
+        "city_slug_id",
+        "validation_code",
+        "suffix"
       ),
       nameActual =  c(
         "typeArea",
@@ -60,7 +62,9 @@ dictionary_geo_names <-
         "hasSlug",
         "hashGeo",
         "hasCountyNeededForUniq",
-        "slugCity"
+        "slugCity",
+        "codeValidation",
+        "suffixLocation"
       )
     )
   }
@@ -306,7 +310,7 @@ geocode <-
     if (remove_list_columns) {
       list_cols <- data %>% select_if(is.list) %>% names()
       if (length(list_cols) > 0) {
-        data <- data %>% 
+        all_data <- all_data %>% 
           select(-one_of(list_cols))
       }
     }
