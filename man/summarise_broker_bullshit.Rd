@@ -20,9 +20,6 @@ summarise_broker_bullshit(
 
 \item{return_message}{if \code{TRUE} returns messages}
 }
-\value{
-
-}
 \description{
 This function takes a 
 vector descriptions and cleans

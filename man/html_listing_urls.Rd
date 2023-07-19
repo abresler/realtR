@@ -20,9 +20,6 @@ html_listing_urls(
 
 \item{return_message}{if \code{TRUE} returns message}
 }
-\value{
-
-}
 \description{
 Parse vector of listing html listing
 urls.

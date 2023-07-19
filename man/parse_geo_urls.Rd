@@ -5,8 +5,8 @@
 \title{Parse GEO URLS}
 \usage{
 parse_geo_urls(
- 
-    urls = "https://parser-external.geo.moveaws.com/suggest?input=bethesda&limit=100&client_id=rdcV8&area_types=neighborhood,city,county,postal_code,address",
+  urls =
+    "https://parser-external.geo.moveaws.com/suggest?input=bethesda&limit=100&client_id=rdcV8&area_types=neighborhood,city,county,postal_code,address",
   use_future = F,
   return_message = T
 )
@@ -17,9 +17,6 @@ parse_geo_urls(
 \item{use_future}{}
 
 \item{return_message}{}
-}
-\value{
-
 }
 \description{
 Parse GEO URLS
