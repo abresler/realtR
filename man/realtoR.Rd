@@ -2,6 +2,8 @@
 % Please edit documentation in R/realtR-package.R
 \docType{package}
 \name{realtoR}
+\alias{realtR}
+\alias{realtR-package}
 \alias{realtoR}
 \title{realtR}
 \description{
