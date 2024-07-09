@@ -10,7 +10,7 @@ Depends:
     R (>= 3.4.0)
 Description: Gateway to residential real estate transparency
 License: GPL (>= 2)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Imports: 
     curl,
     dplyr,

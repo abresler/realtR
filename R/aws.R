@@ -99,7 +99,7 @@ dictionary_geo_names <-
     
     data <-
       data %>%
-      set_names(actual_names) %>%
+      setNames(actual_names) %>%
       mutate(urlGeoAPI = url)
     
     if (data %>% has_name("nameAddress")) {
@@ -124,11 +124,12 @@ dictionary_geo_names <-
         }))
     }
     
-    
+    num_cols <- data %>% dplyr::select(dplyr::matches("^id[A-Z]")) %>% names()
     data <-
       data %>%
-      mutate_at(data %>% dplyr::select(dplyr::matches("^id[A-Z]")) %>% names(),
-                funs(. %>% as.numeric()))
+      mutate_at(num_cols, list(function(x){
+        x |> as.numeric()
+      }))
     
     data
   }
