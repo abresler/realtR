@@ -803,97 +803,45 @@ dictionary_realtor_names <-
 # rates -------------------------------------------------------------------
 
 # https://www.realtor.com/mrtg_handler/get_trends_data
+# NOTE: This endpoint was deprecated by realtor.com circa 2024
 
 #' Mortgage Rates
 #'
-#' Returns a variety of
-#' interest rates for various
-#' mortgage types.
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' This function is deprecated because the realtor.
+#' com API endpoint it relied on (/mrtg_handler/get_trends_data)
+#' no longer exists. Consider using alternative mortgage rate
+#' data sources such as Freddie Mac PMMS or Zillow API.
 #'
 #' @param return_wide if \code{TRUE} widens data and removes duration and benchmark variables
 #'
-#' @return a \code{tibble}
+#' @return an empty \code{tibble} with a deprecation warning
 #' @export
 #' @family interest rates
 #' @examples
+#' \dontrun{
 #' mortgage_rates(return_wide = F)
+#' }
 mortgage_rates <-
   function(return_wide = F) {
-    data <-
-      "https://www.realtor.com/mrtg_handler/get_trends_data" %>%
-      fromJSON(flatten = T, simplifyDataFrame = T) %>%
-      .$rate_trends %>%
-      dplyr::as_tibble()
-    
-    df_types <-
-      tibble(
-        typeRate = c(
-          'pct30YearFixed',
-          'pct15YearFixed',
-          'pct5OneARM',
-          'pct20YearFixed',
-          'pct30YearFixedFHA',
-          'pct30YearFixedVA',
-          'pct10YearFixed',
-          'pct7OneARM'
-        ),
-        durationLoanMonths = c(360,
-                               15 * 12,
-                               5 * 12,
-                               20 * 12,
-                               360,
-                               360,
-                               120,
-                               84),
-        typeBenchmark = c(
-          'fixed',
-          'fixed',
-          'floating',
-          'fixed',
-          'fixed',
-          'fixed',
-          'fixed',
-          'floating'
-        )
+    .Deprecated(
+      msg = paste(
+        "mortgage_rates() is deprecated.",
+        "The realtor.com API endpoint no longer exists.",
+        "Consider using Freddie Mac PMMS or other mortgage rate APIs."
       )
-    
-    data <-
-      data %>%
-      set_names(
-        c(
-          "year",
-          "month",
-          "date",
-          'pct30YearFixed',
-          'pct15YearFixed',
-          'pct5OneARM',
-          'pct20YearFixed',
-          'pct30YearFixedFHA',
-          'pct30YearFixedVA',
-          'pct10YearFixed',
-          'pct7OneARM'
-        )
-      ) %>%
-      unite(dateData, year, month, date, sep = "-") %>%
-      mutate(dateData = dateData %>% lubridate::ymd()) %>%
-      gather(typeRate, value, -dateData) %>%
-      mutate(value = value / 100) %>%
-      arrange(dateData)
-    
-    data <-
-      data %>%
-      left_join(df_types, by = "typeRate") %>%
-      select(dateData, typeRate, durationLoanMonths, typeBenchmark, value)
-    
-    if (return_wide) {
-      data <-
-        data %>%
-        select(-one_of(c(
-          "durationLoanMonths", "typeBenchmark"
-        ))) %>%
-        spread(typeRate, value)
-    }
-    data
+    )
+
+    # Return empty tibble with expected structure
+    tibble::tibble(
+      dateData = as.Date(character()),
+      typeRate = character(),
+      value = numeric(),
+      durationLoanMonths = integer(),
+      typeBenchmark = character()
+    )
   }
 
 
@@ -1490,9 +1438,11 @@ validate_locations <-
 
 #' Market vitality
 #'
-#' Acquires meta level information
-#' for specified locations as of the
-#' most recent time period
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' This function is deprecated because the realtor.com
+#' API endpoint it relied on (/home_page/vitality) no longer exists.
 #'
 #' @param locations vector of location names, location name must contain
 #' a city name and a comma ie "Brooklyn, NY" or a zipcode
@@ -1500,64 +1450,32 @@ validate_locations <-
 #' @param return_message if \code{TRUE} returns a message
 #' @param ... extra parameters
 #'
-#' @return a \code{tibble}
+#' @return an empty \code{tibble} with a deprecation warning
 #' @export
 #'
 #' @examples
-#' vitality(locations = c("La Jolla, CA", "Manhattan, NY", "Bethany, DE", "10016"))
+#' \dontrun{
+#' vitality(locations = c("La Jolla, CA", "Manhattan, NY"))
+#' }
 vitality <-
   function(locations = NULL,
            return_message = TRUE,
            ...) {
-    if (locations %>% is_null()) {
-      stop("Please enter location names!!")
-    }
-    
-    .generate_market_vitality_urls_safef <-
-      possibly(.generate_market_vitality_urls, tibble())
-    
-    df_urls <-
-      .generate_market_vitality_urls_safef(locations = locations)
-    
-    if (df_urls %>% nrow() == 0) {
-      "No results" %>% cat(fill = T)
-      return(invisible())
-    }
-    
-    .parse_market_vitality_urls_safe <-
-      possibly(.parse_market_vitality_urls, tibble())
-    
-    all_data <-
-      .parse_market_vitality_urls_safe(urls = df_urls$urlAPI, return_message = return_message)
-    
-    if (all_data %>% nrow() == 0) {
-      "No results" %>% cat(fill = T)
-      return(invisible())
-    }
-    all_data <-
-      all_data %>%
-      left_join(df_urls %>% select(one_of(c(
-        "locationSearch", "urlAPI"
-      ))), 
-      by = "urlAPI"
-      ) %>%
-      mutate(dateData = Sys.Date()) %>%
-      select(one_of(
-        c(
-          "dateData",
-          "locationSearch",
-          "nameCity",
-          "stateSearch",
-          "zipcodeSearch"
-        )
-      ), everything()) %>%
-      suppressMessages() %>%
-      suppressWarnings() %>%
-      remove_na() %>%
-      remove_columns()
-    
-    
-    all_data
+    .Deprecated(
+      msg = paste(
+        "vitality() is deprecated.",
+        "The realtor.com API endpoint /home_page/vitality no longer exists."
+      )
+    )
+
+    # Return empty tibble with expected structure
+    tibble::tibble(
+      dateData = as.Date(character()),
+      locationSearch = character(),
+      nameCity = character(),
+      stateSearch = character(),
+      zipcodeSearch = character()
+    )
   }
 
 # api ---------------------------------------------------------------------
