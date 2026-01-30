@@ -1,12 +1,11 @@
-#' realtR
+#' realtR: Real Estate Data Tools
 #'
-#' Tools to make finding property
-#' suck less
+#' Tools to make finding property data suck less.
+#' Provides programmatic access to residential real estate
+#' information from realtor.com.
 #'
-#' @name realtoR
-#' @docType package
 #' @author Alex Bresler (abresler@@asbcllc.com)
-#' @import dplyr purrr stringr stringr curl jsonlite rvest tidyr lubridate xml2 tibble readr stringi udpipe rlang furrr future janitor
+#' @import dplyr purrr stringr curl jsonlite rvest tidyr lubridate xml2 tibble readr stringi udpipe textrank rlang furrr future janitor
 #' @importFrom glue glue
-
-NULL
+#' @keywords internal
+"_PACKAGE"

@@ -1860,8 +1860,8 @@ location_listings <-
 
 #' Property listing table
 #'
-#' Returns listing table.  Slower and not advised
-#' unless \link{listings()} does not work for your search.
+#' Returns listing table. Slower and not advised
+#' unless \code{\link{listings}} does not work for your search.
 #'
 #' @param locations vector of table listings
 #' @param include_features if \code{TRUE} includes property features from pages
