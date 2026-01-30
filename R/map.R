@@ -980,18 +980,14 @@ dictionary_search <-
 #' @family listing search
 #'
 #' @examples
+#' \dontrun{
 #' library(dplyr)
-#' library(realtR)
-#' ## New Construction in selected markets
-#' df_nc <-
-#' listing_counts(
-#' locations = c("Miami Beach, FL", "SOMA, San Francisco, CA", 10013,
-#' "Bethesda, MD"),
-#'  is_new_construction = TRUE
-#'  )
-#'
-#'  df_nc %>%
-#'  select(locationSearch, countListings)
+#' df_nc <- listing_counts(
+#'   locations = c("Miami Beach, FL", "Bethesda, MD"),
+#'   is_new_construction = TRUE
+#' )
+#' df_nc %>% select(locationSearch, countListings)
+#' }
 
 listing_counts <-
   function(locations ,
@@ -1274,21 +1270,15 @@ listing_counts <-
 #' @family detailed search
 #' @export
 #' @examples
-#' ## New Construction Waterfront actual mapped listings
+#' \dontrun{
 #' library(dplyr)
-#' library(realtR)
-#' df_new_water <-
-#'  map_listings( locations = c("Miami Beach, FL", "Naples, FL"),
-#' features = "Waterfront", is_new_construction = TRUE )
-#'
-#' df_new_water %>%
-#' glimpse()
-#'
-#' df_new_water %>%
-#' group_by(cityProperty, stateProperty, typeProperty) %>%
-#' summarise( meanPSF = mean(priceListingPerSF, na.rm = T),
-#' meanPrice = mean(priceListing, na.rm = T), countListings = n()) %>%
-#' ungroup()
+#' df_new_water <- map_listings(
+#'   locations = c("Miami Beach, FL", "Naples, FL"),
+#'   features = "Waterfront",
+#'   is_new_construction = TRUE
+#' )
+#' df_new_water %>% glimpse()
+#' }
 #'
 #'
 map_listings <-
@@ -1958,21 +1948,15 @@ map_listings <-
 #' @export
 #' @family listing search
 #' @examples
-#' library(realtR)
-#'  library(dplyr)
-#'  df_big_ass_houses_with_pools <-
-#'  listings(
-#'  locations = c(
-#'  "Buckhead, Atlanta, GA",
-#'  90210,
-#'  "Greenwich, CT",
-#'  "Malibu, CA",
-#'  "Soho, New York, NY"
-#'  ),
-#'  beds_min = 4,
-#'  features = 'Swimming Pool',
-#'  sqft_min = 3000
-#'  )
+#' \dontrun{
+#' library(dplyr)
+#' df_listings <- listings(
+#'   locations = c("Greenwich, CT", "Malibu, CA"),
+#'   beds_min = 4,
+#'   features = "Swimming Pool",
+#'   sqft_min = 3000
+#' )
+#' }
 listings <-
   function(locations = NULL,
            listing_type = "sale",

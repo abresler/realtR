@@ -137,7 +137,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' trends_zipcodes(zipcodes = c("90210", "10016"))
+#' }
 trends_zipcodes <-
   function(zipcodes = NULL,
            return_message = T) {

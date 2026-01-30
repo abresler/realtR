@@ -1007,7 +1007,9 @@ parse_location <-
 #' @export
 #' @family market information
 #' @examples
-#' median_prices(locations = c("Greenwich, CT", "New London, CT", "Woodside, CA", "Park Slope, Brooklyn, NY"))
+#' \dontrun{
+#' median_prices(locations = c("Greenwich, CT", "New London, CT", "Woodside, CA"))
+#' }
 median_prices <-
   function(locations = NULL,
            return_message = TRUE,
@@ -1600,8 +1602,10 @@ property_near <-
 #' @export
 #'
 #' @examples
-#' locations <-  c("2449 Tracy Place, NW, Washington DC", "Sunset Island, Miami Beach, FL" )
+#' \dontrun{
+#' locations <- c("2449 Tracy Place, NW, Washington DC", "Miami Beach, FL")
 #' properties_near(locations = locations)
+#' }
 
 properties_near <-
   function(locations = NULL,
@@ -1870,7 +1874,9 @@ location_listings <-
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' table_listings(locations = "Marietta, GA")
+#' }
 
 table_listings <-
   function(locations,
@@ -2563,7 +2569,9 @@ table_listings <-
 #' @export
 #'
 #' @examples
-#' html_listing_urls(urls = "https://www.realtor.com/realestateandhomes-detail/5301-Westbard-Cir-Apt-323_Bethesda_MD_20816_M63437-59115")
+#' \dontrun{
+#' html_listing_urls(urls = "https://www.realtor.com/realestateandhomes-detail/property-url")
+#' }
 html_listing_urls <-
   function(urls = NULL,
            include_features = F,

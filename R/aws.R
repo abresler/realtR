@@ -264,7 +264,9 @@ parse_geo_urls <-
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' geocode(locations = c("Palm Springs", "Bethesda", 10016), limit = 100)
+#' }
 geocode <-
   function(locations = NULL,
            search_types = c(
