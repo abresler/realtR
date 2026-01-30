@@ -1,8 +1,8 @@
 Package: realtR
 Type: Package
 Title: Real Estate's maxim gun
-Version: 0.1023
-Date: 2019-04-08
+Version: 0.1100
+Date: 2026-01-30
 Authors@R: c(person("Alex", "Bresler", email = "abresler@asbcllc.com", role = c("aut", "cre")))
 Encoding: UTF-8
 Maintainer: Alex Bresler <abresler@asbcllc.com>
@@ -10,7 +10,7 @@ Depends:
     R (>= 3.4.0)
 Description: Gateway to residential real estate transparency
 License: GPL (>= 2)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports: 
     curl,
     dplyr,
