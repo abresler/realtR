@@ -116,26 +116,21 @@ This function is faster than \code{listings}
 but returns less detailed information.
 }
 \examples{
-## New Construction Waterfront actual mapped listings
+\dontrun{
 library(dplyr)
-library(realtR)
-df_new_water <-
- map_listings( locations = c("Miami Beach, FL", "Naples, FL"),
-features = "Waterfront", is_new_construction = TRUE )
-
-df_new_water \%>\%
-glimpse()
-
-df_new_water \%>\%
-group_by(cityProperty, stateProperty, typeProperty) \%>\%
-summarise( meanPSF = mean(priceListingPerSF, na.rm = T),
-meanPrice = mean(priceListing, na.rm = T), countListings = n()) \%>\%
-ungroup()
+df_new_water <- map_listings(
+  locations = c("Miami Beach, FL", "Naples, FL"),
+  features = "Waterfront",
+  is_new_construction = TRUE
+)
+df_new_water \%>\% glimpse()
+}
 
 
 }
 \seealso{
 Other listing search: 
+\code{\link{comps}()},
 \code{\link{dictionary_listing_features}()},
 \code{\link{dictionary_property_types}()},
 \code{\link{listing_counts}()},

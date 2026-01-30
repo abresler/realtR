@@ -2,22 +2,30 @@
 % Please edit documentation in R/api.R
 \name{mortgage_rates}
 \alias{mortgage_rates}
-\title{Mortgage Rates}
+\title{Mortgage Rates (Deprecated)}
 \usage{
-mortgage_rates(return_wide = F)
+mortgage_rates(return_wide = FALSE)
 }
 \arguments{
-\item{return_wide}{if \code{TRUE} widens data and removes duration and benchmark variables}
+\item{return_wide}{if \code{TRUE} widens data}
 }
 \value{
-a \code{tibble}
+an empty \code{tibble} with a deprecation warning
 }
 \description{
-Returns a variety of
-interest rates for various
-mortgage types.
+`r lifecycle::badge("deprecated")`
+
+This function is deprecated. Use \code{\link{mortgage_rates_fred}} instead,
+which fetches data from the Federal Reserve Economic Data (FRED) database.
 }
 \examples{
-mortgage_rates(return_wide = F)
+\dontrun{
+# Use mortgage_rates_fred() instead
+mortgage_rates_fred()
+}
+}
+\seealso{
+Other interest rates: 
+\code{\link{mortgage_rates_fred}()}
 }
 \concept{interest rates}

@@ -26,6 +26,8 @@ The location names must be a city and/or neighborhood bounded
 by commas.
 }
 \examples{
-median_prices(locations = c("Greenwich, CT", "New London, CT", "Woodside, CA", "Park Slope, Brooklyn, NY"))
+\dontrun{
+median_prices(locations = c("Greenwich, CT", "New London, CT", "Woodside, CA"))
+}
 }
 \concept{market information}

@@ -8,10 +8,10 @@ geocode(
   locations = NULL,
   search_types = c("neighborhood", "city", "county", "postal_code", "address",
     "building", "street", "school"),
-  use_future = F,
-  snake_names = F,
+  .parallel = NULL,
+  snake_names = FALSE,
   limit = 100,
-  remove_list_columns = F,
+  remove_list_columns = FALSE,
   return_message = TRUE,
   ...
 )
@@ -29,8 +29,6 @@ geocode(
 \item school - include school info
 }}
 
-\item{use_future}{}
-
 \item{snake_names}{}
 
 \item{limit}{numeric vector of results cannot exceed 100}
@@ -40,6 +38,8 @@ geocode(
 \item{return_message}{if \code{TRUE} returns a message}
 
 \item{...}{extra parameters}
+
+\item{use_future}{}
 }
 \value{
 a \code{tibble}
@@ -49,6 +49,8 @@ This function geocodes a users vector of locations
 and returns a \code{tibble} with the corresponding results
 }
 \examples{
+\dontrun{
 geocode(locations = c("Palm Springs", "Bethesda", 10016), limit = 100)
+}
 }
 \concept{geocoder}

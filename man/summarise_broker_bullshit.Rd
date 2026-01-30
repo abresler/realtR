@@ -27,13 +27,13 @@ them into a concise sentence or
 sentences
 }
 \examples{
-
-broker_bs <- c("This Tashmoo Woods End-Unit Condo Is Simply A Step Above The Rest. The Light And Bright Living Room Has Soaring Cathedral Ceilings, Fireplace, Hardwood Floors And French Doors That Open To A Deck. Eat-In Kitchen W/Newer Appliances And An Abundance Of Cabinets. Dining Area Off Of Living Room. A Den And Full Bath Finish The 1St Floor. The Second Level Features 2 Spacious Bedrooms With En Suites. The Master Has A Tiled Bath With Jacuzzi Tub, Double Vanity And Shower. One Of The Unique Features Of This Unit Is The Full, Partially Finished, Walkout Basement. Just Out The Front Door Is An Outdoor Shower, Storage Area And Detached Garage. Enormous Deck. Central Ac. Dehumidification System. Conveniently Located To All Of The Association Amenities Which Include A Swimming Pool W/Pool House, Wifi & Lounge Chairs, Tennis Courts, Playground, Basketball Court, Private Beach On The Vineyard Sound And A Small Dock On Lake Tashmoo.easy Access To Town, Ferries, Golf & More.")
-library(textrank)
+\dontrun{
 library(udpipe)
-tagger <- udpipe_load_model(file = path_to_model) 
-summarise_broker_bullshit(descriptions = broker_bs, tagger = tagger, sentences = 3, return_message = T)
-
-
+library(textrank)
+# Download model first: udpipe_download_model(language = "english")
+tagger <- udpipe_load_model(file = "path/to/english-model.udpipe")
+broker_bs <- "Beautiful home with stunning views and modern amenities."
+summarise_broker_bullshit(descriptions = broker_bs, tagger = tagger, sentences = 1)
+}
 
 }

@@ -1,0 +1,215 @@
+---
+title: "Your First Property Search in 5 Minutes"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Your First Property Search in 5 Minutes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+## Introduction
+
+realtR gives you programmatic access to real estate data from realtor.com. Whether you're a home buyer researching neighborhoods, an investor analyzing markets, or a data scientist building models, this guide will get you started quickly.
+
+## Installation
+
+```{r install}
+# Install from GitHub
+# install.packages("devtools")
+devtools::install_github("abresler/realtR")
+```
+
+## Quick Start: Find Homes for Sale
+
+The most common use case is searching for homes in a specific area. Use the `listings()` function:
+```{r listings-basic}
+library(realtR)
+
+# Search for homes in a zip code
+homes <- listings(location = "20817")
+
+# View the first few results
+head(homes)
+```
+
+The `location` parameter is flexible - you can use:
+
+- **Zip codes**: `"20817"`, `"90210"`
+- **Cities**: `"Boston, MA"`, `"Austin, TX"`
+- **Neighborhoods**: `"Georgetown, Washington DC"`
+- **Counties**: `"Fairfax County, VA"`
+
+```{r listings-city}
+# Search by city
+boston_homes <- listings(location = "Boston, MA")
+
+# Search by neighborhood
+georgetown <- listings(location = "Georgetown, Washington DC")
+```
+
+## Filter Your Search
+
+Narrow down results with filters:
+
+```{r listings-filtered}
+# Find 3+ bedroom homes under $500K
+affordable_family <- listings(
+  location = "20817",
+  min_beds = 3,
+  max_price = 500000
+)
+
+# Find condos only
+condos <- listings(
+  location = "Boston, MA",
+  property_type = "condo"
+)
+```
+
+## Get Listing Details
+
+For detailed information about specific properties:
+
+```{r listing-details}
+# Get listing URLs from search results
+urls <- homes$urlListing[1:5]
+
+# Parse detailed information
+details <- parse_listing_urls(urls = urls)
+```
+
+## Check Market Trends
+
+See what's happening in a market:
+
+```{r trends}
+# Get median prices for a zip code
+prices <- median_prices(location = "20817")
+
+# Get market trends
+trends <- trends_zipcodes(zipcode = "20817")
+```
+
+## Get Rental Estimates
+
+Investors can estimate rental income:
+
+```{r rental}
+# Get rental estimate for a zip code
+rent <- rental_estimates(zipcode = "20817")
+```
+
+## Geocode Addresses
+
+Convert addresses to coordinates:
+
+```{r geocode}
+# Geocode an address
+geo <- geocode(location = "1600 Pennsylvania Ave, Washington DC")
+geo$latitudeLocation
+geo$longitudeLocation
+```
+
+## Map-Based Searches
+
+Find properties near a specific location:
+
+```{r map}
+# Find properties near an address
+nearby <- properties_near(
+  address = "4000 Massachusetts Ave NW, Washington DC"
+)
+
+# Search a specific area on the map
+area_listings <- map_listings(
+  location = "Bethesda, MD"
+)
+```
+
+## Understanding the Data
+
+realtR uses consistent column naming conventions:
+
+| Prefix | Meaning | Examples |
+|--------|---------|----------|
+| `price*` | Price-related | `priceListing`, `pricePerSF` |
+| `count*` | Counts | `countBeds`, `countBaths` |
+| `area*` | Area measurements | `areaPropertySF` |
+| `date*` | Dates | `dateListed`, `dateSold` |
+| `is*` | Boolean flags | `isForeclosure`, `isNewListing` |
+| `url*` | URLs | `urlListing`, `urlPhoto` |
+| `name*` | Names | `nameBrokerage`, `nameAgent` |
+
+## Tips for Success
+
+### 1. Respect Rate Limits
+
+realtR automatically handles rate limiting, but avoid making excessive requests:
+
+```{r rate-limit}
+# Good: Reasonable batch size
+results <- listings(location = "Boston, MA")
+
+# Avoid: Rapid sequential calls
+# for (zip in 1:1000) { listings(zip) }  # Don't do this
+```
+
+### 2. Handle Errors Gracefully
+
+API endpoints can change. Wrap calls in error handling:
+
+```{r error-handling}
+library(purrr)
+
+safe_listings <- possibly(listings, otherwise = tibble())
+homes <- safe_listings(location = "20817")
+```
+
+### 3. Check API Status
+
+Verify endpoints are working:
+
+```{r status}
+# Check API health
+status <- api_status()
+print(status)
+```
+
+### 4. Cache Results
+
+For repeated analysis, save results locally:
+
+```{r cache}
+# Save results
+saveRDS(homes, "my_search_results.rds")
+
+# Load later
+homes <- readRDS("my_search_results.rds")
+
+# Or use realtR's built-in cache info
+cache_info()
+```
+
+## Next Steps
+
+Now that you can search for properties, explore these advanced features:
+
+- **`summarise_broker_bullshit()`** - Use NLP to cut through marketing fluff in listing descriptions
+- **`table_listings()`** - Get structured listing data for analysis
+- **`listing_counts()`** - Count available properties without fetching full data
+
+## Getting Help
+
+- **Documentation**: `?listings`, `?geocode`, etc.
+- **GitHub Issues**: Report bugs or request features
+- **Source Code**: Explore the implementation
+
+Happy house hunting!

@@ -114,24 +114,19 @@ Returns MLS data for
 specified locations and parameters
 }
 \examples{
-library(realtR)
- library(dplyr)
- df_big_ass_houses_with_pools <-
- listings(
- locations = c(
- "Buckhead, Atlanta, GA",
- 90210,
- "Greenwich, CT",
- "Malibu, CA",
- "Soho, New York, NY"
- ),
- beds_min = 4,
- features = 'Swimming Pool',
- sqft_min = 3000
- )
+\dontrun{
+library(dplyr)
+df_listings <- listings(
+  locations = c("Greenwich, CT", "Malibu, CA"),
+  beds_min = 4,
+  features = "Swimming Pool",
+  sqft_min = 3000
+)
+}
 }
 \seealso{
 Other listing search: 
+\code{\link{comps}()},
 \code{\link{dictionary_listing_features}()},
 \code{\link{dictionary_property_types}()},
 \code{\link{listing_counts}()},

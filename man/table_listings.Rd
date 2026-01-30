@@ -30,9 +30,11 @@ table_listings(
 a \code{tibble}
 }
 \description{
-Returns listing table.  Slower and not advised
-unless \link{listings()} does not work for your search.
+Returns listing table. Slower and not advised
+unless \code{\link{listings}} does not work for your search.
 }
 \examples{
+\dontrun{
 table_listings(locations = "Marietta, GA")
+}
 }

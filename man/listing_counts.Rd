@@ -113,21 +113,18 @@ number of total listings for your specified locations
 and parameters
 }
 \examples{
+\dontrun{
 library(dplyr)
-library(realtR)
-## New Construction in selected markets
-df_nc <-
-listing_counts(
-locations = c("Miami Beach, FL", "SOMA, San Francisco, CA", 10013,
-"Bethesda, MD"),
- is_new_construction = TRUE
- )
-
- df_nc \%>\%
- select(locationSearch, countListings)
+df_nc <- listing_counts(
+  locations = c("Miami Beach, FL", "Bethesda, MD"),
+  is_new_construction = TRUE
+)
+df_nc \%>\% select(locationSearch, countListings)
+}
 }
 \seealso{
 Other listing search: 
+\code{\link{comps}()},
 \code{\link{dictionary_listing_features}()},
 \code{\link{dictionary_property_types}()},
 \code{\link{listings}()},

@@ -1,41 +1,54 @@
-# gdeltr2::load_needed_packages(c("jsonlite", "purrr", "tidyr", "glue", "stringr", "curl", "dplyr", "rvest", 'lubridate', "requestsR", "stringi"))
+# HTTP Functions - Wrappers for backward compatibility
+# Core implementation in R/http.R with httr2, retry, and throttle
 
-.curl_page <-
-  function(url) {
-    df_call <- generate_url_reference()
-    h <-
-      new_handle(
-        accept_encoding = NULL,
-        verbose = F,
-        useragent =  df_call$urlReferer
-      )
-    
-    page <-
-      curl(url, handle = h) %>%
-      read_lines() %>%
-      str_c(collapse = "") %>%
-      read_html()
-    
-    page
+#' @keywords internal
+#' @noRd
+.curl_page <- function(url) {
+
+  # Use httr2-based implementation with retry and throttle
+  .fetch_page(url)
+}
+
+#' @keywords internal
+#' @noRd
+.curl_json <- function(url) {
+
+  # Use httr2-based implementation with retry and throttle
+  .fetch_json(url)
+}
+
+# Parallel Processing Helper ----------------------------------------------
+# Bayesian threshold: parallelize when n * avg_time > 1000 + (workers * 50)
+# For network I/O with ~500ms per request, threshold is ~5 items
+
+#' @keywords internal
+#' @noRd
+.parallel_map_dfr <- function(.x, .f, .parallel = NULL, .progress = NULL, ...) {
+  n <- length(.x)
+
+
+  # Auto-determine parallel if not specified
+  if (is.null(.parallel)) {
+    .parallel <- n >= 5 && future::nbrOfWorkers() > 1
   }
 
-.curl_json <-
-  function(url) {
-    df_call <- generate_url_reference()
-    h <-
-      new_handle(
-        accept_encoding = NULL,
-        verbose = F,
-        useragent =  df_call$urlReferer
-      )
-    
-    json_data <-
-      curl(url, handle = h) %>%
-      read_lines()
-    
-    json_data
-    
+  # Auto-determine progress if not specified
+  if (is.null(.progress)) {
+    .progress <- n > 10
   }
+
+  if (.parallel && requireNamespace("furrr", quietly = TRUE)) {
+    # Parallel execution - respects user's plan() setup
+    furrr::future_map_dfr(
+      .x, .f, ...,
+      .options = furrr::furrr_options(seed = TRUE),
+      .progress = .progress
+    )
+  } else {
+    # Sequential execution
+    purrr::map_dfr(.x, .f, ...)
+  }
+}
 
 # munge -------------------------------------------------------------------
 
@@ -965,6 +978,188 @@ mortgage_rates <-
   }
 
 
+# Redfin Market Data ------------------------------------------------------
+
+#' Redfin Housing Market Data
+#'
+#' @description
+#' Fetches free housing market data from Redfin's public data repository.
+#' Data is updated regularly and includes median sale prices, homes sold,
+#' inventory, days on market, and other key housing metrics at the ZIP code level.
+#'
+#' @param zip_codes optional character vector of ZIP codes to filter.
+#'   If \code{NULL} (default), returns all available ZIP codes.
+#' @param start_date optional start date for filtering data (format: "YYYY-MM-DD")
+#' @param end_date optional end date for filtering data (format: "YYYY-MM-DD")
+#' @param metrics optional character vector of metrics to include. Options:
+#'   \itemize{
+#'     \item \code{"median_sale_price"} - Median sale price
+#'     \item \code{"homes_sold"} - Number of homes sold
+#'     \item \code{"inventory"} - Active listings inventory
+#'     \item \code{"median_dom"} - Median days on market
+#'     \item \code{"avg_sale_to_list"} - Average sale-to-list ratio
+#'     \item \code{"all"} (default) - All available metrics
+#'   }
+#'
+#' @return a \code{tibble} with columns including:
+#'   \itemize{
+#'     \item \code{periodBegin} - Start date of the period
+#'     \item \code{periodEnd} - End date of the period
+#'     \item \code{zipCode} - ZIP code
+#'     \item \code{medianSalePrice} - Median sale price
+#'     \item \code{homesSold} - Number of homes sold
+#'     \item \code{inventory} - Active inventory count
+#'     \item \code{medianDaysOnMarket} - Median days on market
+#'     \item \code{avgSaleToListRatio} - Average sale-to-list ratio
+#'   }
+#' @export
+#' @family market data
+#' @examples
+#' \dontrun{
+#' # Get all Redfin market data
+#' redfin_market_data()
+#'
+#' # Get data for specific ZIP codes
+#' redfin_market_data(zip_codes = c("20814", "20815", "20816"))
+#'
+#' # Get data from 2024 onwards
+#' redfin_market_data(start_date = "2024-01-01")
+#' }
+redfin_market_data <-
+  function(zip_codes = NULL,
+           start_date = NULL,
+           end_date = NULL,
+           metrics = "all") {
+
+    # Redfin public data URL
+    url <- "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_market_tracker/zip_code_market_tracker.tsv000.gz"
+
+    tryCatch({
+      # Download and read gzipped TSV
+      temp_file <- tempfile(fileext = ".tsv.gz")
+      on.exit(unlink(temp_file), add = TRUE)
+
+      # Download with curl for better reliability
+      h <- curl::new_handle()
+      curl::curl_download(url, temp_file, handle = h)
+
+      # Read the TSV file
+      df <- readr::read_tsv(
+        temp_file,
+        show_col_types = FALSE,
+        progress = FALSE
+      )
+
+      # Clean column names to snake_case then to camelCase
+      df <- df %>%
+        janitor::clean_names()
+
+      # Rename columns to match package conventions
+      col_renames <- c(
+        "periodBegin" = "period_begin",
+        "periodEnd" = "period_end",
+        "zipCode" = "region",
+        "regionType" = "region_type",
+        "medianSalePrice" = "median_sale_price",
+        "medianSalePriceYoY" = "median_sale_price_yoy",
+        "homesSold" = "homes_sold",
+        "homesSoldYoY" = "homes_sold_yoy",
+        "newListings" = "new_listings",
+        "newListingsYoY" = "new_listings_yoy",
+        "inventory" = "inventory",
+        "inventoryYoY" = "inventory_yoy",
+        "medianDaysOnMarket" = "median_dom",
+        "medianDaysOnMarketYoY" = "median_dom_yoy",
+        "avgSaleToListRatio" = "avg_sale_to_list",
+        "avgSaleToListRatioYoY" = "avg_sale_to_list_yoy",
+        "soldAboveList" = "sold_above_list",
+        "soldAboveListYoY" = "sold_above_list_yoy",
+        "parentMetroRegion" = "parent_metro_region",
+        "lastUpdated" = "last_updated"
+      )
+
+      # Apply renames for columns that exist
+      for (new_name in names(col_renames)) {
+        old_name <- col_renames[new_name]
+        if (old_name %in% names(df)) {
+          names(df)[names(df) == old_name] <- new_name
+        }
+      }
+
+      # Filter to ZIP code regions only (value has space, not underscore)
+      if ("regionType" %in% names(df)) {
+        df <- df %>%
+          dplyr::filter(regionType == "zip code")
+      }
+
+      # Clean ZIP code column - remove "Zip Code: " prefix
+      if ("zipCode" %in% names(df)) {
+        df <- df %>%
+          dplyr::mutate(zipCode = stringr::str_remove(zipCode, "^Zip Code:\\s*"))
+      }
+
+      # Convert dates
+      if ("periodBegin" %in% names(df)) {
+        df <- df %>%
+          dplyr::mutate(periodBegin = as.Date(periodBegin))
+      }
+      if ("periodEnd" %in% names(df)) {
+        df <- df %>%
+          dplyr::mutate(periodEnd = as.Date(periodEnd))
+      }
+
+      # Filter by ZIP codes if specified
+      if (!is.null(zip_codes)) {
+        df <- df %>%
+          dplyr::filter(zipCode %in% zip_codes)
+      }
+
+      # Filter by date range
+      if (!is.null(start_date)) {
+        df <- df %>%
+          dplyr::filter(periodEnd >= as.Date(start_date))
+      }
+      if (!is.null(end_date)) {
+        df <- df %>%
+          dplyr::filter(periodBegin <= as.Date(end_date))
+      }
+
+      # Select metrics if specified
+      if (!("all" %in% metrics)) {
+        base_cols <- c("periodBegin", "periodEnd", "zipCode", "parentMetroRegion")
+        metric_map <- c(
+          "median_sale_price" = "medianSalePrice",
+          "homes_sold" = "homesSold",
+          "inventory" = "inventory",
+          "median_dom" = "medianDaysOnMarket",
+          "avg_sale_to_list" = "avgSaleToListRatio"
+        )
+        selected_cols <- c(base_cols, unname(metric_map[metrics]))
+        selected_cols <- selected_cols[selected_cols %in% names(df)]
+        df <- df %>% dplyr::select(dplyr::all_of(selected_cols))
+      }
+
+      # Arrange by date and ZIP
+      df <- df %>%
+        dplyr::arrange(dplyr::desc(periodEnd), zipCode)
+
+      df
+
+    }, error = function(e) {
+      warning(paste("Failed to fetch Redfin data:", e$message))
+      tibble::tibble(
+        periodBegin = as.Date(character()),
+        periodEnd = as.Date(character()),
+        zipCode = character(),
+        medianSalePrice = numeric(),
+        homesSold = integer(),
+        inventory = integer(),
+        medianDaysOnMarket = integer(),
+        avgSaleToListRatio = numeric()
+      )
+    })
+  }
+
 
 # market data -------------------------------------------------------------
 
@@ -1097,17 +1292,18 @@ parse_location <-
 
 .parse_market_data_urls <-
   function(urls = "https://www.realtor.com/median_prices?city=Bethesda&state_code=MD",
+           .parallel = NULL,
            return_message = TRUE) {
     .parse_market_data_url_safe <-
       possibly(.parse_market_data_url, tibble())
-    urls %>%
-      map_dfr(function(url) {
-        if (return_message) {
-          glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-            cat(fill = T)
-        }
-        .parse_market_data_url_safe(url = url)
-      })
+
+    .parallel_map_dfr(urls, function(url) {
+      if (return_message && !isTRUE(.parallel)) {
+        glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+          message()
+      }
+      .parse_market_data_url_safe(url = url)
+    }, .parallel = .parallel)
   }
 
 #' Median market statistics
@@ -1241,17 +1437,18 @@ median_prices <-
 
 .parse_validation_urls <-
   function(urls = "https://www.realtor.com/validate_geo?location=Easton%2C+MD&retain_secondary_facets=true&include_zip=false&search_controller=Search%3A%3APropertiesController",
+           .parallel = NULL,
            return_message = TRUE) {
     .parse_validation_url_safe <-
       possibly(.parse_validation_url, tibble())
-    urls %>%
-      map_dfr(function(url) {
-        if (return_message) {
-          glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-            cat(fill = T)
-        }
-        .parse_validation_url_safe(url = url)
-      })
+
+    .parallel_map_dfr(urls, function(url) {
+      if (return_message && !isTRUE(.parallel)) {
+        glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+          message()
+      }
+      .parse_validation_url_safe(url = url)
+    }, .parallel = .parallel)
   }
 
 
@@ -2694,23 +2891,24 @@ table_listings <-
 #' }
 html_listing_urls <-
   function(urls = NULL,
-           include_features = F,
+           include_features = FALSE,
            sleep_time = 1,
+           .parallel = NULL,
            return_message = TRUE) {
     .parse_listing_url_safe <-
       possibly(.parse_listing_url, tibble())
+
     all_data <-
-      urls %>%
-      map_dfr(function(url) {
-        if (return_message) {
+      .parallel_map_dfr(urls, function(url) {
+        if (return_message && !isTRUE(.parallel)) {
           glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
             message()
         }
         .parse_listing_url_safe(url = url,
                                 include_features = include_features,
-                                sleep_time = sleep_time) %>% 
+                                sleep_time = sleep_time) %>%
           suppressWarnings()
-      })
+      }, .parallel = .parallel)
     
     all_data <- 
       all_data %>%

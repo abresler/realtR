@@ -23,6 +23,7 @@ Other dictionary:
 \code{\link{dictionary_property_types}()}
 
 Other listing search: 
+\code{\link{comps}()},
 \code{\link{dictionary_property_types}()},
 \code{\link{listing_counts}()},
 \code{\link{listings}()},

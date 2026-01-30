@@ -925,16 +925,16 @@
 parse_listing_urls <-
   function(urls = NULL,
            sleep_time = 1,
-           assign_to_environment = F,
+           assign_to_environment = FALSE,
+           .parallel = NULL,
            return_message = TRUE) {
-    
+
     .parse_listing_api_url_safe <-
       possibly(.parse_listing_api_url, tibble())
-    
+
     all_data <-
-      urls %>%
-      map_dfr(function(url) {
-        if (return_message) {
+      .parallel_map_dfr(urls, function(url) {
+        if (return_message && !isTRUE(.parallel)) {
           glue(
             "Parsing {url %>% str_replace_all('https://www.realtor.com/property-overview/', '')}"
           ) %>%
@@ -943,7 +943,7 @@ parse_listing_urls <-
         .parse_listing_api_url_safe(url = url,
                                     sleep_time = sleep_time) %>%
           suppressWarnings()
-      }) %>% 
+      }, .parallel = .parallel) %>%
       suppressWarnings()
     
     if (all_data %>% hasName("statusActive")) {

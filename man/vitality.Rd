@@ -15,13 +15,16 @@ a city name and a comma ie "Brooklyn, NY" or a zipcode}
 \item{...}{extra parameters}
 }
 \value{
-a \code{tibble}
+an empty \code{tibble} with a deprecation warning
 }
 \description{
-Acquires meta level information
-for specified locations as of the
-most recent time period
+`r lifecycle::badge("deprecated")`
+
+This function is deprecated because the realtor.com
+API endpoint it relied on (/home_page/vitality) no longer exists.
 }
 \examples{
-vitality(locations = c("La Jolla, CA", "Manhattan, NY", "Bethany, DE", "10016"))
+\dontrun{
+vitality(locations = c("La Jolla, CA", "Manhattan, NY"))
+}
 }

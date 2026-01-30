@@ -16,5 +16,7 @@ Returns moderate rental estimates for
 specified zipcodes
 }
 \examples{
-rental_estimates(zipcodes = c("20852", "10016", "90210"), return_message = T)
+\dontrun{
+rental_estimates(zipcodes = c("20852", "10016", "90210"), return_message = TRUE)
+}
 }

@@ -204,36 +204,41 @@ generate_geo_urls <-
 #' @examples
 parse_geo_urls <-
   function(urls = "https://parser-external.geo.moveaws.com/suggest?input=bethesda&limit=100&client_id=rdcV8&area_types=neighborhood,city,county,postal_code,address",
-           use_future = F,
-           return_message = T) {
+           .parallel = NULL,
+           return_message = TRUE) {
     .parse_geo_query_safe <-
       possibly(.parse_geo_query, tibble())
-    
-    if (!use_future) {
-    all_data <- 
-      urls %>%
-      map_dfr(function(url) {
-        if (return_message) {
-          glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
-            message()
-        }
-        .parse_geo_query_safe(url = url)
-      })
+
+    n <- length(urls)
+
+    # Bayesian threshold: parallelize when n * avg_time > 1000 + (workers * 50)
+    # For network I/O with ~500ms per request, threshold is ~5 items
+    if (is.null(.parallel)) {
+      .parallel <- n >= 5 && future::nbrOfWorkers() > 1
     }
-    
-    if (use_future) {
-      options(future.globals.maxSize = 999999 * 1024 ^ 12)
-      future::plan(cluster)
-      all_data <- 
-        urls %>%
-        furrr::future_map_dfr(function(url) {
+
+    if (.parallel && requireNamespace("furrr", quietly = TRUE)) {
+      # Parallel execution - respects user's plan() setup
+      all_data <- furrr::future_map_dfr(
+        urls,
+        function(url) {
+          .parse_geo_query_safe(url = url)
+        },
+        .options = furrr::furrr_options(seed = TRUE),
+        .progress = n > 10
+      )
+    } else {
+      # Sequential execution with optional progress
+      all_data <- urls %>%
+        map_dfr(function(url) {
+          if (return_message) {
+            glue("Parsing {url %>% str_replace_all('https://www.realtor.com/', '')}") %>%
+              message()
+          }
           .parse_geo_query_safe(url = url)
         })
-      closeAllConnections()
     }
-    
-    
-    
+
     all_data
   }
 
@@ -279,10 +284,10 @@ geocode <-
              "street",
              "school"
            ),
-           use_future = F,
-           snake_names = F,
+           .parallel = NULL,
+           snake_names = FALSE,
            limit = 100,
-           remove_list_columns = F,
+           remove_list_columns = FALSE,
            return_message = TRUE,
            ...) {
     if (length(locations) == 0) {
@@ -292,10 +297,10 @@ geocode <-
       generate_geo_urls(locations = locations,
                         search_types = search_types,
                         limit = 100)
-    
+
     all_data <-
       parse_geo_urls(urls = df_urls$urlGeoAPI, return_message = return_message,
-                     use_future = use_future)
+                     .parallel = .parallel)
     
     all_data <-
       all_data %>%

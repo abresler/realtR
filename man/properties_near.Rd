@@ -20,6 +20,8 @@ The location can be an exact address, zipcode
 city or a neighborhood.
 }
 \examples{
-locations <-  c("2449 Tracy Place, NW, Washington DC", "Sunset Island, Miami Beach, FL" )
+\dontrun{
+locations <- c("2449 Tracy Place, NW, Washington DC", "Miami Beach, FL")
 properties_near(locations = locations)
+}
 }

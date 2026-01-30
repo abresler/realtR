@@ -6,8 +6,9 @@
 \usage{
 html_listing_urls(
   urls = NULL,
-  include_features = F,
+  include_features = FALSE,
   sleep_time = 1,
+  .parallel = NULL,
   return_message = TRUE
 )
 }
@@ -29,5 +30,7 @@ This function will likely result in DDOS so use carefully.
 When possible find the JSON api data for the listings.
 }
 \examples{
-html_listing_urls(urls = "https://www.realtor.com/realestateandhomes-detail/5301-Westbard-Cir-Apt-323_Bethesda_MD_20816_M63437-59115")
+\dontrun{
+html_listing_urls(urls = "https://www.realtor.com/realestateandhomes-detail/property-url")
+}
 }

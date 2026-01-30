@@ -1,7 +1,7 @@
 Package: realtR
 Type: Package
 Title: Real Estate's maxim gun
-Version: 0.1100
+Version: 0.1200
 Date: 2026-01-30
 Authors@R: c(person("Alex", "Bresler", email = "abresler@asbcllc.com", role = c("aut", "cre")))
 Encoding: UTF-8
@@ -11,26 +11,32 @@ Depends:
 Description: Gateway to residential real estate transparency
 License: GPL (>= 2)
 RoxygenNote: 7.3.3
-Imports: 
+Imports:
+    cachem,
     curl,
     dplyr,
-    jsonlite,
-    lubridate,
-    purrr,
-    readr,
-    rvest,
-    rlang,
-    stringi,
-    stringr,
     furrr,
     future,
+    glue,
+    httr2,
     janitor,
+    jsonlite,
+    lubridate,
+    memoise,
+    purrr,
+    readr,
+    rlang,
+    rvest,
+    stringi,
+    stringr,
     textrank,
     tibble,
     tidyr,
     udpipe,
-    xml2,
-    glue
+    xml2
 Language: en-US
-Suggests: 
+Suggests:
+    knitr,
+    rmarkdown,
     testthat
+VignetteBuilder: knitr

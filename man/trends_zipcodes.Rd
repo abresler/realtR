@@ -18,5 +18,7 @@ trends_zipcodes(zipcodes = NULL, return_message = T)
 Market trends for zipcodes
 }
 \examples{
+\dontrun{
 trends_zipcodes(zipcodes = c("90210", "10016"))
+}
 }

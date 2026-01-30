@@ -21,6 +21,7 @@ Other dictionary:
 \code{\link{dictionary_listing_features}()}
 
 Other listing search: 
+\code{\link{comps}()},
 \code{\link{dictionary_listing_features}()},
 \code{\link{listing_counts}()},
 \code{\link{listings}()},

@@ -7,7 +7,8 @@
 parse_listing_urls(
   urls = NULL,
   sleep_time = 1,
-  assign_to_environment = F,
+  assign_to_environment = FALSE,
+  .parallel = NULL,
   return_message = TRUE
 )
 }
