@@ -802,35 +802,155 @@ dictionary_realtor_names <-
 
 # rates -------------------------------------------------------------------
 
-# https://www.realtor.com/mrtg_handler/get_trends_data
-# NOTE: This endpoint was deprecated by realtor.com circa 2024
+# Mortgage Rates from FRED (Federal Reserve Economic Data)
+# Source: https://fred.stlouisfed.org/
 
-#' Mortgage Rates
+#' Mortgage Rates from FRED
+#'
+#' Returns historical mortgage rates from the Federal Reserve
+#' Economic Data (FRED) database. Data is sourced from Freddie Mac's
+
+#' Primary Mortgage Market Survey (PMMS).
+#'
+#' @param rate_types character vector of rate types to fetch. Options:
+#'   \code{"30yr"} (30-year fixed), \code{"15yr"} (15-year fixed),
+#'   \code{"5yr_arm"} (5/1-year ARM). Default is all three.
+#' @param start_date optional start date (Date or character in YYYY-MM-DD format)
+#' @param end_date optional end date (Date or character in YYYY-MM-DD format)
+#' @param return_wide if \code{TRUE} returns data in wide format with
+#'   rate types as columns
+#'
+#' @return a \code{tibble} with columns:
+#'   \itemize{
+#'     \item \code{dateData} - observation date
+#'     \item \code{typeRate} - rate type (e.g., "pct30YearFixed")
+#'     \item \code{value} - interest rate as decimal (e.g., 0.065 for 6.5\%)
+#'     \item \code{durationLoanMonths} - loan duration in months
+#'     \item \code{typeBenchmark} - "fixed" or "floating"
+#'   }
+#' @export
+#' @family interest rates
+#' @examples
+#' \dontrun{
+#' # Get all mortgage rates
+#' mortgage_rates_fred()
+#'
+#' # Get only 30-year fixed rates from 2020 onwards
+#' mortgage_rates_fred(rate_types = "30yr", start_date = "2020-01-01")
+#'
+#' # Get rates in wide format
+#' mortgage_rates_fred(return_wide = TRUE)
+#' }
+mortgage_rates_fred <-
+  function(rate_types = c("30yr", "15yr", "5yr_arm"),
+           start_date = NULL,
+           end_date = NULL,
+           return_wide = FALSE) {
+
+    # FRED series IDs for mortgage rates
+    series_map <- tibble::tibble(
+      typeRate = c("pct30YearFixed", "pct15YearFixed", "pct5OneARM"),
+      series_id = c("MORTGAGE30US", "MORTGAGE15US", "MORTGAGE5US"),
+      rate_type = c("30yr", "15yr", "5yr_arm"),
+      durationLoanMonths = c(360L, 180L, 60L),
+      typeBenchmark = c("fixed", "fixed", "floating")
+    )
+
+    # Filter to requested rate types
+    rate_types <- match.arg(rate_types, c("30yr", "15yr", "5yr_arm"), several.ok = TRUE)
+    series_to_fetch <- series_map %>%
+      dplyr::filter(rate_type %in% rate_types)
+
+    # Build date parameters
+    date_params <- ""
+    if (!is.null(start_date)) {
+      date_params <- paste0(date_params, "&cosd=", as.character(as.Date(start_date)))
+    }
+    if (!is.null(end_date)) {
+      date_params <- paste0(date_params, "&coed=", as.character(as.Date(end_date)))
+    }
+
+    # Fetch each series
+    all_data <- purrr::map_dfr(seq_len(nrow(series_to_fetch)), function(i) {
+      row <- series_to_fetch[i, ]
+      url <- paste0(
+        "https://fred.stlouisfed.org/graph/fredgraph.csv?id=",
+        row$series_id,
+        date_params
+      )
+
+      tryCatch({
+        df <- readr::read_csv(url, show_col_types = FALSE, progress = FALSE)
+        names(df) <- c("dateData", "value")
+        df %>%
+          dplyr::mutate(
+            dateData = as.Date(dateData),
+            value = as.numeric(value) / 100,  # Convert to decimal
+            typeRate = row$typeRate,
+            durationLoanMonths = row$durationLoanMonths,
+            typeBenchmark = row$typeBenchmark
+          ) %>%
+          dplyr::filter(!is.na(value))
+      }, error = function(e) {
+        warning(paste("Failed to fetch", row$series_id, ":", e$message))
+        tibble::tibble()
+      })
+    })
+
+    if (nrow(all_data) == 0) {
+      warning("No mortgage rate data retrieved")
+      return(tibble::tibble(
+        dateData = as.Date(character()),
+        typeRate = character(),
+        value = numeric(),
+        durationLoanMonths = integer(),
+        typeBenchmark = character()
+      ))
+    }
+
+    # Arrange by date
+    all_data <- all_data %>%
+      dplyr::select(dateData, typeRate, durationLoanMonths, typeBenchmark, value) %>%
+      dplyr::arrange(dateData, typeRate)
+
+    # Optionally widen
+    if (return_wide) {
+      all_data <- all_data %>%
+        dplyr::select(dateData, typeRate, value) %>%
+        tidyr::pivot_wider(names_from = typeRate, values_from = value)
+    }
+
+    all_data
+  }
+
+
+# Legacy mortgage_rates function (deprecated)
+
+#' Mortgage Rates (Deprecated)
 #'
 #' @description
 #' `r lifecycle::badge("deprecated")`
 #'
-#' This function is deprecated because the realtor.
-#' com API endpoint it relied on (/mrtg_handler/get_trends_data)
-#' no longer exists. Consider using alternative mortgage rate
-#' data sources such as Freddie Mac PMMS or Zillow API.
+#' This function is deprecated. Use \code{\link{mortgage_rates_fred}} instead,
+#' which fetches data from the Federal Reserve Economic Data (FRED) database.
 #'
-#' @param return_wide if \code{TRUE} widens data and removes duration and benchmark variables
+#' @param return_wide if \code{TRUE} widens data
 #'
 #' @return an empty \code{tibble} with a deprecation warning
 #' @export
 #' @family interest rates
 #' @examples
 #' \dontrun{
-#' mortgage_rates(return_wide = F)
+#' # Use mortgage_rates_fred() instead
+#' mortgage_rates_fred()
 #' }
 mortgage_rates <-
-  function(return_wide = F) {
+  function(return_wide = FALSE) {
     .Deprecated(
+      new = "mortgage_rates_fred",
       msg = paste(
         "mortgage_rates() is deprecated.",
-        "The realtor.com API endpoint no longer exists.",
-        "Consider using Freddie Mac PMMS or other mortgage rate APIs."
+        "Use mortgage_rates_fred() instead for FRED/Freddie Mac data."
       )
     )
 
