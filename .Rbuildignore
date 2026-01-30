@@ -3,4 +3,6 @@
 ^docs$
 ^_pkgdown\.yml$
 ^\.travis\.yml$
-depricated
+^readme\.Rmd$
+^CLEANUP_MANIFEST\.json$
+^CLAUDE\.md$

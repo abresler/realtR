@@ -93,8 +93,12 @@ All data sourced from realtor.com:
 ## Testing
 
 - **Framework:** testthat
-- **Current state:** Minimal coverage (smoke test for `geocode()` only)
-- **Location:** `tests/testthat/test-realtR.R`
+- **Test files:** 4 files, 40+ tests
+- **Location:** `tests/testthat/`
+- **Key test files:**
+  - `test-snapshot-baseline.R` - Function existence and return type verification
+  - `test-dictionaries.R` - Dictionary function validation
+  - `test-nlp.R` - NLP summarization (skipped without udpipe model)
 
 ## Dependencies
 
@@ -105,7 +109,9 @@ All data sourced from realtor.com:
 
 ## Known Issues
 
-- `depricated/` folder contains legacy code (note: folder name is misspelled)
-- Sparse test coverage
+- **Broken APIs (as of 2026-01):**
+  - `mortgage_rates()` - endpoint `/mrtg_handler/get_trends_data` returns 404
+  - `vitality()` - endpoint `/home_page/vitality` returns 404
+- Some endpoints return 429 (rate limited) - user-agent rotation helps
 - No API versioning or fallback handling
-- Last significant update: 2019 (v0.1023)
+- Package depends on external realtor.com API stability
